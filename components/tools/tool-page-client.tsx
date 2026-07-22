@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { getToolBySlug, type ToolDefinition } from "@/lib/tools";
 import { GenericTool } from "./generic-tool";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ToolErrorBoundary } from "@/components/tool-shell/tool-error-boundary";
 
 function loadingFallback() {
   return (
@@ -54,6 +55,18 @@ const IMPLEMENTED_TOOLS: Record<
     () => import("./summarize-pdf").then((m) => m.SummarizePdfTool),
     { loading: loadingFallback, ssr: false }
   ),
+  "word-to-pdf": dynamic(
+    () => import("./word-to-pdf").then((m) => m.WordToPdfTool),
+    { loading: loadingFallback, ssr: false }
+  ),
+  "excel-to-pdf": dynamic(
+    () => import("./excel-to-pdf").then((m) => m.ExcelToPdfTool),
+    { loading: loadingFallback, ssr: false }
+  ),
+  "html-to-pdf": dynamic(
+    () => import("./html-to-pdf").then((m) => m.HtmlToPdfTool),
+    { loading: loadingFallback, ssr: false }
+  ),
 };
 
 export function ToolPageClient({
@@ -70,9 +83,13 @@ export function ToolPageClient({
 
   const Implementation = IMPLEMENTED_TOOLS[tool.slug];
 
-  if (Implementation) {
-    return <Implementation tool={tool} />;
-  }
-
-  return <GenericTool tool={tool} categoryName={categoryName} />;
+  return (
+    <ToolErrorBoundary key={tool.slug}>
+      {Implementation ? (
+        <Implementation tool={tool} />
+      ) : (
+        <GenericTool tool={tool} categoryName={categoryName} />
+      )}
+    </ToolErrorBoundary>
+  );
 }

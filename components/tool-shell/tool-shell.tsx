@@ -17,6 +17,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export interface ToolShellHelpers {
   files: File[];
+  /** Exposed so a custom `preview` can wire up its own reorder UI (e.g. drag-and-drop). */
+  reorderFile: (from: number, to: number) => void;
+  removeFile: (index: number) => void;
 }
 
 interface ToolShellProps {
@@ -36,8 +39,11 @@ interface ToolShellProps {
    */
   onFilesChange?: (files: File[]) => void;
   /**
-   * Replaces the on-device badge for tools that aren't (currently just Summarize) — state
-   * honestly what happens to the user's data instead of leaving the header blank.
+   * Extra header copy shown before any file is uploaded — for a privacy caveat
+   * (Summarize sends text to Gemini) or a quality/limitation disclosure (e.g.
+   * "complex layouts won't survive"). Renders alongside the on-device badge,
+   * not instead of it — a tool can be genuinely client-side and still have a
+   * caveat worth surfacing up front.
    */
   notice?: () => React.ReactNode;
   /** Runs the actual transformation (client-side or via a server route). Return one or more result files. */
@@ -136,7 +142,7 @@ function ToolShellInner({
     });
   }
 
-  const helpers: ToolShellHelpers = { files };
+  const helpers: ToolShellHelpers = { files, reorderFile, removeFile };
   const ready = files.length > 0 && (canRun ? canRun(helpers) : true);
 
   async function handleAction() {
@@ -183,7 +189,8 @@ function ToolShellInner({
             <p className="text-sm text-muted-foreground">{tool.description}</p>
           </div>
         </div>
-        {tool.isClientSide ? <ClientSideBadge /> : notice?.()}
+        {tool.isClientSide && <ClientSideBadge />}
+        {notice?.()}
       </div>
 
       {actionState === "done" && results ? (

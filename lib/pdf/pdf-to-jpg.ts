@@ -1,9 +1,12 @@
 import JSZip from "jszip";
 import { loadPdfDocument, renderPageToDataUrl } from "./thumbnails";
 
+export type ImageFormat = "jpeg" | "png";
+
 export interface PdfToJpgOptions {
   scale?: number; // render resolution multiplier
-  quality?: number; // JPEG quality 0-1
+  quality?: number; // JPEG quality 0-1, ignored for PNG
+  format?: ImageFormat;
   onProgress?: (fraction: number) => void;
 }
 
@@ -21,18 +24,20 @@ export async function pdfToJpgZip(
   file: File,
   opts: PdfToJpgOptions = {}
 ): Promise<{ name: string; blob: Blob; pageCount: number }> {
-  const { scale = 2, quality = 0.9, onProgress } = opts;
+  const { scale = 2, quality = 0.9, format = "jpeg", onProgress } = opts;
   const buffer = await file.arrayBuffer();
   const pdf = await loadPdfDocument(buffer);
   const baseName = file.name.replace(/\.pdf$/i, "");
+  const mime = format === "png" ? "image/png" : "image/jpeg";
+  const ext = format === "png" ? "png" : "jpg";
 
   const zip = new JSZip();
   for (let i = 1; i <= pdf.numPages; i++) {
-    const rendered = await renderPageToDataUrl(pdf, i, scale, "image/jpeg", quality);
-    zip.file(`${baseName}-page-${i}.jpg`, dataUrlToBlob(rendered.dataUrl));
+    const rendered = await renderPageToDataUrl(pdf, i, scale, mime, quality);
+    zip.file(`${baseName}-page-${i}.${ext}`, dataUrlToBlob(rendered.dataUrl));
     onProgress?.(i / pdf.numPages);
   }
 
   const blob = await zip.generateAsync({ type: "blob" });
-  return { name: `${baseName}-jpg.zip`, blob, pageCount: pdf.numPages };
+  return { name: `${baseName}-${ext}.zip`, blob, pageCount: pdf.numPages };
 }

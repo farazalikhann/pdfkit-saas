@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { pdfToJpgZip } from "@/lib/pdf/pdf-to-jpg";
+import { pdfToJpgZip, type ImageFormat } from "@/lib/pdf/pdf-to-jpg";
 import type { ToolDefinition } from "@/lib/tools";
 
 const PRESETS = {
@@ -22,26 +22,41 @@ type PresetKey = keyof typeof PRESETS;
 
 export function PdfToJpgTool({ tool }: { tool: ToolDefinition }) {
   const [preset, setPreset] = React.useState<PresetKey>("standard");
+  const [format, setFormat] = React.useState<ImageFormat>("jpeg");
 
   return (
     <ToolShell
       tool={tool}
-      actionLabel={() => "Convert to JPG"}
+      actionLabel={() => (format === "png" ? "Convert to PNG" : "Convert to JPG")}
       options={() => (
-        <div className="space-y-1.5">
-          <Label>Image quality</Label>
-          <Select value={preset} onValueChange={(v) => setPreset(v as PresetKey)}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {Object.entries(PRESETS).map(([key, p]) => (
-                <SelectItem key={key} value={key}>
-                  {p.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <div className="space-y-4">
+          <div className="space-y-1.5">
+            <Label>Format</Label>
+            <Select value={format} onValueChange={(v) => setFormat(v as ImageFormat)}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="jpeg">JPG</SelectItem>
+                <SelectItem value="png">PNG (lossless, larger files)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1.5">
+            <Label>Image quality</Label>
+            <Select value={preset} onValueChange={(v) => setPreset(v as PresetKey)}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(PRESETS).map(([key, p]) => (
+                  <SelectItem key={key} value={key}>
+                    {p.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       )}
       onProcess={async (files, reportProgress) => {
@@ -49,6 +64,7 @@ export function PdfToJpgTool({ tool }: { tool: ToolDefinition }) {
         const result = await pdfToJpgZip(files[0], {
           scale,
           quality,
+          format,
           onProgress: reportProgress,
         });
         return [{ name: result.name, blob: result.blob }];
