@@ -1,4 +1,5 @@
-import { PDFDocument, degrees } from "@cantoo/pdf-lib";
+import { degrees } from "@cantoo/pdf-lib";
+import { loadPdfSafely } from "./errors";
 
 export interface PageRotation {
   /** 0-indexed page number */
@@ -13,7 +14,7 @@ export async function rotatePages(
   rotations: PageRotation[]
 ): Promise<Uint8Array> {
   const bytes = await file.arrayBuffer();
-  const doc = await PDFDocument.load(bytes);
+  const doc = await loadPdfSafely(bytes);
   const byIndex = new Map(rotations.map((r) => [r.pageIndex, r.deltaDegrees]));
 
   doc.getPages().forEach((page, index) => {
@@ -32,7 +33,7 @@ export async function rotateAllPages(
   deltaDegrees: number
 ): Promise<Uint8Array> {
   const bytes = await file.arrayBuffer();
-  const doc = await PDFDocument.load(bytes);
+  const doc = await loadPdfSafely(bytes);
   doc.getPages().forEach((page) => {
     const current = page.getRotation().angle;
     page.setRotation(degrees((current + deltaDegrees + 360) % 360));

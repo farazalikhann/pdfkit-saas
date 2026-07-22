@@ -1,5 +1,7 @@
 import { PDFDocument } from "@cantoo/pdf-lib";
 import JSZip from "jszip";
+import { copyMetadata } from "./copy-metadata";
+import { loadPdfSafely } from "./errors";
 
 export interface PageRange {
   from: number; // 1-indexed, inclusive
@@ -18,12 +20,13 @@ export interface SplitResult {
 
 export async function splitPdf(
   file: File,
-  mode: SplitMode
+  mode: SplitMode,
+  namePrefix?: string
 ): Promise<SplitResult[]> {
   const bytes = await file.arrayBuffer();
-  const src = await PDFDocument.load(bytes);
+  const src = await loadPdfSafely(bytes);
   const pageCount = src.getPageCount();
-  const baseName = file.name.replace(/\.pdf$/i, "");
+  const baseName = (namePrefix?.trim() || file.name.replace(/\.pdf$/i, "")).replace(/[/\\?%*:|"<>]/g, "-");
 
   const ranges: PageRange[] =
     mode.type === "ranges"
@@ -49,6 +52,7 @@ export async function splitPdf(
     );
     const pages = await doc.copyPages(src, indices);
     pages.forEach((page) => doc.addPage(page));
+    copyMetadata(src, doc);
     const outBytes = await doc.save();
 
     const label =
@@ -61,7 +65,7 @@ export async function splitPdf(
   return results;
 }
 
-function chunkRanges(pageCount: number, n: number): PageRange[] {
+export function chunkRanges(pageCount: number, n: number): PageRange[] {
   const chunks: PageRange[] = [];
   for (let start = 1; start <= pageCount; start += n) {
     chunks.push({ from: start, to: Math.min(pageCount, start + n - 1) });

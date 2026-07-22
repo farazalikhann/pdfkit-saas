@@ -1,103 +1,130 @@
 "use client";
 
 import * as React from "react";
-import { RotateCcw, RotateCw } from "lucide-react";
+import { toast } from "sonner";
+import { RotateCcw, RotateCw, RefreshCw } from "lucide-react";
 import { ToolShell } from "@/components/tool-shell/tool-shell";
-import { PdfThumbnailGrid } from "@/components/pdf/pdf-thumbnail-grid";
 import { Button } from "@/components/ui/button";
-import { renderAllThumbnails, type RenderedPage } from "@/lib/pdf/thumbnails";
-import { rotatePages } from "@/lib/pdf/rotate";
+import { PagePicker } from "@/components/page-picker/page-picker";
+import { rotatePages, type PageRotation } from "@/lib/pdf/rotate";
+import { checkFileMemoryRisk } from "@/lib/files/memory-guard";
 import type { ToolDefinition } from "@/lib/tools";
 
 export function RotatePagesTool({ tool }: { tool: ToolDefinition }) {
-  const [currentFile, setCurrentFile] = React.useState<File | null>(null);
-  const [pages, setPages] = React.useState<RenderedPage[]>([]);
-  const [loadingThumbs, setLoadingThumbs] = React.useState(false);
-  const [rotations, setRotations] = React.useState<Record<number, number>>({});
+  const [selected, setSelected] = React.useState<Set<number>>(new Set());
+  const [rotations, setRotations] = React.useState<Map<number, number>>(new Map());
+  const [pageCount, setPageCount] = React.useState(0);
+  const [pickerError, setPickerError] = React.useState<string | null>(null);
 
-  React.useEffect(() => {
-    if (!currentFile) {
-      setPages([]);
-      return;
-    }
-    let cancelled = false;
-    setLoadingThumbs(true);
-    setRotations({});
-    renderAllThumbnails(currentFile).then((rendered) => {
-      if (!cancelled) setPages(rendered);
-    }).finally(() => {
-      if (!cancelled) setLoadingThumbs(false);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [currentFile]);
-
-  function rotateOne(index: number) {
-    setRotations((prev) => ({
-      ...prev,
-      [index]: ((prev[index] ?? 0) + 90) % 360,
-    }));
-  }
-
-  function rotateAll(delta: number) {
+  function applyDelta(pages: Set<number> | number[], delta: number) {
     setRotations((prev) => {
-      const next = { ...prev };
-      pages.forEach((_, i) => {
-        next[i] = ((next[i] ?? 0) + delta + 360) % 360;
+      const next = new Map(prev);
+      Array.from(pages).forEach((page) => {
+        next.set(page, ((next.get(page) ?? 0) + delta + 360) % 360);
       });
       return next;
     });
   }
 
+  const hasAnyRotation = Array.from(rotations.values()).some((deg) => deg !== 0);
+  const allPages = React.useMemo(
+    () => Array.from({ length: pageCount }, (_, i) => i + 1),
+    [pageCount]
+  );
+
   return (
     <ToolShell
       tool={tool}
       actionLabel={() => "Save rotated PDF"}
-      onFilesChange={(files) => setCurrentFile(files[0] ?? null)}
-      preview={() => {
-        return (
+      canRun={() => hasAnyRotation && !pickerError}
+      onFilesChange={(files) => {
+        setSelected(new Set());
+        setRotations(new Map());
+        setPageCount(0);
+        const f = files[0];
+        if (f) {
+          const risk = checkFileMemoryRisk(f);
+          if (risk) toast.warning(risk);
+        }
+      }}
+      notice={() => (
+        <p className="text-xs text-muted-foreground">
+          Select pages, then rotate just the selection — or rotate every page
+          at once with the shortcut below.
+        </p>
+      )}
+      preview={({ files }) =>
+        files[0] ? (
           <div className="space-y-3">
-            <div className="flex items-center justify-between gap-2 rounded-xl border border-border bg-card p-3">
-              <p className="text-sm text-muted-foreground">
-                Tap a page to rotate it, or rotate every page at once.
+            <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border bg-card p-3">
+              <p className="text-sm font-medium">
+                {selected.size > 0 ? `Rotate ${selected.size} selected` : "Select pages to rotate"}
               </p>
               <div className="flex shrink-0 gap-1.5">
                 <Button
                   variant="outline"
                   size="icon"
-                  aria-label="Rotate all left"
-                  onClick={() => rotateAll(-90)}
+                  aria-label="Rotate selection left 90°"
+                  disabled={selected.size === 0}
+                  onClick={() => applyDelta(selected, -90)}
                 >
                   <RotateCcw className="h-4 w-4" />
                 </Button>
                 <Button
                   variant="outline"
                   size="icon"
-                  aria-label="Rotate all right"
-                  onClick={() => rotateAll(90)}
+                  aria-label="Rotate selection right 90°"
+                  disabled={selected.size === 0}
+                  onClick={() => applyDelta(selected, 90)}
                 >
                   <RotateCw className="h-4 w-4" />
                 </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={selected.size === 0}
+                  onClick={() => applyDelta(selected, 180)}
+                >
+                  180°
+                </Button>
               </div>
             </div>
-            <PdfThumbnailGrid
-              pages={pages}
+
+            <PagePicker
+              mode="select"
+              file={files[0]}
+              selected={selected}
+              onSelectedChange={setSelected}
+              variant="default"
               rotations={rotations}
-              onRotate={rotateOne}
-              loading={loadingThumbs}
+              onPageCountChange={setPageCount}
+              onError={setPickerError}
             />
+
+            <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-dashed border-border p-3">
+              <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <RefreshCw className="h-3.5 w-3.5" />
+                Shortcut: rotate every page
+              </p>
+              <div className="flex shrink-0 gap-1.5">
+                <Button variant="ghost" size="sm" onClick={() => applyDelta(allPages, -90)}>
+                  All ↺ 90°
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => applyDelta(allPages, 90)}>
+                  All ↻ 90°
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => applyDelta(allPages, 180)}>
+                  All 180°
+                </Button>
+              </div>
+            </div>
           </div>
-        );
-      }}
-      canRun={() => Object.values(rotations).some((deg) => deg !== 0)}
+        ) : null
+      }
       onProcess={async (files) => {
-        const rotationList = Object.entries(rotations)
+        const rotationList: PageRotation[] = Array.from(rotations.entries())
           .filter(([, deg]) => deg !== 0)
-          .map(([pageIndex, deltaDegrees]) => ({
-            pageIndex: Number(pageIndex),
-            deltaDegrees,
-          }));
+          .map(([page, deltaDegrees]) => ({ pageIndex: page - 1, deltaDegrees }));
         const bytes = await rotatePages(files[0], rotationList);
         return [
           {

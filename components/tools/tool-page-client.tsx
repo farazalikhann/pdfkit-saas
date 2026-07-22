@@ -67,6 +67,18 @@ const IMPLEMENTED_TOOLS: Record<
     () => import("./html-to-pdf").then((m) => m.HtmlToPdfTool),
     { loading: loadingFallback, ssr: false }
   ),
+  "extract-pages": dynamic(
+    () => import("./extract-pages").then((m) => m.ExtractPagesTool),
+    { loading: loadingFallback, ssr: false }
+  ),
+  "remove-pages": dynamic(
+    () => import("./remove-pages").then((m) => m.RemovePagesTool),
+    { loading: loadingFallback, ssr: false }
+  ),
+  "reorder-pages": dynamic(
+    () => import("./reorder-pages").then((m) => m.ReorderPagesTool),
+    { loading: loadingFallback, ssr: false }
+  ),
 };
 
 export function ToolPageClient({
