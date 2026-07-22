@@ -1,10 +1,15 @@
 import Link from "next/link";
 import { categories } from "@/lib/categories";
+import { getToolsByCategory } from "@/lib/tools";
 
 export function CategoryChips() {
+  const visibleCategories = categories.filter(
+    (cat) => getToolsByCategory(cat.slug).length > 0
+  );
+
   return (
     <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
-      {categories.map((cat) => (
+      {visibleCategories.map((cat) => (
         <Link
           key={cat.slug}
           href={`/category/${cat.slug}`}

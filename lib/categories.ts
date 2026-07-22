@@ -72,7 +72,7 @@ export const categories: Category[] = [
     name: "AI Tools",
     emoji: "🤖",
     icon: Sparkles,
-    description: "Chat with, summarize, translate and extract data from PDFs",
+    description: "Get a quick AI summary of a long document",
     colorVar: "--cat-ai",
   },
 ];

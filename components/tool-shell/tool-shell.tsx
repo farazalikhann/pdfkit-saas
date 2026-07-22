@@ -4,7 +4,6 @@ import * as React from "react";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import type { ToolDefinition } from "@/lib/tools";
-import { useUsageStore } from "@/lib/store/usage-store";
 import { useRecentStore } from "@/lib/store/recent-store";
 import { useChainStore } from "@/lib/store/chain-store";
 import { UploadZone } from "./upload-zone";
@@ -12,7 +11,6 @@ import { FileList } from "./file-list";
 import { OptionsPanel } from "./options-panel";
 import { ActionBar, type ActionState } from "./action-bar";
 import { ResultPanel, type ResultFile } from "./result-panel";
-import { PaywallModal } from "./paywall-modal";
 import { ClientSideBadge } from "./client-badge";
 import { ProgressRing } from "./progress-ring";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -37,7 +35,12 @@ interface ToolShellProps {
    * render, and calling a child's setState there trips React's cross-component render warning.
    */
   onFilesChange?: (files: File[]) => void;
-  /** Runs the actual client-side transformation. Return one or more result files. */
+  /**
+   * Replaces the on-device badge for tools that aren't (currently just Summarize) — state
+   * honestly what happens to the user's data instead of leaving the header blank.
+   */
+  notice?: () => React.ReactNode;
+  /** Runs the actual transformation (client-side or via a server route). Return one or more result files. */
   onProcess: (
     files: File[],
     reportProgress: (fraction: number) => void
@@ -74,6 +77,7 @@ function ToolShellInner({
   actionLabel,
   canRun,
   onFilesChange,
+  notice,
   onProcess,
 }: ToolShellProps) {
   const searchParams = useSearchParams();
@@ -82,13 +86,8 @@ function ToolShellInner({
   const [actionState, setActionState] = React.useState<ActionState>("idle");
   const [progress, setProgress] = React.useState(0);
   const [results, setResults] = React.useState<ResultFile[] | null>(null);
-  const [locked, setLocked] = React.useState(false);
-  const [paywallOpen, setPaywallOpen] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
 
-  const checkFileSize = useUsageStore((s) => s.checkFileSize);
-  const isOverDailyLimit = useUsageStore((s) => s.isOverDailyLimit);
-  const recordTaskRun = useUsageStore((s) => s.recordTaskRun);
   const addRecent = useRecentStore((s) => s.addRecent);
   const chainFile = useChainStore((s) => s.file);
   const clearChainFile = useChainStore((s) => s.clear);
@@ -108,13 +107,6 @@ function ToolShellInner({
   }, [files]);
 
   function addFiles(incoming: File[]) {
-    for (const file of incoming) {
-      const check = checkFileSize(file.size);
-      if (!check.allowed) {
-        toast.error(check.reason);
-        return;
-      }
-    }
     setResults(null);
     setActionState("ready");
     setFiles((prev) => {
@@ -157,10 +149,6 @@ function ToolShellInner({
       setResults(output);
       setActionState("done");
 
-      const overLimit = isOverDailyLimit();
-      setLocked(overLimit);
-      if (!overLimit) recordTaskRun();
-
       addRecent({
         toolSlug: tool.slug,
         toolName: tool.name,
@@ -179,10 +167,6 @@ function ToolShellInner({
     }
   }
 
-  function handleRequestUnlock() {
-    setPaywallOpen(true);
-  }
-
   const acceptHint = tool.multiple
     ? `Up to ${tool.maxFiles} files`
     : "One file at a time";
@@ -199,24 +183,18 @@ function ToolShellInner({
             <p className="text-sm text-muted-foreground">{tool.description}</p>
           </div>
         </div>
-        {tool.isClientSide && <ClientSideBadge />}
+        {tool.isClientSide ? <ClientSideBadge /> : notice?.()}
       </div>
 
       {actionState === "done" && results ? (
         <div className="space-y-3">
-          <ResultPanel
-            tool={tool}
-            results={results}
-            locked={locked}
-            onRequestUnlock={handleRequestUnlock}
-          />
+          <ResultPanel tool={tool} results={results} />
           <button
             type="button"
             onClick={() => {
               setFiles([]);
               setResults(null);
               setActionState("idle");
-              setLocked(false);
             }}
             className="mx-auto block text-sm font-medium text-muted-foreground underline-offset-4 hover:underline"
           >
@@ -295,8 +273,6 @@ function ToolShellInner({
           }
         />
       )}
-
-      <PaywallModal open={paywallOpen} onOpenChange={setPaywallOpen} />
     </div>
   );
 }

@@ -2,14 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import {
-  Download,
-  Share2,
-  CloudUpload,
-  ArrowRightLeft,
-  Lock,
-  CheckCircle2,
-} from "lucide-react";
+import { Download, Share2, CloudUpload, ArrowRightLeft, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -17,8 +10,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { downloadBlob, formatBytes, cn } from "@/lib/utils";
-import { tools, type ToolDefinition } from "@/lib/tools";
+import { downloadBlob, formatBytes } from "@/lib/utils";
+import { getVisibleTools, type ToolDefinition } from "@/lib/tools";
 import { useChainStore } from "@/lib/store/chain-store";
 import { toast } from "sonner";
 
@@ -30,23 +23,15 @@ export interface ResultFile {
 interface ResultPanelProps {
   tool: ToolDefinition;
   results: ResultFile[];
-  locked: boolean;
-  onRequestUnlock: () => void;
 }
 
-export function ResultPanel({
-  tool,
-  results,
-  locked,
-  onRequestUnlock,
-}: ResultPanelProps) {
+export function ResultPanel({ tool, results }: ResultPanelProps) {
   const router = useRouter();
   const [chainOpen, setChainOpen] = React.useState(false);
   const setChainFile = useChainStore((s) => s.setFile);
   const primary = results[0];
 
   async function handleShare() {
-    if (locked) return onRequestUnlock();
     if (!primary) return;
     const file = new File([primary.blob], primary.name, {
       type: primary.blob.type,
@@ -63,18 +48,16 @@ export function ResultPanel({
   }
 
   function handleDownload(result: ResultFile) {
-    if (locked) return onRequestUnlock();
     downloadBlob(result.blob, result.name);
   }
 
   function handleSaveToDrive() {
-    if (locked) return onRequestUnlock();
     toast.info("Save to Drive is coming soon", {
       description: "For now, download the file and upload it manually.",
     });
   }
 
-  const suggestions = tools
+  const suggestions = getVisibleTools()
     .filter((t) => t.slug !== tool.slug && t.category === tool.category)
     .slice(0, 6);
 
@@ -102,33 +85,18 @@ export function ResultPanel({
         </p>
       </div>
 
-      <div className={cn("relative", locked && "select-none")}>
-        <div
-          className={cn(
-            "space-y-2",
-            locked && "pointer-events-none blur-md"
-          )}
-        >
-          {results.map((r) => (
-            <Button
-              key={r.name}
-              size="lg"
-              className="min-h-[52px] w-full gap-2 text-base font-semibold"
-              onClick={() => handleDownload(r)}
-            >
-              <Download className="h-5 w-5" />
-              Download {results.length > 1 ? r.name : ""}
-            </Button>
-          ))}
-        </div>
-        {locked && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-xl bg-background/60">
-            <Button onClick={onRequestUnlock} className="gap-2">
-              <Lock className="h-4 w-4" />
-              Unlock to download
-            </Button>
-          </div>
-        )}
+      <div className="space-y-2">
+        {results.map((r) => (
+          <Button
+            key={r.name}
+            size="lg"
+            className="min-h-[52px] w-full gap-2 text-base font-semibold"
+            onClick={() => handleDownload(r)}
+          >
+            <Download className="h-5 w-5" />
+            Download {results.length > 1 ? r.name : ""}
+          </Button>
+        ))}
       </div>
 
       <div className="grid grid-cols-3 gap-2">

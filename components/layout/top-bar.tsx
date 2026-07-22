@@ -10,7 +10,6 @@ const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/tools", label: "Tools" },
   { href: "/recent", label: "Recent" },
-  { href: "/account", label: "Account" },
 ] as const;
 
 export function TopBar() {

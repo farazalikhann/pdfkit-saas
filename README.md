@@ -1,17 +1,16 @@
 # PDFKit
 
-A mobile-first PDF tools SaaS. Most tools run entirely in the browser — files never touch a server — with a shared `<ToolShell>` layout, a single config file that drives the whole site, and a paywall that unlocks after a file has already been processed (the highest-conversion moment).
+A mobile-first PDF tools app. Every tool is free and unlimited, no account, no paywall. Most tools run entirely in the browser — files never touch a server — with a shared `<ToolShell>` layout and a single config file that drives the whole site.
 
 ## Tech stack
 
 - **Next.js 14** (App Router) + TypeScript
 - **Tailwind CSS** + **shadcn/ui** (Radix primitives)
-- **pdf-lib** (via the `@cantoo/pdf-lib` fork, which adds password/encryption support), **pdfjs-dist** (page rendering/thumbnails), **jszip**
-- **Zustand** for client state (usage limits, recent files, cross-tool file hand-off), persisted to `localStorage`
+- **pdf-lib** (via the `@cantoo/pdf-lib` fork, which adds password/encryption support), **pdfjs-dist** (page rendering/thumbnails/text extraction), **jszip**
+- **Zustand** for client state — just a local `localStorage`-backed "Recent" history and an in-memory cross-tool file hand-off; no accounts, no server sync
 - **react-dropzone** for uploads
 - **next-themes** for dark mode, **vaul** (via shadcn `Drawer`) for the mobile bottom sheet
-- **@anthropic-ai/sdk** for the AI tools (server-only)
-- **Stripe** + **Razorpay** SDKs, **@supabase/ssr** for auth — wired as stubs (see below)
+- **@google/genai** (Gemini API, `gemini-2.5-flash`) for the one AI tool (Summarize), behind a provider-agnostic interface so another backend can be swapped in later
 - PWA: a hand-written `public/sw.js` + `app/manifest.ts` (no external PWA plugin)
 
 ## Getting started
@@ -21,33 +20,26 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). Everything works out of the box with no environment variables — the 8 client-side tools and homepage need nothing at all.
+Open [http://localhost:3000](http://localhost:3000). Everything works out of the box with no environment variables — every client-side tool and the homepage need nothing at all.
 
-### Optional environment variables
+### Optional environment variable
 
-Create `.env.local` for the pieces that need real credentials:
+Create `.env.local` only if you want the Summarize tool:
 
 ```bash
-# AI tools (Chat, Summarize, Translate, Extract to CSV) — app/api/ai/*
-ANTHROPIC_API_KEY=
+# Get a free key at https://aistudio.google.com/apikey — no credit card required.
+GOOGLE_AI_API_KEY=
 
-# Stripe checkout (app/api/checkout/stripe)
-STRIPE_SECRET_KEY=
-STRIPE_PRO_PRICE_ID=
+# Optional: selects the AI backend (lib/ai/get-provider.ts). Only "gemini" is
+# implemented today; the switch exists so Groq/Anthropic/etc. can be added later.
+AI_PROVIDER=gemini
 
-# Razorpay checkout (app/api/checkout/razorpay)
-RAZORPAY_KEY_ID=
-RAZORPAY_KEY_SECRET=
-RAZORPAY_PRO_PLAN_ID=
-
-# Supabase auth (app/account, lib/supabase/*)
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-
-NEXT_PUBLIC_SITE_URL=http://localhost:3000
+# Optional: only needed for a custom domain. Without it, the site auto-detects
+# its own URL on Vercel, or falls back to localhost in dev — see lib/constants.ts.
+NEXT_PUBLIC_SITE_URL=
 ```
 
-Without these, the relevant buttons show a friendly "not configured yet" message instead of failing silently.
+Without `GOOGLE_AI_API_KEY`, Summarize is hidden from the entire site (nav, search, homepage, sitemap, and the route itself 404s) rather than showing a broken page.
 
 ## Folder structure
 
@@ -57,23 +49,20 @@ app/
   page.tsx                Homepage: search, category chips, per-category tool grids
   manifest.ts             PWA manifest (MetadataRoute.Manifest)
   sitemap.ts / robots.ts   Auto-generated from lib/tools.ts + lib/categories.ts
-  icon.tsx / apple-icon.tsx/ icons/[size]/route.tsx   Generated PNG icons (next/og)
+  icon.png / apple-icon.png / icons/*.png   Generated PNG icons (scripts/generate-icons.mjs)
   offline/page.tsx         Offline fallback shown by the service worker
+  privacy/page.tsx         Honest, short privacy policy
   category/[slug]/page.tsx Category listing page
   tools/[slug]/page.tsx    Every tool's route — looks up config, renders <ToolPageClient>
   tools/page.tsx           "All tools" browsable/searchable list (Tools tab)
   recent/page.tsx          Recently-used tools (Recent tab, localStorage-backed)
-  account/page.tsx         Plan, usage, sign-in (Account tab)
-  pricing/page.tsx         Free vs Pro comparison + checkout buttons
-  api/
-    ai/{chat,summarize,translate,extract}/route.ts   Anthropic-backed, server-only key
-    checkout/{stripe,razorpay}/route.ts               Checkout session stubs
+  api/ai/summarize/route.ts   The only server route — Gemini-backed, rate-limited
 
 components/
-  layout/          AppShell, TopBar, BottomTabBar, ThemeProvider/Toggle
+  layout/          AppShell, TopBar, BottomTabBar (Home/Tools/Recent), ThemeProvider/Toggle
   home/            SearchBar, CategoryChips, CategorySection, ToolCard
   tool-shell/      The shared <ToolShell> and its pieces (UploadZone, FileList,
-                   OptionsPanel, ActionBar, ResultPanel, PaywallModal, ProgressRing…)
+                   OptionsPanel, ActionBar, ResultPanel, ProgressRing, client-badge)
   pdf/             PdfThumbnailGrid (used by the rotate tool)
   tools/           One file per tool's specific options/logic (merge-pdf.tsx, etc.),
                    tool-page-client.tsx (slug → component map), generic-tool.tsx (TODO scaffold)
@@ -83,20 +72,25 @@ lib/
   tools.ts         *** THE config file — every tool is one object in this array ***
   categories.ts    The 6 category definitions (slug, name, emoji, color)
   pdf/             Pure, client-safe transformation functions (merge, split, compress,
-                   rotate, pdf-to-jpg, jpg-to-pdf, watermark, password-protect, thumbnails)
-  ai/client.ts     Server-only Anthropic client + helpers (never import from a Client Component)
-  store/           Zustand stores: usage-store (daily quota), recent-store, chain-store
+                   rotate, pdf-to-jpg, jpg-to-pdf, watermark, password-protect,
+                   thumbnails, extract-text)
+  ai/              Provider-agnostic AI layer, Summarize-only:
+                     provider.ts          the AiProvider interface (summarizeText)
+                     get-provider.ts      factory — reads AI_PROVIDER, defaults to Gemini
+                     providers/gemini-provider.ts   the only implementation today
+                     rate-limiter.ts      in-memory daily cap (1,400/day) + 5/hour per IP
+                     is-enabled.ts        hide-if-no-key check (works server & client side)
+  store/           Zustand: recent-store (localStorage) + chain-store (in-memory hand-off)
   seo/json-ld.ts   JSON-LD builders for tool/category pages
-  supabase/        Browser + server Supabase clients (no-op until env vars are set)
-  constants.ts     Free/Pro tier limits, site name/description/URL
+  constants.ts     Site name/description + SITE_URL auto-detection (see below)
 ```
 
 ## Architecture rules this app follows
 
-1. **Client-side first.** Anything that can run in the browser does (`lib/pdf/*`). Those tools show a "🔒 Your file never leaves your device" badge. Only the AI tools and future document-conversion tools touch a server.
-2. **One shared layout.** Every tool route renders `<ToolShell>`: upload → preview → options (bottom sheet on mobile, inline card on desktop) → sticky action button with live state → result (download/share/chain to another tool), with a paywall gate that triggers only *after* processing succeeds.
-3. **One config file.** `lib/tools.ts` is the single source of truth. The homepage, `/tools`, `/category/[slug]`, the sitemap, and `/tools/[slug]`'s `generateStaticParams`/metadata all derive from it — nothing about a tool is hardcoded into more than one place.
-4. **Process now, paywall later.** `useUsageStore` tracks a rolling daily task count. A run is allowed to complete even past the free quota; only the *download* is blurred and gated behind `<PaywallModal>`, since showing the finished result first is the highest-conversion moment.
+1. **Client-side first.** Anything that can run in the browser does (`lib/pdf/*`). Those tools show a "🔒 Your file never leaves your device" badge. Summarize is the one exception — it says so, honestly, instead.
+2. **One shared layout.** Every tool route renders `<ToolShell>`: upload → preview → options (bottom sheet on mobile, inline card on desktop) → sticky action button with live state → result (download/share/chain to another tool).
+3. **One config file.** `lib/tools.ts` is the single source of truth. The homepage, `/tools`, `/category/[slug]`, the sitemap, and `/tools/[slug]`'s `generateStaticParams`/metadata all derive from it — nothing about a tool is hardcoded into more than one place. `getVisibleTools()` is what everything reads from (not the raw `tools` array), so a tool can be hidden (currently just Summarize without a key) without touching more than one file.
+4. **No monetization, no accounts.** There's no paywall, no usage cap, no Pro tier, and no sign-in anywhere in this app. "Recent" is local-storage only.
 
 ## Adding a new tool in under 10 minutes
 
@@ -160,6 +154,5 @@ That's it — no route file to create, no nav link to add, no sitemap entry to w
 ## What's genuinely working vs. scaffolded
 
 - **Fully working, 100% client-side:** Merge, Split, Compress (3 quality presets with real before/after size), Rotate (interactive per-page thumbnail grid), PDF→JPG, JPG→PDF, Add Watermark, Password Protect.
-- **Fully working, server-side via Anthropic:** Chat with PDF, Summarize PDF, Translate PDF, Extract Data to CSV (`app/api/ai/*`) — needs `ANTHROPIC_API_KEY`.
+- **Fully working, server-side via Gemini:** Summarize PDF (`app/api/ai/summarize`) — needs `GOOGLE_AI_API_KEY`. Text is extracted from the PDF in the browser with pdf.js (capped at 50 pages / 100,000 characters — a clear error shows if a document is too long) and only that text is sent to the server; the file itself never leaves the device. Rate-limited to 5 requests/hour per IP and a shared 1,400/day hard cap across all visitors (comfortably inside Gemini's free tier) — see the in-memory-counter caveat in `lib/ai/rate-limiter.ts`.
 - **Scaffolded (real upload/preview/UI, processing pending):** every other tool in `lib/tools.ts` (`isImplemented: false`). Opening one renders `components/tools/generic-tool.tsx`, whose `onProcess` has a `// TODO: implement processing for this tool.` comment marking exactly where to plug in real logic — follow the same 4-step recipe above.
-- **Stubbed pending real credentials:** Stripe/Razorpay checkout, Supabase auth/usage sync — both fail gracefully with an explanatory toast instead of a real charge/session when env vars are absent.

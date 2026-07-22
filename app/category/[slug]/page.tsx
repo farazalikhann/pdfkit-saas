@@ -56,11 +56,17 @@ export default function CategoryPage({ params }: Props) {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-        {tools.map((tool) => (
-          <ToolCard key={tool.slug} tool={tool} />
-        ))}
-      </div>
+      {tools.length === 0 ? (
+        <p className="rounded-xl border border-dashed border-border py-10 text-center text-sm text-muted-foreground">
+          Nothing available in this category right now.
+        </p>
+      ) : (
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+          {tools.map((tool) => (
+            <ToolCard key={tool.slug} tool={tool} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

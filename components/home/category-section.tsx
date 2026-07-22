@@ -6,6 +6,7 @@ import { ToolCard } from "./tool-card";
 
 export function CategorySection({ category }: { category: Category }) {
   const tools = getToolsByCategory(category.slug).slice(0, 6);
+  if (tools.length === 0) return null;
 
   return (
     <section className="space-y-3">

@@ -12,11 +12,6 @@ export function ToolCard({ tool }: { tool: ToolDefinition }) {
         "hover:border-primary/40 hover:shadow-sm"
       )}
     >
-      {tool.isPro && (
-        <span className="absolute right-3 top-3 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
-          PRO
-        </span>
-      )}
       <span
         className="flex h-10 w-10 items-center justify-center rounded-xl"
         style={{

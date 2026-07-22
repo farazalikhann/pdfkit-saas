@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getAllToolSlugs, getToolBySlug } from "@/lib/tools";
 import { getCategory } from "@/lib/categories";
 import { toolJsonLd } from "@/lib/seo/json-ld";
+import { isSummarizeEnabled } from "@/lib/ai/is-enabled";
 import { ToolPageClient } from "@/components/tools/tool-page-client";
 
 interface Props {
@@ -30,6 +31,8 @@ export function generateMetadata({ params }: Props): Metadata {
 export default function ToolPage({ params }: Props) {
   const tool = getToolBySlug(params.slug);
   if (!tool) notFound();
+  // Hidden entirely (not a broken page) when there's no Gemini key configured.
+  if (tool.slug === "summarize-pdf" && !isSummarizeEnabled()) notFound();
 
   const category = getCategory(tool.category);
   const jsonLd = toolJsonLd(tool);

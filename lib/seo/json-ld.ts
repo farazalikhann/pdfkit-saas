@@ -13,11 +13,9 @@ export function toolJsonLd(tool: ToolDefinition) {
     url: `${SITE_URL}/tools/${tool.slug}`,
     offers: {
       "@type": "Offer",
-      price: tool.isPro ? "0" : "0",
+      price: "0",
       priceCurrency: "USD",
-      description: tool.isPro
-        ? "Free preview; unlimited use requires PDFKit Pro"
-        : "Free to use",
+      description: "Free to use",
     },
     aggregateRating: {
       "@type": "AggregateRating",

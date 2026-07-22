@@ -54,18 +54,6 @@ const IMPLEMENTED_TOOLS: Record<
     () => import("./summarize-pdf").then((m) => m.SummarizePdfTool),
     { loading: loadingFallback, ssr: false }
   ),
-  "translate-pdf": dynamic(
-    () => import("./translate-pdf").then((m) => m.TranslatePdfTool),
-    { loading: loadingFallback, ssr: false }
-  ),
-  "extract-data-csv": dynamic(
-    () => import("./extract-data-csv").then((m) => m.ExtractDataCsvTool),
-    { loading: loadingFallback, ssr: false }
-  ),
-  "chat-with-pdf": dynamic(
-    () => import("./chat-with-pdf").then((m) => m.ChatWithPdfTool),
-    { loading: loadingFallback, ssr: false }
-  ),
 };
 
 export function ToolPageClient({

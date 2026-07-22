@@ -2,14 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Wrench, Clock, User } from "lucide-react";
+import { Home, Wrench, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const TABS = [
   { href: "/", label: "Home", icon: Home },
   { href: "/tools", label: "Tools", icon: Wrench },
   { href: "/recent", label: "Recent", icon: Clock },
-  { href: "/account", label: "Account", icon: User },
 ] as const;
 
 export function BottomTabBar() {
@@ -20,7 +19,7 @@ export function BottomTabBar() {
       className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 safe-area-bottom md:hidden"
       aria-label="Primary"
     >
-      <ul className="grid grid-cols-4">
+      <ul className="grid grid-cols-3">
         {TABS.map(({ href, label, icon: Icon }) => {
           const isActive =
             href === "/" ? pathname === "/" : pathname.startsWith(href);

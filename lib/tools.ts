@@ -23,13 +23,11 @@ import {
   Unlock,
   PenTool,
   EyeOff,
-  MessageSquare,
   BookOpen,
-  Languages,
-  Table,
   type LucideIcon,
 } from "lucide-react";
 import type { CategorySlug } from "./categories";
+import { isSummarizeEnabled } from "./ai/is-enabled";
 
 /** react-dropzone-style accept map: MIME type -> file extensions */
 export type AcceptMap = Record<string, string[]>;
@@ -42,7 +40,6 @@ export interface ToolDefinition {
   category: CategorySlug;
   description: string;
   icon: LucideIcon;
-  isPro: boolean;
   /** True when the whole pipeline runs in-browser (shows the "never leaves your device" badge) */
   isClientSide: boolean;
   /** False = ToolShell renders with a TODO panel instead of a working action */
@@ -71,7 +68,6 @@ export const tools: ToolDefinition[] = [
     category: "convert",
     description: "Convert PDF documents into editable Word (.docx) files.",
     icon: FileType,
-    isPro: false,
     isClientSide: false,
     isImplemented: false,
     accept: PDF_ACCEPT,
@@ -87,7 +83,6 @@ export const tools: ToolDefinition[] = [
     category: "convert",
     description: "Extract tables from a PDF into an Excel spreadsheet.",
     icon: FileSpreadsheet,
-    isPro: false,
     isClientSide: false,
     isImplemented: false,
     accept: PDF_ACCEPT,
@@ -97,29 +92,12 @@ export const tools: ToolDefinition[] = [
     keywords: ["excel", "xlsx", "spreadsheet", "tables"],
   },
   {
-    slug: "pdf-to-ppt",
-    name: "PDF to PowerPoint",
-    shortName: "PDF → PPT",
-    category: "convert",
-    description: "Turn PDF pages into an editable PowerPoint presentation.",
-    icon: Presentation,
-    isPro: false,
-    isClientSide: false,
-    isImplemented: false,
-    accept: PDF_ACCEPT,
-    multiple: false,
-    maxFiles: 1,
-    resultFileName: "converted.pptx",
-    keywords: ["powerpoint", "pptx", "slides"],
-  },
-  {
     slug: "pdf-to-jpg",
     name: "PDF to JPG",
     shortName: "PDF → JPG",
     category: "convert",
     description: "Export every page of a PDF as a high-quality JPG image.",
     icon: ImageIcon,
-    isPro: false,
     isClientSide: true,
     isImplemented: true,
     accept: PDF_ACCEPT,
@@ -135,7 +113,6 @@ export const tools: ToolDefinition[] = [
     category: "convert",
     description: "Convert .docx documents into shareable PDF files.",
     icon: FileText,
-    isPro: false,
     isClientSide: false,
     isImplemented: false,
     accept: {
@@ -154,7 +131,6 @@ export const tools: ToolDefinition[] = [
     category: "convert",
     description: "Convert spreadsheets into print-ready PDF files.",
     icon: FileSpreadsheet,
-    isPro: false,
     isClientSide: false,
     isImplemented: false,
     accept: {
@@ -168,13 +144,27 @@ export const tools: ToolDefinition[] = [
     keywords: ["excel", "xlsx", "spreadsheet"],
   },
   {
+    slug: "pdf-to-ppt",
+    name: "PDF to PowerPoint",
+    shortName: "PDF → PPT",
+    category: "convert",
+    description: "Turn PDF pages into an editable PowerPoint presentation.",
+    icon: Presentation,
+    isClientSide: false,
+    isImplemented: false,
+    accept: PDF_ACCEPT,
+    multiple: false,
+    maxFiles: 1,
+    resultFileName: "converted.pptx",
+    keywords: ["powerpoint", "pptx", "slides"],
+  },
+  {
     slug: "ppt-to-pdf",
     name: "PowerPoint to PDF",
     shortName: "PPT → PDF",
     category: "convert",
     description: "Convert presentations into a shareable PDF.",
     icon: Presentation,
-    isPro: false,
     isClientSide: false,
     isImplemented: false,
     accept: {
@@ -193,7 +183,6 @@ export const tools: ToolDefinition[] = [
     category: "convert",
     description: "Combine one or more images into a single PDF.",
     icon: ImageIcon,
-    isPro: false,
     isClientSide: true,
     isImplemented: true,
     accept: IMAGE_ACCEPT,
@@ -209,7 +198,6 @@ export const tools: ToolDefinition[] = [
     category: "convert",
     description: "Render a web page or HTML file as a PDF document.",
     icon: Globe,
-    isPro: true,
     isClientSide: false,
     isImplemented: false,
     accept: { "text/html": [".html", ".htm"] },
@@ -227,7 +215,6 @@ export const tools: ToolDefinition[] = [
     category: "organize",
     description: "Combine multiple PDFs into one document, in any order.",
     icon: Combine,
-    isPro: false,
     isClientSide: true,
     isImplemented: true,
     accept: PDF_ACCEPT,
@@ -243,7 +230,6 @@ export const tools: ToolDefinition[] = [
     category: "organize",
     description: "Split a PDF into separate files by page range.",
     icon: Scissors,
-    isPro: false,
     isClientSide: true,
     isImplemented: true,
     accept: PDF_ACCEPT,
@@ -259,7 +245,6 @@ export const tools: ToolDefinition[] = [
     category: "organize",
     description: "Pull specific pages out of a PDF into a new file.",
     icon: FileOutput,
-    isPro: false,
     isClientSide: false,
     isImplemented: false,
     accept: PDF_ACCEPT,
@@ -275,7 +260,6 @@ export const tools: ToolDefinition[] = [
     category: "organize",
     description: "Delete unwanted pages from a PDF document.",
     icon: FileMinus,
-    isPro: false,
     isClientSide: false,
     isImplemented: false,
     accept: PDF_ACCEPT,
@@ -291,7 +275,6 @@ export const tools: ToolDefinition[] = [
     category: "organize",
     description: "Rotate one, several, or all pages of a PDF.",
     icon: RotateCw,
-    isPro: false,
     isClientSide: true,
     isImplemented: true,
     accept: PDF_ACCEPT,
@@ -307,7 +290,6 @@ export const tools: ToolDefinition[] = [
     category: "organize",
     description: "Drag and drop page thumbnails to change their order.",
     icon: ListOrdered,
-    isPro: false,
     isClientSide: false,
     isImplemented: false,
     accept: PDF_ACCEPT,
@@ -325,7 +307,6 @@ export const tools: ToolDefinition[] = [
     category: "optimize",
     description: "Shrink file size with low, recommended or extreme presets.",
     icon: Minimize2,
-    isPro: false,
     isClientSide: true,
     isImplemented: true,
     accept: PDF_ACCEPT,
@@ -341,7 +322,6 @@ export const tools: ToolDefinition[] = [
     category: "optimize",
     description: "Attempt to fix a corrupted or damaged PDF file.",
     icon: Wrench,
-    isPro: false,
     isClientSide: false,
     isImplemented: false,
     accept: PDF_ACCEPT,
@@ -357,7 +337,6 @@ export const tools: ToolDefinition[] = [
     category: "optimize",
     description: "Make scanned PDFs searchable and selectable with OCR.",
     icon: ScanText,
-    isPro: true,
     isClientSide: false,
     isImplemented: false,
     accept: PDF_ACCEPT,
@@ -375,7 +354,6 @@ export const tools: ToolDefinition[] = [
     category: "edit",
     description: "Place text boxes and images anywhere on a PDF page.",
     icon: Type,
-    isPro: false,
     isClientSide: false,
     isImplemented: false,
     accept: PDF_ACCEPT,
@@ -391,7 +369,6 @@ export const tools: ToolDefinition[] = [
     category: "edit",
     description: "Highlight, draw and add sticky notes on any page.",
     icon: Highlighter,
-    isPro: false,
     isClientSide: false,
     isImplemented: false,
     accept: PDF_ACCEPT,
@@ -407,7 +384,6 @@ export const tools: ToolDefinition[] = [
     category: "edit",
     description: "Insert page numbers with custom position and style.",
     icon: Hash,
-    isPro: false,
     isClientSide: false,
     isImplemented: false,
     accept: PDF_ACCEPT,
@@ -423,7 +399,6 @@ export const tools: ToolDefinition[] = [
     category: "edit",
     description: "Stamp a text or image watermark across every page.",
     icon: Stamp,
-    isPro: false,
     isClientSide: true,
     isImplemented: true,
     accept: PDF_ACCEPT,
@@ -439,7 +414,6 @@ export const tools: ToolDefinition[] = [
     category: "edit",
     description: "Add repeating header or footer text to every page.",
     icon: PanelTop,
-    isPro: false,
     isClientSide: false,
     isImplemented: false,
     accept: PDF_ACCEPT,
@@ -457,7 +431,6 @@ export const tools: ToolDefinition[] = [
     category: "security",
     description: "Encrypt a PDF with a password so only you can open it.",
     icon: Lock,
-    isPro: false,
     isClientSide: true,
     isImplemented: true,
     accept: PDF_ACCEPT,
@@ -473,7 +446,6 @@ export const tools: ToolDefinition[] = [
     category: "security",
     description: "Remove a known password from a protected PDF.",
     icon: Unlock,
-    isPro: false,
     isClientSide: false,
     isImplemented: false,
     accept: PDF_ACCEPT,
@@ -489,7 +461,6 @@ export const tools: ToolDefinition[] = [
     category: "security",
     description: "Draw your signature and place it anywhere on a page.",
     icon: PenTool,
-    isPro: false,
     isClientSide: false,
     isImplemented: false,
     accept: PDF_ACCEPT,
@@ -505,7 +476,6 @@ export const tools: ToolDefinition[] = [
     category: "security",
     description: "Permanently black out sensitive text or areas.",
     icon: EyeOff,
-    isPro: true,
     isClientSide: false,
     isImplemented: false,
     accept: PDF_ACCEPT,
@@ -517,68 +487,19 @@ export const tools: ToolDefinition[] = [
 
   // ---------- AI Tools ----------
   {
-    slug: "chat-with-pdf",
-    name: "Chat with PDF",
-    shortName: "Chat with PDF",
-    category: "ai",
-    description: "Ask questions about a document and get instant answers.",
-    icon: MessageSquare,
-    isPro: true,
-    isClientSide: false,
-    isImplemented: true,
-    accept: PDF_ACCEPT,
-    multiple: false,
-    maxFiles: 1,
-    resultFileName: "",
-    keywords: ["ai", "chat", "questions", "claude"],
-  },
-  {
     slug: "summarize-pdf",
     name: "Summarize PDF",
     shortName: "Summarize",
     category: "ai",
     description: "Generate a concise AI summary of a long document.",
     icon: BookOpen,
-    isPro: true,
     isClientSide: false,
     isImplemented: true,
     accept: PDF_ACCEPT,
     multiple: false,
     maxFiles: 1,
     resultFileName: "summary.txt",
-    keywords: ["ai", "summary", "tldr", "claude"],
-  },
-  {
-    slug: "translate-pdf",
-    name: "Translate PDF",
-    shortName: "Translate",
-    category: "ai",
-    description: "Translate the contents of a PDF into another language.",
-    icon: Languages,
-    isPro: true,
-    isClientSide: false,
-    isImplemented: true,
-    accept: PDF_ACCEPT,
-    multiple: false,
-    maxFiles: 1,
-    resultFileName: "translated.txt",
-    keywords: ["ai", "language", "claude"],
-  },
-  {
-    slug: "extract-data-csv",
-    name: "Extract Data to CSV",
-    shortName: "Extract to CSV",
-    category: "ai",
-    description: "Pull tables and structured data out of a PDF as CSV.",
-    icon: Table,
-    isPro: true,
-    isClientSide: false,
-    isImplemented: true,
-    accept: PDF_ACCEPT,
-    multiple: false,
-    maxFiles: 1,
-    resultFileName: "data.csv",
-    keywords: ["ai", "csv", "table", "data", "claude"],
+    keywords: ["ai", "summary", "tldr", "gemini"],
   },
 ];
 
@@ -586,14 +507,20 @@ export function getToolBySlug(slug: string): ToolDefinition | undefined {
   return tools.find((t) => t.slug === slug);
 }
 
+/** All tools minus ones that are hidden at runtime (currently just Summarize without a Gemini key). */
+export function getVisibleTools(): ToolDefinition[] {
+  if (isSummarizeEnabled()) return tools;
+  return tools.filter((t) => t.slug !== "summarize-pdf");
+}
+
 export function getToolsByCategory(category: CategorySlug): ToolDefinition[] {
-  return tools.filter((t) => t.category === category);
+  return getVisibleTools().filter((t) => t.category === category);
 }
 
 export function searchTools(query: string): ToolDefinition[] {
   const q = query.trim().toLowerCase();
   if (!q) return [];
-  return tools.filter(
+  return getVisibleTools().filter(
     (t) =>
       t.name.toLowerCase().includes(q) ||
       t.description.toLowerCase().includes(q) ||
@@ -602,5 +529,5 @@ export function searchTools(query: string): ToolDefinition[] {
 }
 
 export function getAllToolSlugs(): string[] {
-  return tools.map((t) => t.slug);
+  return getVisibleTools().map((t) => t.slug);
 }

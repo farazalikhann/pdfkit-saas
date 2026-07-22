@@ -41,3 +41,6 @@ next-env.d.ts
 /public/icons/512.png
 /app/icon.png
 /app/apple-icon.png
+
+.vercel
+.env*

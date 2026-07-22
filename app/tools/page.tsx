@@ -18,6 +18,10 @@ export const metadata: Metadata = {
 };
 
 export default function ToolsPage() {
+  const categoriesWithTools = categories
+    .map((c) => ({ category: c, tools: getToolsByCategory(c.slug) }))
+    .filter((c) => c.tools.length > 0);
+
   return (
     <div className="mx-auto max-w-6xl space-y-5 px-4 py-5">
       <div>
@@ -37,7 +41,7 @@ export default function ToolsPage() {
           >
             All
           </TabsTrigger>
-          {categories.map((c) => (
+          {categoriesWithTools.map(({ category: c }) => (
             <TabsTrigger
               key={c.slug}
               value={c.slug}
@@ -50,18 +54,16 @@ export default function ToolsPage() {
 
         <TabsContent value="all" className="mt-4">
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-            {categories.flatMap((c) =>
-              getToolsByCategory(c.slug).map((tool) => (
-                <ToolCard key={tool.slug} tool={tool} />
-              ))
+            {categoriesWithTools.flatMap(({ tools }) =>
+              tools.map((tool) => <ToolCard key={tool.slug} tool={tool} />)
             )}
           </div>
         </TabsContent>
 
-        {categories.map((c) => (
+        {categoriesWithTools.map(({ category: c, tools }) => (
           <TabsContent key={c.slug} value={c.slug} className="mt-4">
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-              {getToolsByCategory(c.slug).map((tool) => (
+              {tools.map((tool) => (
                 <ToolCard key={tool.slug} tool={tool} />
               ))}
             </div>

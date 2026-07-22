@@ -1,43 +1,50 @@
 import { NextResponse } from "next/server";
+import { getAiProvider } from "@/lib/ai/get-provider";
 import {
-  AI_MODEL,
-  extractText,
-  fileToBase64,
-  getAnthropicClient,
-  pdfDocumentBlock,
-} from "@/lib/ai/client";
+  checkDailyLimit,
+  checkHourlyIpLimit,
+  getClientIp,
+  recordAiRequest,
+} from "@/lib/ai/rate-limiter";
 
 export const runtime = "nodejs";
 
+/** Defensive server-side ceiling — the client is expected to stop well before this. */
+const MAX_TEXT_LENGTH = 120_000;
+
 export async function POST(req: Request) {
+  if (!checkDailyLimit().allowed) {
+    return NextResponse.json(
+      { error: "AI tools are busy, try again tomorrow." },
+      { status: 429 }
+    );
+  }
+
+  const ip = getClientIp(req);
+  if (!checkHourlyIpLimit(ip).allowed) {
+    return NextResponse.json(
+      { error: "Too many summaries from this device — try again in a bit." },
+      { status: 429 }
+    );
+  }
+
   try {
-    const form = await req.formData();
-    const file = form.get("file");
-    if (!(file instanceof File)) {
-      return NextResponse.json({ error: "Missing file" }, { status: 400 });
+    const body = (await req.json()) as { text?: string };
+    const text = body.text?.trim();
+    if (!text) {
+      return NextResponse.json({ error: "Missing text" }, { status: 400 });
+    }
+    if (text.length > MAX_TEXT_LENGTH) {
+      return NextResponse.json(
+        { error: "Document is too long to summarize." },
+        { status: 413 }
+      );
     }
 
-    const client = getAnthropicClient();
-    const base64 = await fileToBase64(file);
+    const summary = await getAiProvider().summarizeText({ text });
 
-    const response = await client.messages.create({
-      model: AI_MODEL,
-      max_tokens: 1024,
-      messages: [
-        {
-          role: "user",
-          content: [
-            pdfDocumentBlock(base64),
-            {
-              type: "text",
-              text: "Summarize this document in 5-8 concise bullet points, followed by a one-sentence TLDR.",
-            },
-          ],
-        },
-      ],
-    });
-
-    return NextResponse.json({ summary: extractText(response) });
+    recordAiRequest(ip);
+    return NextResponse.json({ summary });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Summarization failed";
     return NextResponse.json({ error: message }, { status: 500 });
