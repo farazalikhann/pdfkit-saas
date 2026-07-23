@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
 import { getAiProvider } from "@/lib/ai/get-provider";
+import type { SummaryLength } from "@/lib/ai/provider";
 import {
   checkDailyLimit,
   checkHourlyIpLimit,
   getClientIp,
   recordAiRequest,
 } from "@/lib/ai/rate-limiter";
+
+const VALID_LENGTHS: SummaryLength[] = ["short", "detailed", "bullets"];
 
 export const runtime = "nodejs";
 
@@ -29,7 +32,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    const body = (await req.json()) as { text?: string };
+    const body = (await req.json()) as { text?: string; length?: string };
     const text = body.text?.trim();
     if (!text) {
       return NextResponse.json({ error: "Missing text" }, { status: 400 });
@@ -40,8 +43,11 @@ export async function POST(req: Request) {
         { status: 413 }
       );
     }
+    const length = VALID_LENGTHS.includes(body.length as SummaryLength)
+      ? (body.length as SummaryLength)
+      : "bullets";
 
-    const summary = await getAiProvider().summarizeText({ text });
+    const summary = await getAiProvider().summarizeText({ text, length });
 
     recordAiRequest(ip);
     return NextResponse.json({ summary });

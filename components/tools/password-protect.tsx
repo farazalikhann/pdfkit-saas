@@ -8,6 +8,19 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { protectPdf } from "@/lib/pdf/password-protect";
 import type { ToolDefinition } from "@/lib/tools";
+import { cn } from "@/lib/utils";
+
+function passwordStrength(pw: string): { label: string; score: 0 | 1 | 2 | 3; className: string } {
+  if (pw.length === 0) return { label: "", score: 0, className: "" };
+  let variety = 0;
+  if (/[a-z]/.test(pw)) variety++;
+  if (/[A-Z]/.test(pw)) variety++;
+  if (/[0-9]/.test(pw)) variety++;
+  if (/[^a-zA-Z0-9]/.test(pw)) variety++;
+  if (pw.length < 6 || variety <= 1) return { label: "Weak", score: 1, className: "bg-destructive" };
+  if (pw.length < 10 || variety <= 2) return { label: "Fair", score: 2, className: "bg-amber-500" };
+  return { label: "Strong", score: 3, className: "bg-emerald-500" };
+}
 
 export function PasswordProtectTool({ tool }: { tool: ToolDefinition }) {
   const [password, setPassword] = React.useState("");
@@ -17,6 +30,7 @@ export function PasswordProtectTool({ tool }: { tool: ToolDefinition }) {
   const [allowCopying, setAllowCopying] = React.useState(true);
 
   const ready = password.length >= 4 && password === confirm;
+  const strength = passwordStrength(password);
 
   return (
     <ToolShell
@@ -48,6 +62,19 @@ export function PasswordProtectTool({ tool }: { tool: ToolDefinition }) {
                 )}
               </button>
             </div>
+            {password.length > 0 && (
+              <div className="flex items-center gap-2 pt-0.5">
+                <div className="flex h-1.5 flex-1 gap-1">
+                  {[1, 2, 3].map((i) => (
+                    <div
+                      key={i}
+                      className={cn("h-full flex-1 rounded-full bg-muted", i <= strength.score && strength.className)}
+                    />
+                  ))}
+                </div>
+                <span className="text-xs text-muted-foreground">{strength.label}</span>
+              </div>
+            )}
           </div>
 
           <div className="space-y-1.5">

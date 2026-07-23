@@ -2,7 +2,10 @@ import "server-only";
 import { GoogleGenAI, ApiError } from "@google/genai";
 import type { AiProvider, SummarizeTextInput } from "../provider";
 
-const MODEL = "gemini-2.5-flash";
+// An alias, not a dated snapshot — keeps resolving to a current flash-tier model as
+// Google retires specific versions (gemini-2.5-flash itself was pulled from new-user
+// access after this was first wired up, which is exactly the failure mode this avoids).
+const MODEL = "gemini-flash-latest";
 
 function getClient(): GoogleGenAI {
   const apiKey = process.env.GOOGLE_AI_API_KEY;
@@ -26,8 +29,20 @@ function toFriendlyError(err: unknown): Error {
   return err instanceof Error ? err : new Error("Unknown AI provider error");
 }
 
+const INSTRUCTIONS: Record<NonNullable<SummarizeTextInput["length"]>, string> = {
+  short:
+    "Summarize the following document in 2-3 concise sentences — just the core point, no bullets.",
+  detailed:
+    "Write a detailed multi-paragraph summary of the following document, covering its main " +
+    "points, supporting details, and any conclusions or recommendations.",
+  bullets:
+    "Summarize the following document text in 5-8 concise bullet points, followed by a " +
+    "one-sentence TLDR.",
+};
+
 async function summarizeText({
   text,
+  length = "bullets",
   maxOutputTokens = 1024,
 }: SummarizeTextInput): Promise<string> {
   const ai = getClient();
@@ -39,10 +54,7 @@ async function summarizeText({
           role: "user",
           parts: [
             {
-              text:
-                "Summarize the following document text in 5-8 concise bullet points, " +
-                "followed by a one-sentence TLDR. Respond with plain text only.\n\n---\n\n" +
-                text,
+              text: `${INSTRUCTIONS[length]} Respond with plain text only.\n\n---\n\n${text}`,
             },
           ],
         },

@@ -83,8 +83,16 @@ const IMPLEMENTED_TOOLS: Record<
     loading: loadingFallback,
     ssr: false,
   }),
-  "repair-pdf": dynamic(
-    () => import("./repair-pdf").then((m) => m.RepairPdfTool),
+  "unlock-pdf": dynamic(
+    () => import("./unlock-pdf").then((m) => m.UnlockPdfTool),
+    { loading: loadingFallback, ssr: false }
+  ),
+  "esign-pdf": dynamic(
+    () => import("./esign-pdf").then((m) => m.ESignPdfTool),
+    { loading: loadingFallback, ssr: false }
+  ),
+  "redact-pdf": dynamic(
+    () => import("./redact-pdf").then((m) => m.RedactPdfTool),
     { loading: loadingFallback, ssr: false }
   ),
   "add-text-image": dynamic(

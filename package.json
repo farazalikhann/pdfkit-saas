@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "serve:fresh": "next build && next start",
     "postinstall": "node scripts/copy-pdf-worker.mjs && node scripts/generate-icons.mjs"
   },
   "dependencies": {

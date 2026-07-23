@@ -1,14 +1,26 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
 import { ToolShell } from "@/components/tool-shell/tool-shell";
 import { ServerSideNotice } from "@/components/tool-shell/client-badge";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { extractPdfText } from "@/lib/pdf/extract-text";
+import type { SummaryLength } from "@/lib/ai/provider";
 import type { ToolDefinition } from "@/lib/tools";
 
 const LIMITS = { maxPages: 50, maxCharacters: 100_000 };
 
 export function SummarizePdfTool({ tool }: { tool: ToolDefinition }) {
+  const [length, setLength] = React.useState<SummaryLength>("bullets");
+
   return (
     <ToolShell
       tool={tool}
@@ -22,6 +34,21 @@ export function SummarizePdfTool({ tool }: { tool: ToolDefinition }) {
           </Link>
           .
         </ServerSideNotice>
+      )}
+      options={() => (
+        <div className="space-y-1.5">
+          <Label>Summary length</Label>
+          <Select value={length} onValueChange={(v) => setLength(v as SummaryLength)}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="short">Short (2-3 sentences)</SelectItem>
+              <SelectItem value="bullets">Bullet points</SelectItem>
+              <SelectItem value="detailed">Detailed</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       )}
       onProcess={async (files, reportProgress) => {
         // Extraction happens entirely in the browser — only the resulting text
@@ -39,7 +66,7 @@ export function SummarizePdfTool({ tool }: { tool: ToolDefinition }) {
         const res = await fetch("/api/ai/summarize", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text }),
+          body: JSON.stringify({ text, length }),
         });
         reportProgress(1);
         const data = await res.json();

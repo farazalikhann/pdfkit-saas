@@ -1,5 +1,8 @@
+export type SummaryLength = "short" | "detailed" | "bullets";
+
 export interface SummarizeTextInput {
   text: string;
+  length?: SummaryLength;
   maxOutputTokens?: number;
 }
 
