@@ -79,6 +79,30 @@ const IMPLEMENTED_TOOLS: Record<
     () => import("./reorder-pages").then((m) => m.ReorderPagesTool),
     { loading: loadingFallback, ssr: false }
   ),
+  "ocr-pdf": dynamic(() => import("./ocr-pdf").then((m) => m.OcrPdfTool), {
+    loading: loadingFallback,
+    ssr: false,
+  }),
+  "repair-pdf": dynamic(
+    () => import("./repair-pdf").then((m) => m.RepairPdfTool),
+    { loading: loadingFallback, ssr: false }
+  ),
+  "add-text-image": dynamic(
+    () => import("./add-text-image").then((m) => m.AddTextImageTool),
+    { loading: loadingFallback, ssr: false }
+  ),
+  "annotate-pdf": dynamic(
+    () => import("./annotate-pdf").then((m) => m.AnnotatePdfTool),
+    { loading: loadingFallback, ssr: false }
+  ),
+  "add-page-numbers": dynamic(
+    () => import("./add-page-numbers").then((m) => m.AddPageNumbersTool),
+    { loading: loadingFallback, ssr: false }
+  ),
+  "add-header-footer": dynamic(
+    () => import("./add-header-footer").then((m) => m.AddHeaderFooterTool),
+    { loading: loadingFallback, ssr: false }
+  ),
 };
 
 export function ToolPageClient({
