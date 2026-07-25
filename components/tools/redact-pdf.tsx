@@ -13,6 +13,7 @@ import { useElementHistory } from "@/components/page-editor/use-element-history"
 import { nextZIndex } from "@/components/page-editor/z-order";
 import type { RedactBoxElement } from "@/lib/pdf/edit/redact";
 import { checkFileMemoryRisk } from "@/lib/files/memory-guard";
+import { trackToolUploadStarted, trackToolUsed } from "@/lib/analytics/track";
 import { uid, cn } from "@/lib/utils";
 import type { ToolDefinition } from "@/lib/tools";
 
@@ -42,6 +43,7 @@ export function RedactPdfTool({ tool }: { tool: ToolDefinition }) {
     setResults(null);
     setState("idle");
     if (f) {
+      trackToolUploadStarted(tool.slug);
       const risk = checkFileMemoryRisk(f);
       if (risk) toast.warning(risk);
     }
@@ -97,6 +99,7 @@ export function RedactPdfTool({ tool }: { tool: ToolDefinition }) {
       setProgress(1);
       setResults([{ name: "redacted.pdf", blob: new Blob([new Uint8Array(bytes)], { type: "application/pdf" }) }]);
       setState("done");
+      trackToolUsed(tool.slug);
     } catch (err) {
       console.error(err);
       setState("error");
@@ -110,15 +113,6 @@ export function RedactPdfTool({ tool }: { tool: ToolDefinition }) {
   return (
     <div className="mx-auto max-w-2xl px-4 pb-40 pt-4 md:pb-16">
       <div className="mb-4 space-y-2">
-        <div className="flex items-center gap-3">
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-            <tool.icon className="h-6 w-6" />
-          </span>
-          <div>
-            <h1 className="text-xl font-bold leading-tight">{tool.name}</h1>
-            <p className="text-sm text-muted-foreground">{tool.description}</p>
-          </div>
-        </div>
         <ClientSideBadge />
         <p className="rounded-lg bg-amber-500/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-400">
           Any page with a redaction box is converted to an image on export — this is what

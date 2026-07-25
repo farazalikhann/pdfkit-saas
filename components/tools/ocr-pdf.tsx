@@ -19,6 +19,7 @@ import {
 import { PagePicker } from "@/components/page-picker/page-picker";
 import { checkFileMemoryRisk } from "@/lib/files/memory-guard";
 import { OCR_LANGUAGES } from "@/lib/ocr/languages";
+import { trackToolUploadStarted, trackToolUsed } from "@/lib/analytics/track";
 import type { ToolDefinition } from "@/lib/tools";
 
 export function OcrPdfTool({ tool }: { tool: ToolDefinition }) {
@@ -38,6 +39,7 @@ export function OcrPdfTool({ tool }: { tool: ToolDefinition }) {
 
   function handleFiles(files: File[]) {
     const f = files[0] ?? null;
+    if (f) trackToolUploadStarted(tool.slug);
     setFile(f);
     setSelected(new Set());
     setPageCount(0);
@@ -80,6 +82,7 @@ export function OcrPdfTool({ tool }: { tool: ToolDefinition }) {
         },
       ]);
       setState("done");
+      trackToolUsed(tool.slug);
     } catch (err) {
       console.error(err);
       setState("error");
@@ -95,15 +98,6 @@ export function OcrPdfTool({ tool }: { tool: ToolDefinition }) {
   return (
     <div className="mx-auto max-w-2xl px-4 pb-40 pt-4 md:pb-16">
       <div className="mb-4 space-y-2">
-        <div className="flex items-center gap-3">
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-            <tool.icon className="h-6 w-6" />
-          </span>
-          <div>
-            <h1 className="text-xl font-bold leading-tight">{tool.name}</h1>
-            <p className="text-sm text-muted-foreground">{tool.description}</p>
-          </div>
-        </div>
         <ClientSideBadge />
         <p className="text-xs text-muted-foreground">
           Makes scanned pages searchable by placing an invisible text layer over

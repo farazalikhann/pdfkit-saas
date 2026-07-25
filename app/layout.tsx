@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
+import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { AppShell } from "@/components/layout/app-shell";
@@ -34,6 +35,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: SITE_NAME,
+    url: SITE_URL,
     title: `${SITE_NAME} — Free Online PDF Tools`,
     description: SITE_DESCRIPTION,
   },
@@ -42,6 +44,12 @@ export const metadata: Metadata = {
     title: `${SITE_NAME} — Free Online PDF Tools`,
     description: SITE_DESCRIPTION,
   },
+  // Set NEXT_PUBLIC_GSC_VERIFICATION in Vercel's env vars with the token from
+  // Search Console's "HTML tag" verification method — nothing renders until it's set,
+  // so this never ships an empty/placeholder <meta> tag to production.
+  verification: process.env.NEXT_PUBLIC_GSC_VERIFICATION
+    ? { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION }
+    : undefined,
 };
 
 export const viewport: Viewport = {
@@ -70,6 +78,7 @@ export default function RootLayout({
           <Toaster richColors position="top-center" />
           <ServiceWorkerRegister />
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );

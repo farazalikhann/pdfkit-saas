@@ -1,15 +1,17 @@
 import type { ToolDefinition } from "@/lib/tools";
 import type { Category } from "@/lib/categories";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
+import { getToolSeoContent, type ToolFaq } from "./tool-content";
 
 export function toolJsonLd(tool: ToolDefinition) {
+  const content = getToolSeoContent(tool.slug);
   return {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     name: `${tool.name} — ${SITE_NAME}`,
     applicationCategory: "Utility",
-    operatingSystem: "Any (runs in the browser)",
-    description: tool.description,
+    operatingSystem: "Any",
+    description: content?.metaDescription ?? tool.description,
     url: `${SITE_URL}/tools/${tool.slug}`,
     offers: {
       "@type": "Offer",
@@ -17,11 +19,77 @@ export function toolJsonLd(tool: ToolDefinition) {
       priceCurrency: "USD",
       description: "Free to use",
     },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.8",
-      ratingCount: "1240",
-    },
+    // No aggregateRating here deliberately — this site has no real review or rating
+    // collection system, and fabricating one violates both Google's structured-data
+    // policies and the plain rule that schema should never claim what isn't real.
+  };
+}
+
+/** HowTo schema — steps must match the visible, numbered "How to" list on the page. */
+export function howToJsonLd(tool: ToolDefinition, steps: string[]) {
+  const content = getToolSeoContent(tool.slug);
+  return {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: content?.h1 ?? `How to use ${tool.name}`,
+    step: steps.map((text, i) => ({
+      "@type": "HowToStep",
+      position: i + 1,
+      text,
+    })),
+  };
+}
+
+/** FAQPage schema — must exactly mirror the visible FAQ content rendered on the page. */
+export function faqJsonLd(faqs: ToolFaq[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.q,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.a,
+      },
+    })),
+  };
+}
+
+export interface BreadcrumbItem {
+  name: string;
+  url: string;
+}
+
+export function breadcrumbJsonLd(items: BreadcrumbItem[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: item.name,
+      item: item.url,
+    })),
+  };
+}
+
+export function websiteJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: SITE_NAME,
+    url: SITE_URL,
+  };
+}
+
+export function organizationJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: SITE_NAME,
+    url: SITE_URL,
+    logo: `${SITE_URL}/icon.png`,
   };
 }
 

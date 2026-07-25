@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import type { ToolDefinition } from "@/lib/tools";
 import { useRecentStore } from "@/lib/store/recent-store";
 import { useChainStore } from "@/lib/store/chain-store";
+import { trackToolUsed, trackToolUploadStarted } from "@/lib/analytics/track";
 import { UploadZone } from "./upload-zone";
 import { FileList } from "./file-list";
 import { OptionsPanel } from "./options-panel";
@@ -115,6 +116,7 @@ function ToolShellInner({
   function addFiles(incoming: File[]) {
     setResults(null);
     setActionState("ready");
+    trackToolUploadStarted(tool.slug);
     setFiles((prev) => {
       if (!tool.multiple) return incoming.slice(0, 1);
       const merged = [...prev, ...incoming].slice(0, tool.maxFiles);
@@ -154,6 +156,7 @@ function ToolShellInner({
       const output = await onProcess(files, setProgress);
       setResults(output);
       setActionState("done");
+      trackToolUsed(tool.slug);
 
       addRecent({
         toolSlug: tool.slug,
@@ -180,15 +183,6 @@ function ToolShellInner({
   return (
     <div className="mx-auto max-w-2xl px-4 pb-40 pt-4 md:pb-16">
       <div className="mb-4 space-y-2">
-        <div className="flex items-center gap-3">
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-            <tool.icon className="h-6 w-6" />
-          </span>
-          <div>
-            <h1 className="text-xl font-bold leading-tight">{tool.name}</h1>
-            <p className="text-sm text-muted-foreground">{tool.description}</p>
-          </div>
-        </div>
         {tool.isClientSide && <ClientSideBadge />}
         {notice?.()}
       </div>

@@ -18,6 +18,7 @@ import { useToolWorker } from "@/hooks/use-tool-worker";
 import { loadPdfDocument, renderPageToDataUrl } from "@/lib/pdf/thumbnails";
 import { toFriendlyPdfLoadError } from "@/lib/pdf/errors";
 import { checkFileMemoryRisk } from "@/lib/files/memory-guard";
+import { trackToolUploadStarted, trackToolUsed } from "@/lib/analytics/track";
 import { PRESETS, PRESET_ORDER, type PresetKey } from "@/lib/pdf/compress/presets";
 import { parseTargetSize } from "@/lib/pdf/compress/target-size";
 import type { CompressPdfRequest, CompressPdfResult } from "@/lib/workers/compress-pdf.types";
@@ -60,6 +61,7 @@ export function CompressPdfTool({ tool }: { tool: ToolDefinition }) {
   async function handleFiles(files: File[]) {
     const f = files[0];
     if (!f) return;
+    trackToolUploadStarted(tool.slug);
     setFile(f);
     setResult(null);
     setAfterPreview(null);
@@ -104,6 +106,7 @@ export function CompressPdfTool({ tool }: { tool: ToolDefinition }) {
         setAfterPreview(null);
       }
       setState("done");
+      trackToolUsed(tool.slug);
     } catch (err) {
       console.error(err);
       setState("error");
@@ -135,15 +138,6 @@ export function CompressPdfTool({ tool }: { tool: ToolDefinition }) {
   return (
     <div className="mx-auto max-w-2xl px-4 pb-40 pt-4 md:pb-16">
       <div className="mb-4 space-y-2">
-        <div className="flex items-center gap-3">
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-            <tool.icon className="h-6 w-6" />
-          </span>
-          <div>
-            <h1 className="text-xl font-bold leading-tight">{tool.name}</h1>
-            <p className="text-sm text-muted-foreground">{tool.description}</p>
-          </div>
-        </div>
         <ClientSideBadge />
         <p className="text-xs text-muted-foreground">
           Shrinks embedded images (downsample + re-encode) — real vector text is left

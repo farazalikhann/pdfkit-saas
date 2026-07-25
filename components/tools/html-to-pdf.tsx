@@ -21,6 +21,7 @@ import { ServerSideNotice } from "@/components/tool-shell/client-badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { ToolDefinition } from "@/lib/tools";
 import type { PageSize, Orientation } from "@/lib/pdf/html-to-pdf-render";
+import { trackToolUsed } from "@/lib/analytics/track";
 
 type Mode = "url" | "paste";
 type Margin = "none" | "normal" | "wide";
@@ -100,6 +101,7 @@ export function HtmlToPdfTool({ tool }: { tool: ToolDefinition }) {
         },
       ]);
       setState("done");
+      trackToolUsed(tool.slug);
     } catch (err) {
       console.error(err);
       setState("error");
@@ -116,15 +118,6 @@ export function HtmlToPdfTool({ tool }: { tool: ToolDefinition }) {
   return (
     <div className="mx-auto max-w-2xl px-4 pb-40 pt-4 md:pb-16">
       <div className="mb-4 space-y-2">
-        <div className="flex items-center gap-3">
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-            <tool.icon className="h-6 w-6" />
-          </span>
-          <div>
-            <h1 className="text-xl font-bold leading-tight">{tool.name}</h1>
-            <p className="text-sm text-muted-foreground">{tool.description}</p>
-          </div>
-        </div>
         <ServerSideNotice>
           Fetching a URL runs through our server briefly to avoid browser CORS
           blocks — the page is not stored. Pasted HTML never leaves your device.

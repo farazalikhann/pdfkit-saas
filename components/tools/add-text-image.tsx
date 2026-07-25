@@ -24,6 +24,7 @@ import { bringToFront, sendToBack, nextZIndex } from "@/components/page-editor/z
 import type { Rect } from "@/components/page-editor/types";
 import type { AddElement, TextBoxElement, ImageBoxElement, FontFamily } from "@/lib/pdf/edit/flatten-text-image";
 import { checkFileMemoryRisk } from "@/lib/files/memory-guard";
+import { trackToolUploadStarted, trackToolUsed } from "@/lib/analytics/track";
 import { uid, cn } from "@/lib/utils";
 import type { ToolDefinition } from "@/lib/tools";
 
@@ -62,6 +63,7 @@ export function AddTextImageTool({ tool }: { tool: ToolDefinition }) {
     setResults(null);
     setState("idle");
     if (f) {
+      trackToolUploadStarted(tool.slug);
       const risk = checkFileMemoryRisk(f);
       if (risk) toast.warning(risk);
     }
@@ -162,6 +164,7 @@ export function AddTextImageTool({ tool }: { tool: ToolDefinition }) {
       setProgress(1);
       setResults([{ name: "edited.pdf", blob: new Blob([new Uint8Array(bytes)], { type: "application/pdf" }) }]);
       setState("done");
+      trackToolUsed(tool.slug);
     } catch (err) {
       console.error(err);
       setState("error");
@@ -173,15 +176,6 @@ export function AddTextImageTool({ tool }: { tool: ToolDefinition }) {
   return (
     <div className="mx-auto max-w-2xl px-4 pb-40 pt-4 md:pb-16">
       <div className="mb-4 space-y-2">
-        <div className="flex items-center gap-3">
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-            <tool.icon className="h-6 w-6" />
-          </span>
-          <div>
-            <h1 className="text-xl font-bold leading-tight">{tool.name}</h1>
-            <p className="text-sm text-muted-foreground">{tool.description}</p>
-          </div>
-        </div>
         <ClientSideBadge />
         <p className="text-xs text-muted-foreground">
           Tap the page to drop a text box, or add an image, then drag/resize/rotate
@@ -308,7 +302,7 @@ export function AddTextImageTool({ tool }: { tool: ToolDefinition }) {
                 </div>
               ) : (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={el.dataUrl} alt="" className="h-full w-full object-fill" draggable={false} />
+                <img src={el.dataUrl} alt="Placed image" className="h-full w-full object-fill" draggable={false} />
               )
             }
           />

@@ -31,6 +31,13 @@ export type AcceptMap = Record<string, string[]>;
 
 export interface ToolDefinition {
   slug: string;
+  /**
+   * Keyword-rich page H1, e.g. "Merge PDF Files Online — Free, Without Uploading
+   * Anything". Kept here (a file every tool component already imports and that's
+   * cheap to bundle) rather than in lib/seo/tool-content.ts, which also carries
+   * ~300-500 words of body copy per tool and must never end up in a client bundle.
+   */
+  h1: string;
   name: string;
   /** Short label for the 2-column home grid card */
   shortName: string;
@@ -63,6 +70,7 @@ export const tools: ToolDefinition[] = [
   // libraries, so they were removed rather than shipped rough or as fake scaffolds.
   {
     slug: "pdf-to-jpg",
+    h1: "Convert PDF to JPG Online — Free, No Upload Required",
     name: "PDF to JPG",
     shortName: "PDF → JPG",
     category: "convert",
@@ -78,6 +86,7 @@ export const tools: ToolDefinition[] = [
   },
   {
     slug: "word-to-pdf",
+    h1: "Convert Word to PDF Online Free — No Signup Needed",
     name: "Word to PDF",
     shortName: "Word → PDF",
     category: "convert",
@@ -96,6 +105,7 @@ export const tools: ToolDefinition[] = [
   },
   {
     slug: "excel-to-pdf",
+    h1: "Convert Excel to PDF Online — Free, No Upload",
     name: "Excel to PDF",
     shortName: "Excel → PDF",
     category: "convert",
@@ -117,6 +127,7 @@ export const tools: ToolDefinition[] = [
   },
   {
     slug: "jpg-to-pdf",
+    h1: "Convert JPG to PDF Online — Free & Works Offline",
     name: "JPG to PDF",
     shortName: "JPG → PDF",
     category: "convert",
@@ -132,6 +143,7 @@ export const tools: ToolDefinition[] = [
   },
   {
     slug: "html-to-pdf",
+    h1: "Convert HTML or a Web Page to PDF — Free Online Tool",
     name: "HTML to PDF",
     shortName: "HTML → PDF",
     category: "convert",
@@ -149,6 +161,7 @@ export const tools: ToolDefinition[] = [
   // ---------- Organize ----------
   {
     slug: "merge-pdf",
+    h1: "Merge PDF Files Online — Free, Without Uploading Anything",
     name: "Merge PDF",
     shortName: "Merge PDF",
     category: "organize",
@@ -164,6 +177,7 @@ export const tools: ToolDefinition[] = [
   },
   {
     slug: "split-pdf",
+    h1: "Split a PDF Into Multiple Files — Free, No Upload",
     name: "Split PDF",
     shortName: "Split PDF",
     category: "organize",
@@ -179,6 +193,7 @@ export const tools: ToolDefinition[] = [
   },
   {
     slug: "extract-pages",
+    h1: "Extract Pages From a PDF — Free, No Upload Required",
     name: "Extract Pages",
     shortName: "Extract Pages",
     category: "organize",
@@ -194,6 +209,7 @@ export const tools: ToolDefinition[] = [
   },
   {
     slug: "remove-pages",
+    h1: "Remove Pages From a PDF — Free & Works Offline",
     name: "Remove Pages",
     shortName: "Remove Pages",
     category: "organize",
@@ -209,6 +225,7 @@ export const tools: ToolDefinition[] = [
   },
   {
     slug: "rotate-pages",
+    h1: "Rotate PDF Pages Online — Free, No Upload",
     name: "Rotate Pages",
     shortName: "Rotate Pages",
     category: "organize",
@@ -224,6 +241,7 @@ export const tools: ToolDefinition[] = [
   },
   {
     slug: "reorder-pages",
+    h1: "Reorder PDF Pages — Free, Drag-and-Drop Tool",
     name: "Reorder Pages",
     shortName: "Reorder Pages",
     category: "organize",
@@ -241,6 +259,7 @@ export const tools: ToolDefinition[] = [
   // ---------- Optimize ----------
   {
     slug: "compress-pdf",
+    h1: "Compress PDF Online — Free Offline PDF Compressor",
     name: "Compress PDF",
     shortName: "Compress PDF",
     category: "optimize",
@@ -256,6 +275,7 @@ export const tools: ToolDefinition[] = [
   },
   {
     slug: "ocr-pdf",
+    h1: "OCR a Scanned PDF Online — Free & Private",
     name: "OCR Scanned PDF",
     shortName: "OCR PDF",
     category: "optimize",
@@ -273,6 +293,7 @@ export const tools: ToolDefinition[] = [
   // ---------- Edit ----------
   {
     slug: "add-text-image",
+    h1: "Add Text and Images to a PDF — Free Online Editor",
     name: "Add Text & Images",
     shortName: "Add Text/Image",
     category: "edit",
@@ -288,6 +309,7 @@ export const tools: ToolDefinition[] = [
   },
   {
     slug: "annotate-pdf",
+    h1: "Annotate a PDF Online — Free, Private, No Signup",
     name: "Annotate & Highlight",
     shortName: "Annotate",
     category: "edit",
@@ -303,6 +325,7 @@ export const tools: ToolDefinition[] = [
   },
   {
     slug: "add-page-numbers",
+    h1: "Add Page Numbers to a PDF — Free Online Tool",
     name: "Add Page Numbers",
     shortName: "Page Numbers",
     category: "edit",
@@ -318,6 +341,7 @@ export const tools: ToolDefinition[] = [
   },
   {
     slug: "add-watermark",
+    h1: "Add a Watermark to a PDF — Free, No Signup",
     name: "Add Watermark",
     shortName: "Watermark",
     category: "edit",
@@ -333,6 +357,7 @@ export const tools: ToolDefinition[] = [
   },
   {
     slug: "add-header-footer",
+    h1: "Add Header and Footer to a PDF — Free Online Tool",
     name: "Add Header & Footer",
     shortName: "Header/Footer",
     category: "edit",
@@ -350,6 +375,7 @@ export const tools: ToolDefinition[] = [
   // ---------- Security ----------
   {
     slug: "password-protect",
+    h1: "Password Protect a PDF — Free, Real AES-256 Encryption",
     name: "Password Protect",
     shortName: "Add Password",
     category: "security",
@@ -365,6 +391,7 @@ export const tools: ToolDefinition[] = [
   },
   {
     slug: "unlock-pdf",
+    h1: "Remove a Password From a PDF — Free, No Upload",
     name: "Unlock PDF",
     shortName: "Unlock PDF",
     category: "security",
@@ -380,6 +407,7 @@ export const tools: ToolDefinition[] = [
   },
   {
     slug: "esign-pdf",
+    h1: "eSign a PDF Online — Free, No Account Needed",
     name: "eSign PDF",
     shortName: "eSign",
     category: "security",
@@ -395,6 +423,7 @@ export const tools: ToolDefinition[] = [
   },
   {
     slug: "redact-pdf",
+    h1: "Redact a PDF Online — Free, Genuinely Permanent",
     name: "Redact PDF",
     shortName: "Redact",
     category: "security",
@@ -412,6 +441,7 @@ export const tools: ToolDefinition[] = [
   // ---------- AI Tools ----------
   {
     slug: "summarize-pdf",
+    h1: "Summarize a PDF With AI — Free, Fast Document Summary",
     name: "Summarize PDF",
     shortName: "Summarize",
     category: "ai",

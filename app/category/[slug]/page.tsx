@@ -5,7 +5,8 @@ import { ArrowLeft } from "lucide-react";
 import { categories, getCategory } from "@/lib/categories";
 import { getToolsByCategory } from "@/lib/tools";
 import { ToolCard } from "@/components/home/tool-card";
-import { categoryJsonLd } from "@/lib/seo/json-ld";
+import { categoryJsonLd, breadcrumbJsonLd } from "@/lib/seo/json-ld";
+import { SITE_URL } from "@/lib/constants";
 
 interface Props {
   params: { slug: string };
@@ -31,12 +32,20 @@ export default function CategoryPage({ params }: Props) {
 
   const tools = getToolsByCategory(category.slug);
   const jsonLd = categoryJsonLd(category, tools);
+  const breadcrumb = breadcrumbJsonLd([
+    { name: "Home", url: SITE_URL },
+    { name: category.name, url: `${SITE_URL}/category/${category.slug}` },
+  ]);
 
   return (
     <div className="mx-auto max-w-6xl space-y-5 px-4 py-5">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }}
       />
       <Link
         href="/"

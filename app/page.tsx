@@ -4,6 +4,7 @@ import { CategoryChips } from "@/components/home/category-chips";
 import { CategorySection } from "@/components/home/category-section";
 import { categories } from "@/lib/categories";
 import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/constants";
+import { websiteJsonLd, organizationJsonLd } from "@/lib/seo/json-ld";
 
 export const metadata: Metadata = {
   title: `${SITE_NAME} — Free Online PDF Tools`,
@@ -14,6 +15,14 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-5">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd()) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd()) }}
+      />
       <div className="space-y-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">

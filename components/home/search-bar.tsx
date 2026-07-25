@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { Search, X } from "lucide-react";
 import { searchTools } from "@/lib/tools";
+import { trackSearchZeroResults } from "@/lib/analytics/track";
 import { cn } from "@/lib/utils";
 
 export function SearchBar() {
@@ -11,6 +12,15 @@ export function SearchBar() {
   const [focused, setFocused] = React.useState(false);
   const results = React.useMemo(() => searchTools(query).slice(0, 8), [query]);
   const showDropdown = focused && query.trim().length > 0;
+
+  // Debounced so this fires once the user pauses, not on every keystroke —
+  // a zero-result search here is a direct signal for what tool to build next.
+  React.useEffect(() => {
+    const trimmed = query.trim();
+    if (trimmed.length < 3 || results.length > 0) return;
+    const timer = setTimeout(() => trackSearchZeroResults(trimmed), 800);
+    return () => clearTimeout(timer);
+  }, [query, results.length]);
 
   return (
     <div className="relative">

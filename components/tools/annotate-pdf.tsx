@@ -35,6 +35,7 @@ import type {
 } from "@/lib/pdf/edit/flatten-annotations";
 import { getPageTextLines, findOverlappingLines, type TextLineBox } from "@/lib/pdf/edit/text-lines";
 import { checkFileMemoryRisk } from "@/lib/files/memory-guard";
+import { trackToolUploadStarted, trackToolUsed } from "@/lib/analytics/track";
 import { uid, cn } from "@/lib/utils";
 import type { ToolDefinition } from "@/lib/tools";
 
@@ -115,6 +116,7 @@ export function AnnotatePdfTool({ tool }: { tool: ToolDefinition }) {
     setResults(null);
     setState("idle");
     if (f) {
+      trackToolUploadStarted(tool.slug);
       const risk = checkFileMemoryRisk(f);
       if (risk) toast.warning(risk);
     }
@@ -290,6 +292,7 @@ export function AnnotatePdfTool({ tool }: { tool: ToolDefinition }) {
       setProgress(1);
       setResults([{ name: "annotated.pdf", blob: new Blob([new Uint8Array(bytes)], { type: "application/pdf" }) }]);
       setState("done");
+      trackToolUsed(tool.slug);
     } catch (err) {
       console.error(err);
       setState("error");
@@ -301,15 +304,6 @@ export function AnnotatePdfTool({ tool }: { tool: ToolDefinition }) {
   return (
     <div className="mx-auto max-w-2xl px-4 pb-40 pt-4 md:pb-16">
       <div className="mb-4 space-y-2">
-        <div className="flex items-center gap-3">
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-            <tool.icon className="h-6 w-6" />
-          </span>
-          <div>
-            <h1 className="text-xl font-bold leading-tight">{tool.name}</h1>
-            <p className="text-sm text-muted-foreground">{tool.description}</p>
-          </div>
-        </div>
         <ClientSideBadge />
         <p className="text-xs text-muted-foreground">
           Pick a tool below, then draw directly on the page. Switch to Select to
