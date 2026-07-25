@@ -59,7 +59,7 @@ export default function ToolPage({ params }: Props) {
         />
       ))}
       <ToolHeader tool={tool} />
-      <ToolPageClient slug={tool.slug} categoryName={categoryName} />
+      <ToolPageClient slug={tool.slug} />
       <ToolSeoSection tool={tool} />
     </>
   );

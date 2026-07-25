@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Download, Share2, CloudUpload, ArrowRightLeft, CheckCircle2 } from "lucide-react";
+import { Download, Share2, ArrowRightLeft, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -49,12 +49,6 @@ export function ResultPanel({ tool, results }: ResultPanelProps) {
 
   function handleDownload(result: ResultFile) {
     downloadBlob(result.blob, result.name);
-  }
-
-  function handleSaveToDrive() {
-    toast.info("Save to Drive is coming soon", {
-      description: "For now, download the file and upload it manually.",
-    });
   }
 
   const suggestions = getVisibleTools()
@@ -108,18 +102,10 @@ export function ResultPanel({ tool, results }: ResultPanelProps) {
         ))}
       </div>
 
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-2 gap-2">
         <Button variant="outline" className="flex-col gap-1 h-16" onClick={handleShare}>
           <Share2 className="h-4 w-4" />
           <span className="text-xs">Share</span>
-        </Button>
-        <Button
-          variant="outline"
-          className="flex-col gap-1 h-16"
-          onClick={handleSaveToDrive}
-        >
-          <CloudUpload className="h-4 w-4" />
-          <span className="text-xs">Save to Drive</span>
         </Button>
         <Button
           variant="outline"

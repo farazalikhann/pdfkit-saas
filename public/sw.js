@@ -1,4 +1,10 @@
-const CACHE_NAME = "pdfkit-shell-v1";
+// Bump this version string on every deploy that changes app-shell routes or
+// their content — it's the only thing that forces a stale service worker to
+// drop its old cache. A returning visitor whose browser is still running an
+// old SW instance (only rechecked periodically, not on every navigation)
+// would otherwise keep serving pages exactly as they were the day that SW
+// was installed, even though the live deployment has long since moved on.
+const CACHE_NAME = "pdfkit-shell-v2";
 const APP_SHELL = ["/", "/offline", "/manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {

@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useDropzone } from "react-dropzone";
-import { FolderOpen, Camera, Cloud, UploadCloud } from "lucide-react";
+import { FolderOpen, Camera, UploadCloud } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import type { AcceptMap } from "@/lib/tools";
@@ -64,7 +64,7 @@ export function UploadZone({
         <p className="text-xs text-muted-foreground">{acceptHint}</p>
       </div>
 
-      <div className="grid w-full max-w-sm grid-cols-3 gap-2">
+      <div className="grid w-full max-w-sm grid-cols-2 gap-2">
         <button
           type="button"
           onClick={open}
@@ -81,18 +81,6 @@ export function UploadZone({
         >
           <Camera className="h-5 w-5" />
           Camera
-        </button>
-        <button
-          type="button"
-          onClick={() =>
-            toast.info("Cloud import is coming soon", {
-              description: "Google Drive & Dropbox pickers are on the roadmap.",
-            })
-          }
-          className="flex min-h-[44px] flex-col items-center justify-center gap-1 rounded-xl border border-border bg-background px-2 py-2.5 text-xs font-medium transition-colors active:scale-[0.97] active:bg-accent"
-        >
-          <Cloud className="h-5 w-5" />
-          Cloud
         </button>
       </div>
 

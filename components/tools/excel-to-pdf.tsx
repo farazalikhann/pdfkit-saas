@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { FileList } from "@/components/tool-shell/file-list";
 import { validateSpreadsheet } from "@/lib/files/validate-file";
 import { checkFileMemoryRisk } from "@/lib/files/memory-guard";
 import { useToolWorker } from "@/hooks/use-tool-worker";
@@ -95,22 +96,11 @@ export function ExcelToPdfTool({ tool }: { tool: ToolDefinition }) {
           }
         }
       }}
-      options={() => (
+      preview={({ files, removeFile }) => (
         <div className="space-y-4">
-          <div className="space-y-1.5">
-            <Label>Page orientation</Label>
-            <Select value={orientation} onValueChange={(v) => setOrientation(v as Orientation)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="auto">Auto (landscape for wide sheets)</SelectItem>
-                <SelectItem value="portrait">Portrait</SelectItem>
-                <SelectItem value="landscape">Landscape</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
+          {loadingSheets && (
+            <p className="text-xs text-muted-foreground">Reading sheets…</p>
+          )}
           {sheetNames.length > 1 && (
             <div className="space-y-1.5">
               <Label>Sheets to include</Label>
@@ -130,10 +120,22 @@ export function ExcelToPdfTool({ tool }: { tool: ToolDefinition }) {
               </div>
             </div>
           )}
-
-          {loadingSheets && (
-            <p className="text-xs text-muted-foreground">Reading sheets…</p>
-          )}
+          <FileList files={files} onRemove={removeFile} />
+        </div>
+      )}
+      options={() => (
+        <div className="space-y-1.5">
+          <Label>Page orientation</Label>
+          <Select value={orientation} onValueChange={(v) => setOrientation(v as Orientation)}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="auto">Auto (landscape for wide sheets)</SelectItem>
+              <SelectItem value="portrait">Portrait</SelectItem>
+              <SelectItem value="landscape">Landscape</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       )}
       onProcess={async (files, reportProgress) => {

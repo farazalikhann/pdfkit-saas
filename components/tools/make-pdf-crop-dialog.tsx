@@ -3,13 +3,25 @@
 import * as React from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import type { CropRect } from "@/lib/pdf/image-transform";
+import { cn } from "@/lib/utils";
+import {
+  DOCUMENT_FILTER_CSS,
+  type CropRect,
+  type DocumentFilter,
+} from "@/lib/pdf/image-transform";
 
 type Corner = "nw" | "ne" | "sw" | "se";
 type DragMode = "move" | Corner;
 
 const DEFAULT_RECT: CropRect = { x: 0.05, y: 0.05, width: 0.9, height: 0.9 };
 const MIN_SIZE = 0.08;
+
+const FILTER_OPTIONS: { value: DocumentFilter; label: string }[] = [
+  { value: "original", label: "Original" },
+  { value: "enhance", label: "Enhance" },
+  { value: "grayscale", label: "Grayscale" },
+  { value: "bw", label: "B & W scan" },
+];
 
 function clamp(v: number, min: number, max: number) {
   return Math.min(max, Math.max(min, v));
@@ -31,9 +43,20 @@ interface CropDialogProps {
   rotationDeg: number;
   initialCrop: CropRect | null;
   onApply: (crop: CropRect | null) => void;
+  filter: DocumentFilter;
+  onFilterChange: (filter: DocumentFilter) => void;
 }
 
-export function CropDialog({ open, onOpenChange, imageUrl, rotationDeg, initialCrop, onApply }: CropDialogProps) {
+export function CropDialog({
+  open,
+  onOpenChange,
+  imageUrl,
+  rotationDeg,
+  initialCrop,
+  onApply,
+  filter,
+  onFilterChange,
+}: CropDialogProps) {
   const containerRef = React.useRef<HTMLDivElement | null>(null);
   const [rect, setRect] = React.useState<CropRect>(initialCrop ?? DEFAULT_RECT);
   const dragRef = React.useRef<{ mode: DragMode; startX: number; startY: number; startRect: CropRect } | null>(null);
@@ -100,7 +123,7 @@ export function CropDialog({ open, onOpenChange, imageUrl, rotationDeg, initialC
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Crop photo</DialogTitle>
+          <DialogTitle>Crop & filter</DialogTitle>
         </DialogHeader>
 
         <div
@@ -116,7 +139,7 @@ export function CropDialog({ open, onOpenChange, imageUrl, rotationDeg, initialC
             src={imageUrl}
             alt="Photo to crop"
             className="pointer-events-none max-h-full max-w-full"
-            style={{ transform: `rotate(${rotationDeg}deg)` }}
+            style={{ transform: `rotate(${rotationDeg}deg)`, filter: DOCUMENT_FILTER_CSS[filter] }}
             draggable={false}
           />
           <div
@@ -168,6 +191,27 @@ export function CropDialog({ open, onOpenChange, imageUrl, rotationDeg, initialC
                 />
               ))}
             </div>
+          </div>
+        </div>
+
+        <div className="space-y-1.5">
+          <p className="text-xs font-medium text-muted-foreground">Document filter</p>
+          <div className="grid grid-cols-4 gap-1.5">
+            {FILTER_OPTIONS.map((f) => (
+              <button
+                key={f.value}
+                type="button"
+                onClick={() => onFilterChange(f.value)}
+                className={cn(
+                  "rounded-lg border px-1.5 py-1.5 text-[11px] font-medium transition-colors",
+                  filter === f.value
+                    ? "border-primary bg-primary/10 text-primary"
+                    : "border-border text-muted-foreground active:bg-accent"
+                )}
+              >
+                {f.label}
+              </button>
+            ))}
           </div>
         </div>
 

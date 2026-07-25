@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { GripVertical, X, RotateCw, Crop } from "lucide-react";
+import { GripVertical, X, RotateCw, Crop, ScanLine } from "lucide-react";
 import {
   DndContext,
   closestCenter,
@@ -18,7 +18,11 @@ import {
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { ToolShell, type ToolShellHelpers } from "@/components/tool-shell/tool-shell";
+import {
+  ToolShell,
+  type ToolShellHelpers,
+  type ToolShellFilesApi,
+} from "@/components/tool-shell/tool-shell";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -28,7 +32,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CropDialog } from "./make-pdf-crop-dialog";
-import { applyImageTransform, type CropRect } from "@/lib/pdf/image-transform";
+import { ScanCameraDialog } from "./scan-camera-dialog";
+import {
+  applyImageTransform,
+  DOCUMENT_FILTER_CSS,
+  type CropRect,
+  type DocumentFilter,
+} from "@/lib/pdf/image-transform";
 import {
   imagesToPdf,
   type PageSizeOption,
@@ -43,8 +53,9 @@ const MARGIN_PT: Record<MarginOption, number> = { none: 0, normal: 24, wide: 48 
 interface PhotoState {
   rotation: 0 | 90 | 180 | 270;
   crop: CropRect | null;
+  filter: DocumentFilter;
 }
-const DEFAULT_STATE: PhotoState = { rotation: 0, crop: null };
+const DEFAULT_STATE: PhotoState = { rotation: 0, crop: null, filter: "original" };
 
 function fileKey(file: File): string {
   return `${file.name}-${file.size}-${file.lastModified}`;
@@ -96,7 +107,10 @@ function SortablePhotoThumb({
             src={url}
             alt=""
             className="h-full w-full object-cover"
-            style={{ transform: `rotate(${state.rotation}deg)` }}
+            style={{
+              transform: `rotate(${state.rotation}deg)`,
+              filter: DOCUMENT_FILTER_CSS[state.filter],
+            }}
           />
         )}
       </span>
@@ -189,6 +203,9 @@ export function MakePdfTool({ tool }: { tool: ToolDefinition }) {
   const [photoStates, setPhotoStates] = React.useState<Map<string, PhotoState>>(new Map());
   const [cropTarget, setCropTarget] = React.useState<File | null>(null);
   const [cropTargetUrl, setCropTargetUrl] = React.useState<string | null>(null);
+  const [scanOpen, setScanOpen] = React.useState(false);
+  const [fileCount, setFileCount] = React.useState(0);
+  const filesApiRef = React.useRef<ToolShellFilesApi | null>(null);
 
   const getState = React.useCallback(
     (file: File) => photoStates.get(fileKey(file)) ?? DEFAULT_STATE,
@@ -225,8 +242,22 @@ export function MakePdfTool({ tool }: { tool: ToolDefinition }) {
 
   return (
     <>
+      <div className="mx-auto max-w-2xl px-4 pt-4">
+        <button
+          type="button"
+          onClick={() => setScanOpen(true)}
+          disabled={fileCount >= tool.maxFiles}
+          className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-primary/40 bg-primary/5 px-4 py-3.5 text-sm font-semibold text-primary transition-colors active:bg-primary/10 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <ScanLine className="h-5 w-5" />
+          {fileCount === 0 ? "Scan Document with Camera" : "Scan more pages"}
+        </button>
+      </div>
+
       <ToolShell
         tool={tool}
+        filesApiRef={filesApiRef}
+        onFilesChange={(files) => setFileCount(files.length)}
         canRun={({ files }) => files.length >= 1}
         actionLabel={({ files }) =>
           files.length > 1 ? `Create PDF from ${files.length} photos` : "Create PDF"
@@ -316,6 +347,7 @@ export function MakePdfTool({ tool }: { tool: ToolDefinition }) {
             const t = await applyImageTransform(files[i], {
               rotationDeg: state.rotation,
               crop: state.crop,
+              filter: state.filter,
             });
             transformed.push(t);
             reportProgress(((i + 1) / files.length) * 0.5);
@@ -346,8 +378,16 @@ export function MakePdfTool({ tool }: { tool: ToolDefinition }) {
           rotationDeg={getState(cropTarget).rotation}
           initialCrop={getState(cropTarget).crop}
           onApply={(crop) => cropTarget && updateState(cropTarget, { crop })}
+          filter={getState(cropTarget).filter}
+          onFilterChange={(filter) => cropTarget && updateState(cropTarget, { filter })}
         />
       )}
+
+      <ScanCameraDialog
+        open={scanOpen}
+        onOpenChange={setScanOpen}
+        onFinish={(files) => filesApiRef.current?.addFiles(files)}
+      />
     </>
   );
 }

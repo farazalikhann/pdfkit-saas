@@ -6,23 +6,39 @@ export interface CropRect {
   height: number;
 }
 
+/** "Document filter" presets applied to scanned/photographed pages. */
+export type DocumentFilter = "original" | "grayscale" | "bw" | "enhance";
+
+export const DOCUMENT_FILTER_CSS: Record<DocumentFilter, string> = {
+  original: "none",
+  grayscale: "grayscale(1) contrast(1.1)",
+  bw: "grayscale(1) contrast(2.4) brightness(1.15)",
+  enhance: "contrast(1.25) brightness(1.08) saturate(1.05)",
+};
+
 async function loadBitmap(file: File): Promise<ImageBitmap> {
   return createImageBitmap(file);
 }
 
 /**
- * Applies a 90-degree-step rotation and/or a crop to an image file, returning a
- * new File with the same name and a matching mime type. Crop coordinates are
- * fractions (0-1) of the image AFTER rotation is applied, matching what the user
- * sees in the crop UI regardless of the original photo's orientation.
+ * Applies a 90-degree-step rotation, a crop, and/or a document filter to an
+ * image file, returning a new File with the same name and a matching mime
+ * type. Crop coordinates are fractions (0-1) of the image AFTER rotation is
+ * applied, matching what the user sees in the crop UI regardless of the
+ * original photo's orientation.
  */
 export async function applyImageTransform(
   file: File,
-  opts: { rotationDeg?: 0 | 90 | 180 | 270; crop?: CropRect | null }
+  opts: {
+    rotationDeg?: 0 | 90 | 180 | 270;
+    crop?: CropRect | null;
+    filter?: DocumentFilter;
+  }
 ): Promise<File> {
   const rotationDeg = opts.rotationDeg ?? 0;
   const crop = opts.crop ?? null;
-  if (rotationDeg === 0 && !crop) return file;
+  const filter = opts.filter ?? "original";
+  if (rotationDeg === 0 && !crop && filter === "original") return file;
 
   const bitmap = await loadBitmap(file);
   const swapDims = rotationDeg === 90 || rotationDeg === 270;
@@ -49,6 +65,15 @@ export async function applyImageTransform(
     if (!cctx) throw new Error("Canvas 2D context unavailable");
     cctx.drawImage(rotatedCanvas, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
     outputCanvas = croppedCanvas;
+  }
+
+  if (filter !== "original") {
+    const filteredCanvas = new OffscreenCanvas(outputCanvas.width, outputCanvas.height);
+    const fctx = filteredCanvas.getContext("2d");
+    if (!fctx) throw new Error("Canvas 2D context unavailable");
+    fctx.filter = DOCUMENT_FILTER_CSS[filter];
+    fctx.drawImage(outputCanvas, 0, 0);
+    outputCanvas = filteredCanvas;
   }
 
   const isPng = /png$/i.test(file.type) || /\.png$/i.test(file.name);

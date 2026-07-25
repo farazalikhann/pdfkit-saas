@@ -35,15 +35,46 @@ function toFriendlyError(err: unknown): Error {
   return err instanceof Error ? err : new Error("Unknown AI provider error");
 }
 
+/**
+ * The single call path every AI tool on this site goes through. Summarize,
+ * Translate, and generate-MCQs each just build a different prompt and pass it
+ * here — the model, the client, and the error handling live in exactly one
+ * place, so they can't quietly drift apart (e.g. one tool still pointing at a
+ * model Google has since retired for new users, like gemini-2.5-flash was).
+ */
+async function callGemini(
+  prompt: string,
+  config: { maxOutputTokens?: number; responseMimeType?: string } = {}
+): Promise<string> {
+  const ai = getClient();
+  try {
+    const response = await ai.models.generateContent({
+      model: MODEL,
+      contents: [{ role: "user", parts: [{ text: prompt }] }],
+      config: {
+        maxOutputTokens: config.maxOutputTokens ?? 1024,
+        ...(config.responseMimeType ? { responseMimeType: config.responseMimeType } : {}),
+      },
+    });
+    const text = response.text;
+    if (!text) throw new Error("Gemini returned an empty response.");
+    return text;
+  } catch (err) {
+    throw toFriendlyError(err);
+  }
+}
+
 const SUMMARY_INSTRUCTIONS: Record<NonNullable<SummarizeTextInput["length"]>, string> = {
   short:
     "Summarize the following document in 2-3 concise sentences — just the core point, no bullets.",
   detailed:
     "Write a detailed multi-paragraph summary of the following document, covering its main " +
-    "points, supporting details, and any conclusions or recommendations.",
+    "points, supporting details, and any conclusions or recommendations. Use Markdown: a level-2 " +
+    "heading (##) for each major section if the document has distinct topics, and \"- \" bullet " +
+    "points for lists.",
   bullets:
-    "Summarize the following document text in 5-8 concise bullet points, followed by a " +
-    "one-sentence TLDR.",
+    "Summarize the following document text in 5-8 concise bullet points (each starting with \"- \"), " +
+    "followed by a one-sentence TLDR on its own line starting with \"TLDR: \".",
 };
 
 async function summarizeText({
@@ -51,28 +82,8 @@ async function summarizeText({
   length = "bullets",
   maxOutputTokens = 1024,
 }: SummarizeTextInput): Promise<string> {
-  const ai = getClient();
-  try {
-    const response = await ai.models.generateContent({
-      model: MODEL,
-      contents: [
-        {
-          role: "user",
-          parts: [
-            {
-              text: `${SUMMARY_INSTRUCTIONS[length]} Respond with plain text only.\n\n---\n\n${text}`,
-            },
-          ],
-        },
-      ],
-      config: { maxOutputTokens },
-    });
-    const summary = response.text;
-    if (!summary) throw new Error("Gemini returned an empty response.");
-    return summary;
-  } catch (err) {
-    throw toFriendlyError(err);
-  }
+  const prompt = `${SUMMARY_INSTRUCTIONS[length]} Respond in plain Markdown (headings as "## ", bullets as "- "), no other formatting.\n\n---\n\n${text}`;
+  return callGemini(prompt, { maxOutputTokens });
 }
 
 async function translateText({
@@ -81,35 +92,13 @@ async function translateText({
   sourceLanguage,
   maxOutputTokens = 4096,
 }: TranslateTextInput): Promise<string> {
-  const ai = getClient();
-  const sourceClause = sourceLanguage && sourceLanguage !== "auto"
-    ? `from ${sourceLanguage} `
-    : "";
-  try {
-    const response = await ai.models.generateContent({
-      model: MODEL,
-      contents: [
-        {
-          role: "user",
-          parts: [
-            {
-              text:
-                `Translate the following document text ${sourceClause}into ${targetLanguage}. ` +
-                "Preserve the original paragraph structure and meaning as closely as possible. " +
-                "Respond with only the translated text — no preamble, no notes, no explanation.\n\n---\n\n" +
-                text,
-            },
-          ],
-        },
-      ],
-      config: { maxOutputTokens },
-    });
-    const translated = response.text;
-    if (!translated) throw new Error("Gemini returned an empty response.");
-    return translated;
-  } catch (err) {
-    throw toFriendlyError(err);
-  }
+  const sourceClause = sourceLanguage && sourceLanguage !== "auto" ? `from ${sourceLanguage} ` : "";
+  const prompt =
+    `Translate the following document text ${sourceClause}into ${targetLanguage}. ` +
+    "Preserve the original paragraph structure and meaning as closely as possible. " +
+    "Respond with only the translated text — no preamble, no notes, no explanation.\n\n---\n\n" +
+    text;
+  return callGemini(prompt, { maxOutputTokens });
 }
 
 const DIFFICULTY_INSTRUCTIONS: Record<GenerateMcqsInput["difficulty"], string> = {
@@ -129,64 +118,45 @@ async function generateMcqs({
   difficulty,
   maxOutputTokens = 4096,
 }: GenerateMcqsInput): Promise<McqQuestion[]> {
-  const ai = getClient();
+  const prompt =
+    `Generate exactly ${count} multiple-choice questions from the following document text, ` +
+    `for a student studying this material. Difficulty: ${difficulty}. ${DIFFICULTY_INSTRUCTIONS[difficulty]} ` +
+    "Each question must have exactly 4 options with exactly one correct answer.\n\n" +
+    'Respond with ONLY a JSON array, no markdown fences, no commentary, in this exact shape: ' +
+    '[{"question": "...", "options": ["...", "...", "...", "..."], "correctIndex": 0}]\n\n' +
+    "correctIndex is a 0-based index into options.\n\n---\n\n" +
+    text;
+
+  const raw = await callGemini(prompt, { maxOutputTokens, responseMimeType: "application/json" });
+
+  let parsed: unknown;
   try {
-    const response = await ai.models.generateContent({
-      model: MODEL,
-      contents: [
-        {
-          role: "user",
-          parts: [
-            {
-              text:
-                `Generate exactly ${count} multiple-choice questions from the following document text, ` +
-                `for a student studying this material. Difficulty: ${difficulty}. ${DIFFICULTY_INSTRUCTIONS[difficulty]} ` +
-                "Each question must have exactly 4 options with exactly one correct answer.\n\n" +
-                'Respond with ONLY a JSON array, no markdown fences, no commentary, in this exact shape: ' +
-                '[{"question": "...", "options": ["...", "...", "...", "..."], "correctIndex": 0}]\n\n' +
-                "correctIndex is a 0-based index into options.\n\n---\n\n" +
-                text,
-            },
-          ],
-        },
-      ],
-      config: { maxOutputTokens, responseMimeType: "application/json" },
-    });
-    const raw = response.text;
-    if (!raw) throw new Error("Gemini returned an empty response.");
-
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(extractJson(raw));
-    } catch {
-      throw new Error("Gemini returned a response that couldn't be parsed as quiz questions. Please try again.");
-    }
-    if (!Array.isArray(parsed)) {
-      throw new Error("Gemini returned a response that couldn't be parsed as quiz questions. Please try again.");
-    }
-
-    const questions: McqQuestion[] = parsed
-      .filter(
-        (q): q is McqQuestion =>
-          typeof q === "object" &&
-          q !== null &&
-          typeof (q as McqQuestion).question === "string" &&
-          Array.isArray((q as McqQuestion).options) &&
-          (q as McqQuestion).options.length === 4 &&
-          typeof (q as McqQuestion).correctIndex === "number" &&
-          (q as McqQuestion).correctIndex >= 0 &&
-          (q as McqQuestion).correctIndex <= 3
-      )
-      .slice(0, count);
-
-    if (questions.length === 0) {
-      throw new Error("Gemini didn't return any usable questions for this document. Please try again.");
-    }
-    return questions;
-  } catch (err) {
-    if (err instanceof ApiError) throw toFriendlyError(err);
-    throw err instanceof Error ? err : new Error("Unknown AI provider error");
+    parsed = JSON.parse(extractJson(raw));
+  } catch {
+    throw new Error("Gemini returned a response that couldn't be parsed as quiz questions. Please try again.");
   }
+  if (!Array.isArray(parsed)) {
+    throw new Error("Gemini returned a response that couldn't be parsed as quiz questions. Please try again.");
+  }
+
+  const questions: McqQuestion[] = parsed
+    .filter(
+      (q): q is McqQuestion =>
+        typeof q === "object" &&
+        q !== null &&
+        typeof (q as McqQuestion).question === "string" &&
+        Array.isArray((q as McqQuestion).options) &&
+        (q as McqQuestion).options.length === 4 &&
+        typeof (q as McqQuestion).correctIndex === "number" &&
+        (q as McqQuestion).correctIndex >= 0 &&
+        (q as McqQuestion).correctIndex <= 3
+    )
+    .slice(0, count);
+
+  if (questions.length === 0) {
+    throw new Error("Gemini didn't return any usable questions for this document. Please try again.");
+  }
+  return questions;
 }
 
 export const geminiProvider: AiProvider = { summarizeText, translateText, generateMcqs };

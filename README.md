@@ -65,7 +65,8 @@ components/
                    OptionsPanel, ActionBar, ResultPanel, ProgressRing, client-badge)
   pdf/             PdfThumbnailGrid (used by the rotate tool)
   tools/           One file per tool's specific options/logic (merge-pdf.tsx, etc.),
-                   tool-page-client.tsx (slug → component map), generic-tool.tsx (TODO scaffold)
+                   tool-page-client.tsx (slug → component map; a tool with no
+                   entry there 404s rather than rendering a placeholder)
   pwa/             Service worker registration
 
 lib/
@@ -94,7 +95,7 @@ lib/
 
 ## Adding a new tool in under 10 minutes
 
-Say you want to add **"Add Header & Footer"** as a real, working client-side tool (it currently exists as a config entry with a generic "coming soon" scaffold).
+Say you want to add a new tool called **"Add Header & Footer"** as a real, working client-side tool.
 
 1. **Write the transform** in `lib/pdf/header-footer.ts`:
 
@@ -145,14 +146,13 @@ Say you want to add **"Add Header & Footer"** as a real, working client-side too
    "add-header-footer": dynamic(() => import("./add-header-footer").then((m) => m.AddHeaderFooterTool), { loading: loadingFallback, ssr: false }),
    ```
 
-4. **Flip the flag** in `lib/tools.ts`: set `isImplemented: true` on the `add-header-footer` entry (it's already there — every tool in the app is pre-registered, whether built or not).
+4. **Add its `ToolDefinition`** object to the `tools` array in `lib/tools.ts` (slug, name, category, icon, `accept` map, etc.) — copy the shape of a neighboring entry in the same category.
 
-That's it — no route file to create, no nav link to add, no sitemap entry to write. The homepage grid, category page, search, sitemap, and static params all pick it up automatically because they all read from `lib/tools.ts`.
+That's it — no route file to create, no nav link to add, no sitemap entry to write. The homepage grid, category page, search, sitemap, and static params all pick it up automatically because they all read from `lib/tools.ts`. A slug present in `lib/tools.ts` but missing from `IMPLEMENTED_TOOLS` 404s instead of rendering a placeholder, so there's no way to half-ship a tool.
 
-**Adding a brand-new tool that doesn't exist yet** is the same, plus one extra step: add its `ToolDefinition` object to the `tools` array in `lib/tools.ts` first (slug, name, category, icon, `accept` map, etc.) — copy the shape of a neighboring entry in the same category.
+## What's working
 
-## What's genuinely working vs. scaffolded
+Every tool listed in `lib/tools.ts` is fully implemented — there are no scaffolded or "coming soon" tools in this app.
 
-- **Fully working, 100% client-side:** Merge, Split, Compress (3 quality presets with real before/after size), Rotate (interactive per-page thumbnail grid), PDF→JPG, JPG→PDF, Add Watermark, Password Protect.
-- **Fully working, server-side via Gemini:** Summarize PDF (`app/api/ai/summarize`) — needs `GOOGLE_AI_API_KEY`. Text is extracted from the PDF in the browser with pdf.js (capped at 50 pages / 100,000 characters — a clear error shows if a document is too long) and only that text is sent to the server; the file itself never leaves the device. Rate-limited to 5 requests/hour per IP and a shared 1,400/day hard cap across all visitors (comfortably inside Gemini's free tier) — see the in-memory-counter caveat in `lib/ai/rate-limiter.ts`.
-- **Scaffolded (real upload/preview/UI, processing pending):** every other tool in `lib/tools.ts` (`isImplemented: false`). Opening one renders `components/tools/generic-tool.tsx`, whose `onProcess` has a `// TODO: implement processing for this tool.` comment marking exactly where to plug in real logic — follow the same 4-step recipe above.
+- **Client-side:** Make PDF (incl. camera scan), Merge, Split, Compress, Rotate, PDF→JPG, JPG→PDF, Add Watermark, Password Protect, Unlock, Extract/Remove/Reorder Pages, Word/Excel/HTML→PDF, OCR, e-Sign, Redact, Add Text/Image, Annotate, Add Page Numbers, Add Header & Footer.
+- **Server-side via Gemini:** Summarize, Translate, and MCQ Generator (`app/api/ai/*`) — need `GOOGLE_AI_API_KEY`, hidden site-wide without one. Text is extracted from the source PDF in the browser with pdf.js (capped at 50 pages / 100,000 characters) and only that text is sent to the server; the file itself never leaves the device. All three share one Gemini call path (`lib/ai/providers/gemini-provider.ts`). Rate-limited to 5 requests/hour per IP and a shared 1,400/day hard cap across all visitors — see the in-memory-counter caveat in `lib/ai/rate-limiter.ts`.

@@ -1,8 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { notFound } from "next/navigation";
 import { getToolBySlug, type ToolDefinition } from "@/lib/tools";
-import { GenericTool } from "./generic-tool";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ToolErrorBoundary } from "@/components/tool-shell/tool-error-boundary";
 
@@ -125,27 +125,23 @@ const IMPLEMENTED_TOOLS: Record<
   ),
 };
 
-export function ToolPageClient({
-  slug,
-  categoryName,
-}: {
-  slug: string;
-  categoryName: string;
-}) {
+export function ToolPageClient({ slug }: { slug: string }) {
   // Resolved here (client-side) rather than passed down from the Server Component —
   // ToolDefinition.icon is a component reference, which can't cross the RSC boundary as a prop.
   const tool: ToolDefinition | undefined = getToolBySlug(slug);
   if (!tool) return null;
 
   const Implementation = IMPLEMENTED_TOOLS[tool.slug];
+  // No placeholder fallback here on purpose: a tool with no real implementation
+  // must not be reachable at all — not visible with a dead-end Run button, not
+  // a generic "coming soon" screen. If this ever fires, the tool was listed in
+  // lib/tools.ts without being wired up above, which is a bug to catch before
+  // shipping, not a state to render gracefully for users.
+  if (!Implementation) notFound();
 
   return (
     <ToolErrorBoundary key={tool.slug}>
-      {Implementation ? (
-        <Implementation tool={tool} />
-      ) : (
-        <GenericTool tool={tool} categoryName={categoryName} />
-      )}
+      <Implementation tool={tool} />
     </ToolErrorBoundary>
   );
 }

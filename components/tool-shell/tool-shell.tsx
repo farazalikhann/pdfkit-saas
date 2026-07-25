@@ -23,6 +23,10 @@ export interface ToolShellHelpers {
   removeFile: (index: number) => void;
 }
 
+export interface ToolShellFilesApi {
+  addFiles: (files: File[]) => void;
+}
+
 interface ToolShellProps {
   tool: ToolDefinition;
   /** Tool-specific controls, rendered inside the responsive options panel. */
@@ -52,6 +56,12 @@ interface ToolShellProps {
     files: File[],
     reportProgress: (fraction: number) => void
   ) => Promise<ResultFile[]>;
+  /**
+   * Populated with an imperative `addFiles` once mounted, so a parent can feed
+   * files in from outside the normal upload zone (e.g. Make PDF's camera scan
+   * flow, which produces File objects itself rather than via a picker).
+   */
+  filesApiRef?: React.MutableRefObject<ToolShellFilesApi | null>;
 }
 
 export function ToolShell(props: ToolShellProps) {
@@ -86,6 +96,7 @@ function ToolShellInner({
   onFilesChange,
   notice,
   onProcess,
+  filesApiRef,
 }: ToolShellProps) {
   const searchParams = useSearchParams();
   const [files, setFiles] = React.useState<File[]>([]);
@@ -112,6 +123,15 @@ function ToolShellInner({
     onFilesChange?.(files);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [files]);
+
+  React.useEffect(() => {
+    if (!filesApiRef) return;
+    filesApiRef.current = { addFiles };
+    return () => {
+      filesApiRef.current = null;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filesApiRef]);
 
   function addFiles(incoming: File[]) {
     setResults(null);
