@@ -35,3 +35,20 @@ export function downloadBlob(data: Uint8Array | Blob, fileName: string) {
 export function uid(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
+
+/**
+ * Truncates a long filename in the middle rather than at the end, so both the
+ * start and the distinguishing tail (page ranges, sequence numbers, extension —
+ * generated filenames like "merged-pages-15-108.pdf" put the part that tells
+ * files in a batch apart right before the extension) stay visible — e.g.
+ * "merged (4)-pages-15-108.pdf" -> "merged (4)...ges-15-108.pdf". Biased 35/65
+ * toward the tail for that reason. A CSS `truncate` class should still be
+ * layered on top as a hard safety net for containers narrower than this
+ * character budget anticipates.
+ */
+export function truncateMiddle(text: string, maxLength = 20): string {
+  if (text.length <= maxLength) return text;
+  const keepStart = Math.floor((maxLength - 3) * 0.35);
+  const keepEnd = Math.ceil((maxLength - 3) * 0.65);
+  return `${text.slice(0, keepStart)}...${text.slice(text.length - keepEnd)}`;
+}

@@ -377,19 +377,25 @@ function SplitPointsGrid({
   }, [pageCount, gapsAfter]);
 
   return (
-    <div className={cn(GRID_CLASSES, className)}>
-      {Array.from({ length: pageCount }, (_, i) => i + 1).map((page) => (
-        <SplitPointPageCell
-          key={page}
-          pageNumber={page}
-          dataUrl={getThumbnail(page)}
-          onVisible={() => requestThumbnail(page)}
-          groupColorClass={GROUP_COLOR_CLASSES[(groupIndexByPage.get(page) ?? 0) % GROUP_COLOR_CLASSES.length]}
-          gapAfterActive={gapsAfter.has(page)}
-          onToggleGapAfter={() => onToggleGap(page)}
-          isLastPage={page === pageCount}
-        />
-      ))}
+    <div className={cn("space-y-1.5", className)}>
+      {/* Horizontal filmstrip, like a video editor's timeline — touch-pan-x lets the
+          browser handle left-right swipes here natively while a vertical swipe (even
+          one starting on a thumbnail) still falls through to scroll the page. */}
+      <div className="flex touch-pan-x snap-x snap-mandatory gap-0.5 overflow-x-auto overscroll-x-contain pb-2">
+        {Array.from({ length: pageCount }, (_, i) => i + 1).map((page) => (
+          <SplitPointPageCell
+            key={page}
+            pageNumber={page}
+            dataUrl={getThumbnail(page)}
+            onVisible={() => requestThumbnail(page)}
+            groupColorClass={GROUP_COLOR_CLASSES[(groupIndexByPage.get(page) ?? 0) % GROUP_COLOR_CLASSES.length]}
+            gapAfterActive={gapsAfter.has(page)}
+            onToggleGapAfter={() => onToggleGap(page)}
+            isLastPage={page === pageCount}
+          />
+        ))}
+      </div>
+      <p className="text-center text-xs text-muted-foreground">Swipe left/right to move through the document</p>
     </div>
   );
 }

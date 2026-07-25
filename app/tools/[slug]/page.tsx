@@ -5,7 +5,7 @@ import { getCategory } from "@/lib/categories";
 import { toolJsonLd, howToJsonLd, faqJsonLd, breadcrumbJsonLd } from "@/lib/seo/json-ld";
 import { buildToolMetadata } from "@/lib/seo/metadata";
 import { getToolSeoContent } from "@/lib/seo/tool-content";
-import { isSummarizeEnabled } from "@/lib/ai/is-enabled";
+import { isAiToolsEnabled } from "@/lib/ai/is-enabled";
 import { SITE_URL } from "@/lib/constants";
 import { ToolPageClient } from "@/components/tools/tool-page-client";
 import { ToolSeoSection } from "@/components/seo/tool-seo-section";
@@ -28,8 +28,9 @@ export function generateMetadata({ params }: Props): Metadata {
 export default function ToolPage({ params }: Props) {
   const tool = getToolBySlug(params.slug);
   if (!tool) notFound();
-  // Hidden entirely (not a broken page) when there's no Gemini key configured.
-  if (tool.slug === "summarize-pdf" && !isSummarizeEnabled()) notFound();
+  // Hidden entirely (not a broken page) when there's no Gemini key configured —
+  // covers every AI tool (Summarize, Translate, MCQ), not just one hardcoded slug.
+  if (tool.category === "ai" && !isAiToolsEnabled()) notFound();
 
   const category = getCategory(tool.category);
   const content = getToolSeoContent(tool.slug);

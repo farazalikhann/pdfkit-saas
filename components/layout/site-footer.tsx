@@ -26,6 +26,7 @@ export function SiteFooter() {
         <p className="text-xs">
           © {new Date().getFullYear()} {SITE_NAME}. Free PDF tools that run in your browser.
         </p>
+        <p className="text-xs">A product by Faraz Ali Khan</p>
       </div>
     </footer>
   );

@@ -19,6 +19,10 @@ const IMPLEMENTED_TOOLS: Record<
   string,
   ReturnType<typeof dynamic<{ tool: ToolDefinition }>>
 > = {
+  "make-pdf": dynamic(() => import("./make-pdf").then((m) => m.MakePdfTool), {
+    loading: loadingFallback,
+    ssr: false,
+  }),
   "merge-pdf": dynamic(() => import("./merge-pdf").then((m) => m.MergePdfTool), {
     loading: loadingFallback,
     ssr: false,
@@ -53,6 +57,14 @@ const IMPLEMENTED_TOOLS: Record<
   ),
   "summarize-pdf": dynamic(
     () => import("./summarize-pdf").then((m) => m.SummarizePdfTool),
+    { loading: loadingFallback, ssr: false }
+  ),
+  "translate-pdf": dynamic(
+    () => import("./translate-pdf").then((m) => m.TranslatePdfTool),
+    { loading: loadingFallback, ssr: false }
+  ),
+  "pdf-to-mcq": dynamic(
+    () => import("./mcq-pdf").then((m) => m.McqPdfTool),
     { loading: loadingFallback, ssr: false }
   ),
   "word-to-pdf": dynamic(

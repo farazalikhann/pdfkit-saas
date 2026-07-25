@@ -10,7 +10,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { downloadBlob, formatBytes } from "@/lib/utils";
+import { downloadBlob, formatBytes, truncateMiddle } from "@/lib/utils";
 import { getVisibleTools, type ToolDefinition } from "@/lib/tools";
 import { useChainStore } from "@/lib/store/chain-store";
 import { toast } from "sonner";
@@ -93,8 +93,17 @@ export function ResultPanel({ tool, results }: ResultPanelProps) {
             className="min-h-[52px] w-full gap-2 text-base font-semibold"
             onClick={() => handleDownload(r)}
           >
-            <Download className="h-5 w-5" />
-            Download {results.length > 1 ? r.name : ""}
+            <Download className="h-5 w-5 shrink-0" />
+            {results.length > 1 ? (
+              <span className="flex min-w-0 items-baseline gap-1.5">
+                <span className="shrink-0">Download</span>
+                <span className="min-w-0 truncate" title={r.name}>
+                  {truncateMiddle(r.name)}
+                </span>
+              </span>
+            ) : (
+              "Download"
+            )}
           </Button>
         ))}
       </div>

@@ -3,6 +3,7 @@
 import * as React from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { ToolShell } from "@/components/tool-shell/tool-shell";
+import { FileList } from "@/components/tool-shell/file-list";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -37,8 +38,9 @@ export function PasswordProtectTool({ tool }: { tool: ToolDefinition }) {
       tool={tool}
       actionLabel={() => "Protect PDF"}
       canRun={() => ready}
-      options={() => (
+      preview={({ files, removeFile }) => (
         <div className="space-y-4">
+          <FileList files={files} onRemove={removeFile} />
           <div className="space-y-1.5">
             <Label htmlFor="pw">Password</Label>
             <div className="relative">

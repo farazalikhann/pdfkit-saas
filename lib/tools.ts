@@ -21,10 +21,13 @@ import {
   PenTool,
   EyeOff,
   BookOpen,
+  Camera,
+  Languages,
+  ListChecks,
   type LucideIcon,
 } from "lucide-react";
 import type { CategorySlug } from "./categories";
-import { isSummarizeEnabled } from "./ai/is-enabled";
+import { isAiToolsEnabled } from "./ai/is-enabled";
 
 /** react-dropzone-style accept map: MIME type -> file extensions */
 export type AcceptMap = Record<string, string[]>;
@@ -68,6 +71,25 @@ export const tools: ToolDefinition[] = [
   // Note: PDF-to-Word, PDF-to-Excel, PDF-to-PPT, and PPT-to-PDF are deliberately
   // absent — none can be done to an acceptable quality with free, client-side-only
   // libraries, so they were removed rather than shipped rough or as fake scaffolds.
+  // Kept first in this list on purpose — it's the most approachable entry point
+  // (turn photos into a PDF) and that ordering is what puts it first in the
+  // homepage's Convert section, i.e. genuinely prominent, not just labeled so.
+  {
+    slug: "make-pdf",
+    h1: "Make a PDF From Photos — Free, Works Offline",
+    name: "Make PDF",
+    shortName: "Make PDF",
+    category: "convert",
+    description: "Turn photos into a PDF — add, reorder, rotate and crop, right on your phone.",
+    icon: Camera,
+    isClientSide: true,
+    isImplemented: true,
+    accept: IMAGE_ACCEPT,
+    multiple: true,
+    maxFiles: 50,
+    resultFileName: "document.pdf",
+    keywords: ["photos", "pictures", "camera", "scan", "images", "make pdf"],
+  },
   {
     slug: "pdf-to-jpg",
     h1: "Convert PDF to JPG Online — Free, No Upload Required",
@@ -455,16 +477,48 @@ export const tools: ToolDefinition[] = [
     resultFileName: "summary.txt",
     keywords: ["ai", "summary", "tldr", "gemini"],
   },
+  {
+    slug: "translate-pdf",
+    h1: "Translate a PDF With AI — Free, 13+ Languages",
+    name: "Translate PDF",
+    shortName: "Translate",
+    category: "ai",
+    description: "Translate a PDF's text into another language.",
+    icon: Languages,
+    isClientSide: false,
+    isImplemented: true,
+    accept: PDF_ACCEPT,
+    multiple: false,
+    maxFiles: 1,
+    resultFileName: "translation.txt",
+    keywords: ["ai", "translate", "language", "gemini"],
+  },
+  {
+    slug: "pdf-to-mcq",
+    h1: "Generate MCQs From a PDF — Free AI Quiz Maker",
+    name: "Generate MCQs from PDF",
+    shortName: "MCQ Generator",
+    category: "ai",
+    description: "Turn a PDF into multiple-choice quiz questions.",
+    icon: ListChecks,
+    isClientSide: false,
+    isImplemented: true,
+    accept: PDF_ACCEPT,
+    multiple: false,
+    maxFiles: 1,
+    resultFileName: "quiz.pdf",
+    keywords: ["ai", "quiz", "mcq", "questions", "gemini", "study"],
+  },
 ];
 
 export function getToolBySlug(slug: string): ToolDefinition | undefined {
   return tools.find((t) => t.slug === slug);
 }
 
-/** All tools minus ones that are hidden at runtime (currently just Summarize without a Gemini key). */
+/** All tools minus ones hidden at runtime (currently the "ai" category, without a Gemini key). */
 export function getVisibleTools(): ToolDefinition[] {
-  if (isSummarizeEnabled()) return tools;
-  return tools.filter((t) => t.slug !== "summarize-pdf");
+  if (isAiToolsEnabled()) return tools;
+  return tools.filter((t) => t.category !== "ai");
 }
 
 export function getToolsByCategory(category: CategorySlug): ToolDefinition[] {

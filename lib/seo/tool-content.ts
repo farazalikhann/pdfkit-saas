@@ -28,6 +28,52 @@ export interface ToolSeoContent {
 
 export const toolSeoContent: Record<string, ToolSeoContent> = {
   // ---------- Convert ----------
+  "make-pdf": {
+    metaTitle: "Make a PDF From Photos — Free, Works Offline",
+    metaDescription:
+      "Turn photos into a PDF in seconds — add photos, drag to reorder, rotate and crop each one. Free, unlimited, and works completely offline on your phone.",
+    h1: "Make a PDF From Photos — Free, Works Offline",
+    intro: [
+      "This tool turns a set of photos — screenshots, scanned pages, receipts, whiteboard shots — into a single, properly formatted PDF. Add photos from your camera roll or take them directly with your phone's camera, put them in the right order, and each one becomes a page in the finished document.",
+      "It's built to feel like a phone-first camera-scanner app rather than a generic file converter: tap to add photos, drag thumbnails to reorder them, and adjust each photo individually before it becomes a page — rotate it 90 degrees if it came out sideways, or crop it to cut out a background, a desk edge, or someone's thumb in frame. Those per-photo adjustments happen before the PDF is built, so the final pages look intentional rather than like raw, unedited phone photos.",
+      "Under the hood it's the same reliable image-to-PDF engine used elsewhere on this site, running entirely in your browser — photos are never uploaded anywhere, which matters since photos of documents (IDs, forms, handwritten notes) are often exactly the kind of thing worth keeping off a server. It works completely offline once the page has loaded, which is genuinely useful when you're scanning paperwork somewhere without reliable signal.",
+      "You control the page size (A4, Letter, or match each photo's own size), orientation, margins, and how a photo fits its page — shrink to fit with no cropping, fill the page and crop the edges, or stretch to fill exactly. For a quick one-photo PDF the defaults work fine; for scanning a multi-page document, adding and ordering several photos in one pass turns what used to be a multi-app workflow (camera app, then a separate PDF app) into a single, direct step.",
+    ],
+    howTo: [
+      "Tap \"Add Photos\" to choose existing photos, or use the camera button to take new ones.",
+      "Drag the thumbnails into the order you want them to appear as pages.",
+      "Rotate or crop any photo that needs adjusting, using the buttons on its thumbnail.",
+      "Choose a page size and fit mode, then tap \"Create PDF\" and download the finished document.",
+    ],
+    faqs: [
+      {
+        q: "Can I take a photo directly instead of picking one from my gallery?",
+        a: "Yes, there's a camera button that opens your phone's camera directly so you can capture a new photo on the spot.",
+      },
+      {
+        q: "Can I crop out part of a photo, like a background or a desk edge?",
+        a: "Yes, each photo has its own crop tool — drag the corners of the crop box to keep just the part you want before it becomes a page.",
+      },
+      {
+        q: "What if a photo came out sideways or upside down?",
+        a: "Tap the rotate button on that photo's thumbnail to rotate it in 90-degree steps before creating the PDF.",
+      },
+      {
+        q: "Are my photos uploaded anywhere?",
+        a: "No — everything runs in your browser, including rotation and cropping, so your photos never leave your device.",
+      },
+      {
+        q: "Is there a limit on how many photos I can combine?",
+        a: "No hard limit — combine as many photos as you need into one PDF, for free.",
+      },
+      {
+        q: "Does this work well for scanning documents, not just regular photos?",
+        a: "Yes — many people use it exactly that way: photograph each page of a paper document, put them in order, and get back a proper multi-page PDF.",
+      },
+    ],
+    related: ["jpg-to-pdf", "pdf-to-jpg", "compress-pdf", "merge-pdf"],
+  },
+
   "pdf-to-jpg": {
     metaTitle: "Convert PDF to JPG Free — No Upload, No Signup",
     metaDescription:
@@ -1013,7 +1059,96 @@ export const toolSeoContent: Record<string, ToolSeoContent> = {
         a: "It's free to use. There are modest rate limits in place to keep the tool available for everyone, since each summary has a real API cost behind it.",
       },
     ],
-    related: ["ocr-pdf", "compress-pdf", "add-text-image", "annotate-pdf"],
+    related: ["translate-pdf", "pdf-to-mcq", "ocr-pdf", "compress-pdf"],
+  },
+
+  "translate-pdf": {
+    metaTitle: "Translate a PDF With AI — Free, 13+ Languages",
+    metaDescription:
+      "Translate a PDF into Hindi, Spanish, Arabic, Chinese, and more with AI, for free. Get a .txt file or a full translated PDF. Extraction is local, text is sent to AI.",
+    h1: "Translate a PDF With AI — Free, 13+ Languages",
+    intro: [
+      "This tool translates a PDF's text into another language using Google's Gemini AI model — useful for reading a document written in a language you don't speak, or producing a translated version to share with someone who doesn't read the original. Pick a source language or let the tool auto-detect it, choose a target language from 13 widely-spoken options, and get back the full translated text.",
+      "Like Summarize, this is one of the two tools on this site that genuinely isn't fully private, and we say so upfront: your PDF's text is extracted locally in your browser, but that extracted text is then sent to Google's Gemini API to produce the translation, since no on-device model today handles this range of languages well. Only the extracted text is sent — never the original file — and there's a clear notice before you run it.",
+      "You can download the translation as a plain text file, or check the option to also generate a simple PDF version of it. That PDF is rendered through the browser's own text layout engine rather than a fixed built-in font, specifically so that non-Latin scripts — Hindi, Arabic, Bengali, Russian, Urdu, Japanese, Mandarin — render correctly instead of coming out as missing characters, which is a real limitation of the basic fonts a lot of lightweight PDF tools rely on.",
+      "The same 50-page/100,000-character cap as Summarize applies here, for the same reason: translation quality and cost both hold up better on reasonably-sized documents than on very long ones. For a scanned PDF with no real text layer, run it through the OCR tool first — there's nothing to translate without extractable text underneath.",
+    ],
+    howTo: [
+      "Upload your PDF (up to 50 pages or 100,000 characters).",
+      "Choose the source language (or leave it on auto-detect) and the language to translate into.",
+      "Optionally check \"Also generate a PDF of the translation.\"",
+      "Tap \"Translate with AI\" and download the result.",
+    ],
+    faqs: [
+      {
+        q: "Which languages are supported?",
+        a: "English, Hindi, Spanish, Arabic, French, Mandarin Chinese, Bengali, Portuguese, Russian, Urdu, Indonesian, German, and Japanese, as both source and target languages.",
+      },
+      {
+        q: "Do I need to specify the source language?",
+        a: "No, auto-detect is the default and works well for clearly-written text — but you can set it explicitly if you prefer.",
+      },
+      {
+        q: "Will non-Latin scripts like Hindi or Arabic display correctly in the PDF output?",
+        a: "Yes — the optional PDF is rendered through the browser's own font rendering rather than a limited built-in font, so scripts like Hindi, Arabic, Bengali, and Japanese display properly.",
+      },
+      {
+        q: "Is this tool as private as the rest of the site?",
+        a: "No, and we're upfront about it — text extraction is local, but the extracted text is sent to Google's Gemini API to produce the translation. The original file is never uploaded.",
+      },
+      {
+        q: "Is there a document length limit?",
+        a: "Yes, up to 50 pages or 100,000 characters, the same cap used by the Summarize tool.",
+      },
+    ],
+    related: ["summarize-pdf", "pdf-to-mcq", "ocr-pdf", "compress-pdf"],
+  },
+
+  "pdf-to-mcq": {
+    metaTitle: "Generate MCQs From a PDF — Free AI Quiz Maker",
+    metaDescription:
+      "Turn any PDF into multiple-choice quiz questions with AI, for free. Pick question count and difficulty, with an answer key. Great for studying and revision.",
+    h1: "Generate MCQs From a PDF — Free AI Quiz Maker",
+    intro: [
+      "This tool reads a PDF and generates multiple-choice questions from it using Google's Gemini AI model — built for students turning lecture notes, a textbook chapter, or a study guide into practice questions without writing them by hand. Choose how many questions you want, how difficult they should be, and whether to include an answer key.",
+      "Like Summarize and Translate, this tool isn't fully private and says so clearly: your PDF's text is extracted locally in your browser, and that extracted text is sent to Google's Gemini API to generate questions, since this depth of reading comprehension isn't something an on-device model handles well yet. Only the extracted text is sent, never the file itself.",
+      "Difficulty genuinely changes what kind of question you get, not just the wording: easy questions test direct recall of facts stated plainly in the text, medium questions require connecting two or more points together, and hard questions lean on inference and include closer, more plausible wrong answers — meaningfully harder to guess by elimination alone.",
+      "Questions appear on screen as a real quiz you can click through, with each answer hidden until you choose to reveal it — useful for self-testing right in the browser before you ever download anything. When you're ready, download the quiz as a plain text file or as a formatted PDF with the questions first and the answer key (if you asked for one) in a separate section at the end.",
+      "This is meant for genuine self-testing rather than passively re-reading notes, which research on studying consistently finds is a weaker way to retain material — actively recalling an answer, checking it, and noting what you got wrong sticks better than highlighting a page for the third time. It works equally well on a dense textbook chapter or a shorter set of lecture notes, and generating several quizzes from the same material with different difficulty settings is a reasonable way to build up a larger practice set over time.",
+    ],
+    howTo: [
+      "Upload your PDF (up to 50 pages or 100,000 characters).",
+      "Set the number of questions, difficulty, and whether to include an answer key.",
+      "Tap \"Generate MCQs\" and review the quiz on screen, revealing answers as you go.",
+      "Download the quiz as a .txt file or a formatted PDF.",
+    ],
+    faqs: [
+      {
+        q: "Can I control how many questions are generated?",
+        a: "Yes, choose any number from 1 to 20 questions.",
+      },
+      {
+        q: "What's the difference between easy, medium, and hard?",
+        a: "Easy tests direct recall of stated facts, medium requires connecting multiple points in the text, and hard leans on inference with closer, more plausible wrong answers.",
+      },
+      {
+        q: "Can I see the questions before downloading anything?",
+        a: "Yes, the generated quiz displays on screen first, with each answer hidden until you tap to reveal it, before you download anything.",
+      },
+      {
+        q: "Does the answer key come with the questions, or separately?",
+        a: "In the downloaded files, the answer key is a separate section at the end, after all the questions — not mixed in alongside each one.",
+      },
+      {
+        q: "Is my document uploaded to a server?",
+        a: "The original PDF is never uploaded — text is extracted locally in your browser, and only that extracted text is sent to Google's Gemini API to generate the questions.",
+      },
+      {
+        q: "Is there a document length limit?",
+        a: "Yes, up to 50 pages or 100,000 characters, the same cap used by the other AI tools on this site.",
+      },
+    ],
+    related: ["summarize-pdf", "translate-pdf", "ocr-pdf", "compress-pdf"],
   },
 };
 

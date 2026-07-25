@@ -76,7 +76,12 @@ export function SelectPageCell({ pageNumber, dataUrl, onVisible, selected, varia
   return (
     <div
       data-page-number={pageNumber}
-      className="flex min-h-[44px] w-full touch-none flex-col items-center gap-1 select-none"
+      // touch-action: pan-y (not "none") — a touch here must still be able to
+      // scroll the page vertically. The pointer handlers in PagePicker already
+      // tell a quick swipe apart from a deliberate long-press-then-drag paint
+      // gesture; `touch-none` was overriding that at the browser level and
+      // blocking scroll unconditionally before the JS ever got a say.
+      className="flex min-h-[44px] w-full touch-pan-y flex-col items-center gap-1 select-none"
     >
       <ThumbFrame
         pageNumber={pageNumber}
@@ -129,8 +134,8 @@ export function SplitPointPageCell({
   isLastPage,
 }: GapCellProps) {
   return (
-    <div className="flex w-full items-stretch gap-0.5">
-      <div data-page-number={pageNumber} className="flex min-h-[44px] flex-1 flex-col items-center gap-1">
+    <div className="flex shrink-0 snap-start items-stretch gap-0.5">
+      <div data-page-number={pageNumber} className="flex w-20 shrink-0 flex-col items-center gap-1 sm:w-24">
         <ThumbFrame pageNumber={pageNumber} dataUrl={dataUrl} onVisible={onVisible} className={groupColorClass} />
       </div>
       {!isLastPage && (
@@ -140,7 +145,7 @@ export function SplitPointPageCell({
           aria-label={gapAfterActive ? `Remove split after page ${pageNumber}` : `Split after page ${pageNumber}`}
           aria-pressed={gapAfterActive}
           className={cn(
-            "flex min-h-[44px] w-6 shrink-0 items-center justify-center rounded-md border-2 border-dashed transition-colors",
+            "flex min-h-[44px] w-7 shrink-0 items-center justify-center rounded-md border-2 border-dashed transition-colors",
             gapAfterActive
               ? "border-primary bg-primary/15 text-primary"
               : "border-transparent text-muted-foreground/50 hover:border-border hover:text-muted-foreground"
