@@ -7,6 +7,7 @@ import { UploadZone } from "@/components/tool-shell/upload-zone";
 import { ActionBar, type ActionState } from "@/components/tool-shell/action-bar";
 import { ProgressRing } from "@/components/tool-shell/progress-ring";
 import { ServerSideNotice } from "@/components/tool-shell/client-badge";
+import { OcrFallbackPrompt } from "@/components/tools/ocr-fallback-prompt";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -18,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { extractPdfText } from "@/lib/pdf/extract-text";
+import { useTextExtraction } from "@/lib/ai/use-text-extraction";
 import { buildQuestionsHtml, buildAnswerKeyHtml, buildQuizText } from "@/lib/ai/quiz-pdf";
 import type { McqQuestion, McqDifficulty } from "@/lib/ai/provider";
 import { downloadBlob, cn } from "@/lib/utils";
@@ -35,6 +36,7 @@ export function McqPdfTool({ tool }: { tool: ToolDefinition }) {
   const [includeAnswerKey, setIncludeAnswerKey] = React.useState(true);
   const [revealed, setRevealed] = React.useState<Set<number>>(new Set());
 
+  const extraction = useTextExtraction(LIMITS);
   const [state, setState] = React.useState<ActionState>("idle");
   const [progress, setProgress] = React.useState(0);
   const [questions, setQuestions] = React.useState<McqQuestion[] | null>(null);
@@ -45,7 +47,9 @@ export function McqPdfTool({ tool }: { tool: ToolDefinition }) {
     setFile(f);
     setQuestions(null);
     setRevealed(new Set());
+    setErrorMessage(null);
     setState("idle");
+    extraction.reset();
   }
 
   function toggleReveal(index: number) {
@@ -57,22 +61,16 @@ export function McqPdfTool({ tool }: { tool: ToolDefinition }) {
     });
   }
 
-  async function handleGenerate() {
-    if (!file) return;
+  async function runGenerate(text: string) {
     setState("processing");
-    setProgress(0.1);
+    setProgress(0.9);
     setErrorMessage(null);
     try {
-      const { text } = await extractPdfText(file, LIMITS, (f) => setProgress(f * 0.4));
-      if (!text.trim()) {
-        throw new Error("Couldn't find any text in this PDF — it may be a scanned image without OCR.");
-      }
       const res = await fetch("/api/ai/mcq", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text, count, difficulty }),
       });
-      setProgress(0.9);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Question generation failed");
       setQuestions(data.questions);
@@ -88,6 +86,25 @@ export function McqPdfTool({ tool }: { tool: ToolDefinition }) {
       });
     }
   }
+
+  async function handleGenerate() {
+    if (!file) return;
+    setErrorMessage(null);
+    const text = await extraction.start(file);
+    if (text) await runGenerate(text);
+  }
+
+  async function handleRunOcr() {
+    const text = await extraction.runOcr();
+    if (text) await runGenerate(text);
+  }
+
+  const isReading = extraction.phase === "extracting" || extraction.phase === "ocr-running";
+  const isBusy = isReading || state === "processing";
+  const busyLabel = isReading ? extraction.statusText : "Generating questions…";
+  const busyProgress = isReading ? extraction.progress * 100 : progress * 100;
+  const displayError =
+    state === "error" ? errorMessage : extraction.phase === "error" ? extraction.error : null;
 
   function downloadTxt() {
     if (!questions) return;
@@ -142,11 +159,19 @@ export function McqPdfTool({ tool }: { tool: ToolDefinition }) {
 
       {!file ? (
         <UploadZone accept={tool.accept} multiple={false} maxFiles={1} onFiles={handleFiles} acceptHint="One file at a time" />
-      ) : state === "processing" ? (
+      ) : isBusy ? (
         <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-border bg-muted/30 py-12">
-          <ProgressRing progress={progress * 100} />
-          <p className="text-sm text-muted-foreground">Generating questions…</p>
+          <ProgressRing progress={busyProgress} />
+          <p className="text-sm text-muted-foreground">{busyLabel}</p>
         </div>
+      ) : extraction.phase === "needs-ocr" ? (
+        <OcrFallbackPrompt
+          onRunOcr={handleRunOcr}
+          onCancel={() => {
+            setFile(null);
+            extraction.reset();
+          }}
+        />
       ) : questions ? (
         <div className="space-y-4">
           <div className="space-y-3">
@@ -237,11 +262,11 @@ export function McqPdfTool({ tool }: { tool: ToolDefinition }) {
         </div>
       )}
 
-      {errorMessage && state === "error" && (
-        <p className="mt-3 rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{errorMessage}</p>
+      {displayError && (
+        <p className="mt-3 rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{displayError}</p>
       )}
 
-      {state !== "done" && file && (
+      {state !== "done" && file && extraction.phase !== "needs-ocr" && !isBusy && (
         <ActionBar state={state === "idle" ? "ready" : state} label="Generate MCQs" progress={progress * 100} onAction={handleGenerate} />
       )}
     </div>

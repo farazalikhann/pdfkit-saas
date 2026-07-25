@@ -25,7 +25,16 @@ export function BottomTabBar() {
     label: string;
     icon: typeof Home;
   }) {
-    const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href);
+    // "/tools/make-pdf" must NOT also light up the "Tools" tab — it has its
+    // own dedicated FAB now, so without this exclusion both the FAB and the
+    // adjacent Tools tab render active/red at once, reading as a single
+    // smeared red blob instead of two distinct nav items.
+    const isActive =
+      href === "/"
+        ? pathname === "/"
+        : href === "/tools"
+          ? pathname.startsWith(href) && !pathname.startsWith("/tools/make-pdf")
+          : pathname.startsWith(href);
     return (
       <li key={href} className="flex-1">
         <Link
@@ -60,13 +69,13 @@ export function BottomTabBar() {
             href="/tools/make-pdf"
             className="flex min-h-[56px] flex-col items-center justify-center gap-0.5 py-1.5 text-[11px] font-medium text-muted-foreground active:text-foreground"
             aria-current={isMakePdfActive ? "page" : undefined}
+            // A no-op touch handler — iOS Safari only reliably clears :active
+            // styles on elements it considers "interactive enough" to track
+            // touch state for; without this, active:scale-95 below can stay
+            // stuck at its pressed scale after the tap ends on some devices.
+            onTouchStart={() => {}}
           >
-            <span
-              className={cn(
-                "-mt-6 flex h-12 w-12 items-center justify-center rounded-full shadow-lg shadow-primary/30 ring-4 ring-background transition-transform active:scale-95",
-                isMakePdfActive ? "bg-primary" : "bg-primary"
-              )}
-            >
+            <span className="-mt-6 flex h-12 w-12 items-center justify-center rounded-full bg-primary shadow-lg shadow-primary/30 ring-4 ring-background transition-transform active:scale-95">
               <Camera className="h-5 w-5 text-primary-foreground" strokeWidth={2.5} />
             </span>
             <span className={cn(isMakePdfActive && "text-primary")}>Make PDF</span>

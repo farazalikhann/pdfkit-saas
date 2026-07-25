@@ -7,6 +7,7 @@ import { UploadZone } from "@/components/tool-shell/upload-zone";
 import { ActionBar, type ActionState } from "@/components/tool-shell/action-bar";
 import { ProgressRing } from "@/components/tool-shell/progress-ring";
 import { ServerSideNotice } from "@/components/tool-shell/client-badge";
+import { OcrFallbackPrompt } from "@/components/tools/ocr-fallback-prompt";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { extractPdfText } from "@/lib/pdf/extract-text";
+import { useTextExtraction } from "@/lib/ai/use-text-extraction";
 import { downloadBlob } from "@/lib/utils";
 import type { ToolDefinition } from "@/lib/tools";
 
@@ -47,6 +48,7 @@ export function TranslatePdfTool({ tool }: { tool: ToolDefinition }) {
   const [sourceLanguage, setSourceLanguage] = React.useState("auto");
   const [targetLanguage, setTargetLanguage] = React.useState<string>("English");
 
+  const extraction = useTextExtraction(LIMITS);
   const [state, setState] = React.useState<ActionState>("idle");
   const [progress, setProgress] = React.useState(0);
   const [translation, setTranslation] = React.useState<string | null>(null);
@@ -56,19 +58,16 @@ export function TranslatePdfTool({ tool }: { tool: ToolDefinition }) {
     const f = files[0] ?? null;
     setFile(f);
     setTranslation(null);
+    setErrorMessage(null);
     setState("idle");
+    extraction.reset();
   }
 
-  async function handleTranslate() {
-    if (!file) return;
+  async function runTranslate(text: string) {
     setState("processing");
-    setProgress(0.1);
+    setProgress(0.9);
     setErrorMessage(null);
     try {
-      const { text } = await extractPdfText(file, LIMITS, (f) => setProgress(f * 0.5));
-      if (!text.trim()) {
-        throw new Error("Couldn't find any text in this PDF — it may be a scanned image without OCR.");
-      }
       const res = await fetch("/api/ai/translate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -78,7 +77,6 @@ export function TranslatePdfTool({ tool }: { tool: ToolDefinition }) {
           sourceLanguage: sourceLanguage === "auto" ? undefined : sourceLanguage,
         }),
       });
-      setProgress(0.9);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Translation failed");
       setTranslation(data.translation);
@@ -93,6 +91,25 @@ export function TranslatePdfTool({ tool }: { tool: ToolDefinition }) {
       });
     }
   }
+
+  async function handleTranslate() {
+    if (!file) return;
+    setErrorMessage(null);
+    const text = await extraction.start(file);
+    if (text) await runTranslate(text);
+  }
+
+  async function handleRunOcr() {
+    const text = await extraction.runOcr();
+    if (text) await runTranslate(text);
+  }
+
+  const isReading = extraction.phase === "extracting" || extraction.phase === "ocr-running";
+  const isBusy = isReading || state === "processing";
+  const busyLabel = isReading ? extraction.statusText : "Translating…";
+  const busyProgress = isReading ? extraction.progress * 100 : progress * 100;
+  const displayError =
+    state === "error" ? errorMessage : extraction.phase === "error" ? extraction.error : null;
 
   function downloadTxt() {
     if (!translation) return;
@@ -141,11 +158,19 @@ export function TranslatePdfTool({ tool }: { tool: ToolDefinition }) {
 
       {!file ? (
         <UploadZone accept={tool.accept} multiple={false} maxFiles={1} onFiles={handleFiles} acceptHint="One file at a time" />
-      ) : state === "processing" ? (
+      ) : isBusy ? (
         <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-border bg-muted/30 py-12">
-          <ProgressRing progress={progress * 100} />
-          <p className="text-sm text-muted-foreground">Translating…</p>
+          <ProgressRing progress={busyProgress} />
+          <p className="text-sm text-muted-foreground">{busyLabel}</p>
         </div>
+      ) : extraction.phase === "needs-ocr" ? (
+        <OcrFallbackPrompt
+          onRunOcr={handleRunOcr}
+          onCancel={() => {
+            setFile(null);
+            extraction.reset();
+          }}
+        />
       ) : translation ? (
         <div className="space-y-4">
           <div className="whitespace-pre-wrap rounded-xl border border-border bg-card p-4 text-sm leading-relaxed">
@@ -207,11 +232,11 @@ export function TranslatePdfTool({ tool }: { tool: ToolDefinition }) {
         </div>
       )}
 
-      {errorMessage && state === "error" && (
-        <p className="mt-3 rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{errorMessage}</p>
+      {displayError && (
+        <p className="mt-3 rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{displayError}</p>
       )}
 
-      {state !== "done" && file && (
+      {state !== "done" && file && extraction.phase !== "needs-ocr" && !isBusy && (
         <ActionBar
           state={state === "idle" ? "ready" : state}
           label="Translate with AI"
