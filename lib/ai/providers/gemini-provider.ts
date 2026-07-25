@@ -98,7 +98,11 @@ async function translateText({
     "Preserve the original paragraph structure and meaning as closely as possible. " +
     "Respond with only the translated text — no preamble, no notes, no explanation.\n\n---\n\n" +
     text;
-  return callGemini(prompt, { maxOutputTokens });
+  const raw = await callGemini(prompt, { maxOutputTokens });
+  // Translate doesn't ask for structured output, but models occasionally wrap
+  // even plain-text replies in a ``` fence anyway — strip it defensively so a
+  // stray fence marker never ends up in the on-screen text or exported PDF.
+  return stripCodeFence(raw);
 }
 
 const DIFFICULTY_INSTRUCTIONS: Record<GenerateMcqsInput["difficulty"], string> = {
@@ -107,39 +111,49 @@ const DIFFICULTY_INSTRUCTIONS: Record<GenerateMcqsInput["difficulty"], string> =
   hard: "Questions should require inference or synthesis across the text, and include plausible, non-obvious distractor options.",
 };
 
-function extractJson(raw: string): string {
+/** Strips a wrapping ```json ... ``` or ``` ... ``` fence, if present — models
+ * sometimes add one even in JSON mode, or even around plain prose. No-op
+ * (aside from trimming) when there isn't one. */
+function stripCodeFence(raw: string): string {
   const fenced = raw.match(/```(?:json)?\s*([\s\S]*?)```/i);
   return (fenced ? fenced[1] : raw).trim();
 }
 
-async function generateMcqs({
-  text,
-  count,
-  difficulty,
-  maxOutputTokens = 4096,
-}: GenerateMcqsInput): Promise<McqQuestion[]> {
-  const prompt =
-    `Generate exactly ${count} multiple-choice questions from the following document text, ` +
-    `for a student studying this material. Difficulty: ${difficulty}. ${DIFFICULTY_INSTRUCTIONS[difficulty]} ` +
-    "Each question must have exactly 4 options with exactly one correct answer.\n\n" +
-    'Respond with ONLY a JSON array, no markdown fences, no commentary, in this exact shape: ' +
-    '[{"question": "...", "options": ["...", "...", "...", "..."], "correctIndex": 0}]\n\n' +
-    "correctIndex is a 0-based index into options.\n\n---\n\n" +
-    text;
+/**
+ * Best-effort recovery for a JSON value that should be in `raw` but may be
+ * preceded/followed by prose, wrapped in a markdown fence, or have a trailing
+ * comma — things models occasionally do even when told not to and even in
+ * JSON response-mime mode. Throws (a plain SyntaxError from JSON.parse) if
+ * nothing usable can be recovered.
+ */
+function parseJsonLoose(raw: string): unknown {
+  let text = stripCodeFence(raw);
 
-  const raw = await callGemini(prompt, { maxOutputTokens, responseMimeType: "application/json" });
-
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(extractJson(raw));
-  } catch {
-    throw new Error("Gemini returned a response that couldn't be parsed as quiz questions. Please try again.");
-  }
-  if (!Array.isArray(parsed)) {
-    throw new Error("Gemini returned a response that couldn't be parsed as quiz questions. Please try again.");
+  // Trim to the outermost [ ] or { } — drops any leading/trailing prose the
+  // fence strip above didn't catch.
+  const firstBracket = text.search(/[[{]/);
+  const lastBracket = Math.max(text.lastIndexOf("]"), text.lastIndexOf("}"));
+  if (firstBracket !== -1 && lastBracket > firstBracket) {
+    text = text.slice(firstBracket, lastBracket + 1);
   }
 
-  const questions: McqQuestion[] = parsed
+  // Trailing commas before a closing bracket: `..., ]` / `..., }`.
+  text = text.replace(/,(\s*[\]}])/g, "$1");
+
+  return JSON.parse(text);
+}
+
+function toMcqQuestions(parsed: unknown, count: number): McqQuestion[] {
+  // Gemini occasionally wraps the array in an object (e.g. {"questions": [...]})
+  // even when told to respond with a bare array — unwrap it if so.
+  const candidate = Array.isArray(parsed)
+    ? parsed
+    : parsed && typeof parsed === "object" && Array.isArray((parsed as { questions?: unknown }).questions)
+      ? (parsed as { questions: unknown[] }).questions
+      : null;
+  if (!candidate) return [];
+
+  return candidate
     .filter(
       (q): q is McqQuestion =>
         typeof q === "object" &&
@@ -152,11 +166,66 @@ async function generateMcqs({
         (q as McqQuestion).correctIndex <= 3
     )
     .slice(0, count);
+}
 
-  if (questions.length === 0) {
-    throw new Error("Gemini didn't return any usable questions for this document. Please try again.");
+async function generateMcqs({
+  text,
+  count,
+  difficulty,
+  // 20 questions (the tool's max) at "hard" difficulty — which is explicitly
+  // instructed to write longer, non-obvious distractors — can genuinely need
+  // more than the previous 4096-token ceiling; that was silently truncating
+  // the JSON mid-array, which is indistinguishable from a parse failure.
+  maxOutputTokens = 8192,
+}: GenerateMcqsInput): Promise<McqQuestion[]> {
+  const prompt =
+    `Generate exactly ${count} multiple-choice questions from the following document text, ` +
+    `for a student studying this material. Difficulty: ${difficulty}. ${DIFFICULTY_INSTRUCTIONS[difficulty]} ` +
+    "Each question must have exactly 4 options with exactly one correct answer. Keep each question " +
+    "and option concise — one sentence each — so the full response fits comfortably within the output limit.\n\n" +
+    "Respond with ONLY valid JSON: a single array, no markdown code fences, no commentary before or " +
+    'after it, in exactly this shape: [{"question": "...", "options": ["...", "...", "...", "..."], "correctIndex": 0}]\n\n' +
+    "correctIndex is a 0-based index into options.\n\n---\n\n" +
+    text;
+
+  let lastRaw = "";
+  let lastParseError: string | null = null;
+
+  // One retry: JSON parse failures here are almost always a transient model
+  // quirk (a stray fence, truncation, wrapping object) rather than a
+  // deterministic one, so asking again before giving up on the user usually
+  // just works.
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    const raw = await callGemini(prompt, { maxOutputTokens, responseMimeType: "application/json" });
+    lastRaw = raw;
+
+    let parsed: unknown;
+    try {
+      parsed = parseJsonLoose(raw);
+    } catch (err) {
+      lastParseError = err instanceof Error ? err.message : String(err);
+      console.error(
+        `[gemini-provider] MCQ attempt ${attempt}: JSON.parse failed (${lastParseError}). Raw response:`,
+        raw
+      );
+      continue;
+    }
+
+    const questions = toMcqQuestions(parsed, count);
+    if (questions.length > 0) return questions;
+
+    console.error(
+      `[gemini-provider] MCQ attempt ${attempt}: parsed but no usable questions. Raw response:`,
+      raw
+    );
   }
-  return questions;
+
+  console.error("[gemini-provider] MCQ generation exhausted retries. Last raw response:", lastRaw);
+  throw new Error(
+    lastParseError
+      ? "Gemini returned a response that couldn't be parsed as quiz questions. Please try again."
+      : "Gemini didn't return any usable questions for this document. Please try again."
+  );
 }
 
 export const geminiProvider: AiProvider = { summarizeText, translateText, generateMcqs };
