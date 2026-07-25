@@ -37,6 +37,11 @@ AI_PROVIDER=gemini
 # Optional: only needed for a custom domain. Without it, the site auto-detects
 # its own URL on Vercel, or falls back to localhost in dev — see lib/constants.ts.
 NEXT_PUBLIC_SITE_URL=
+
+# Optional: enables Google Analytics 4 (via @next/third-parties/google) in
+# app/layout.tsx. Only set this in Vercel's Production environment — leaving
+# it unset in Preview/local dev keeps that traffic out of the real GA property.
+NEXT_PUBLIC_GA_ID=
 ```
 
 Without `GOOGLE_AI_API_KEY`, Summarize is hidden from the entire site (nav, search, homepage, sitemap, and the route itself 404s) rather than showing a broken page.

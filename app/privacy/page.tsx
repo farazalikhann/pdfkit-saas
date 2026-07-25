@@ -67,10 +67,22 @@ export default function PrivacyPage() {
       </section>
 
       <section className="space-y-2">
-        <h2 className="text-base font-semibold">No tracking, no ads</h2>
+        <h2 className="text-base font-semibold">Analytics</h2>
         <p className="text-sm text-muted-foreground">
-          There&apos;s no usage-based paywall, no billing, and no analytics tied to a
-          personal account on this site.
+          We use Vercel Analytics and Google Analytics to understand anonymous,
+          aggregate usage — which pages get visited and which tool was used (e.g.
+          &ldquo;Merge PDF was used&rdquo;), never a file name, file content, or
+          anything read from inside a document. This data isn&apos;t tied to an
+          account — there isn&apos;t one — and never includes anything about the
+          files you process.
+        </p>
+      </section>
+
+      <section className="space-y-2">
+        <h2 className="text-base font-semibold">No accounts, no ads</h2>
+        <p className="text-sm text-muted-foreground">
+          There&apos;s no usage-based paywall, no billing, no accounts, and no ads
+          on this site.
         </p>
       </section>
     </div>

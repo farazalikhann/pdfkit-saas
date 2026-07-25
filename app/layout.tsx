@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { Analytics } from "@vercel/analytics/react";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { AppShell } from "@/components/layout/app-shell";
@@ -63,6 +64,11 @@ export const viewport: Viewport = {
   ],
 };
 
+// Unset on purpose in local/preview environments — only Vercel's Production
+// environment has this configured, so dev traffic and preview deploys never
+// pollute the real GA property's stats.
+const gaId = process.env.NEXT_PUBLIC_GA_ID;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -79,6 +85,7 @@ export default function RootLayout({
           <ServiceWorkerRegister />
         </ThemeProvider>
         <Analytics />
+        {gaId && <GoogleAnalytics gaId={gaId} />}
       </body>
     </html>
   );
