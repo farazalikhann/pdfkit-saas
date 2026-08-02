@@ -80,26 +80,50 @@ export function ResultPanel({ tool, results }: ResultPanelProps) {
       </div>
 
       <div className="space-y-2">
-        {results.map((r) => (
-          <Button
-            key={r.name}
-            size="lg"
-            className="min-h-[52px] w-full gap-2 text-base font-semibold"
-            onClick={() => handleDownload(r)}
-          >
-            <Download className="h-5 w-5 shrink-0" />
-            {results.length > 1 ? (
-              <span className="flex min-w-0 items-baseline gap-1.5">
-                <span className="shrink-0">Download</span>
-                <span className="min-w-0 truncate" title={r.name}>
-                  {truncateMiddle(r.name)}
-                </span>
-              </span>
-            ) : (
-              "Download"
-            )}
-          </Button>
-        ))}
+        {results.map((r) => {
+          const rangeMatch = r.name.match(/-((?:page|pages)-\d+(?:-\d+)?)\.[a-z0-9]+$/i);
+          let badge: string | null = null;
+          if (rangeMatch) {
+            const isPlural = rangeMatch[1].startsWith("pages-");
+            const nums = rangeMatch[1].replace(/^pages?-/, "").replace("-", "–");
+            badge = `${isPlural ? "Pages" : "Page"} ${nums}`;
+          } else if (r.name.toLowerCase().endsWith(".zip")) {
+            badge = "All files (ZIP)";
+          }
+
+          return (
+            <Button
+              key={r.name}
+              size="lg"
+              className="min-h-[52px] w-full gap-2 text-base font-semibold"
+              onClick={() => handleDownload(r)}
+            >
+              <Download className="h-5 w-5 shrink-0" />
+              {results.length > 1 ? (
+                badge ? (
+                  <span className="flex min-w-0 flex-col items-start leading-tight">
+                    <span className="truncate">{badge}</span>
+                    <span
+                      className="max-w-full truncate text-xs font-normal opacity-80"
+                      title={r.name}
+                    >
+                      {truncateMiddle(r.name, 26)}
+                    </span>
+                  </span>
+                ) : (
+                  <span className="flex min-w-0 items-baseline gap-1.5">
+                    <span className="shrink-0">Download</span>
+                    <span className="min-w-0 truncate" title={r.name}>
+                      {truncateMiddle(r.name)}
+                    </span>
+                  </span>
+                )
+              ) : (
+                "Download"
+              )}
+            </Button>
+          );
+        })}
       </div>
 
       <div className="grid grid-cols-2 gap-2">
