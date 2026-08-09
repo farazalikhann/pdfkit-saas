@@ -40,6 +40,50 @@ export function howToJsonLd(tool: ToolDefinition, steps: string[]) {
   };
 }
 
+/**
+ * Same HowTo shape as howToJsonLd, for pages not backed by a ToolDefinition —
+ * e.g. keyword landing pages that reuse an existing tool's UI under a different H1.
+ */
+export function howToJsonLdNamed(name: string, steps: string[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name,
+    step: steps.map((text, i) => ({
+      "@type": "HowToStep",
+      position: i + 1,
+      text,
+    })),
+  };
+}
+
+/**
+ * Same SoftwareApplication shape as toolJsonLd, for pages not backed by a
+ * ToolDefinition — e.g. keyword landing pages that reuse an existing tool's UI
+ * under a different name/URL/description.
+ */
+export function softwareApplicationJsonLd(opts: {
+  name: string;
+  url: string;
+  description: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: opts.name,
+    applicationCategory: "Utility",
+    operatingSystem: "Any",
+    description: opts.description,
+    url: opts.url,
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+      description: "Free to use",
+    },
+  };
+}
+
 /** FAQPage schema — must exactly mirror the visible FAQ content rendered on the page. */
 export function faqJsonLd(faqs: ToolFaq[]) {
   return {

@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { Fragment } from "react";
 import { SearchBar } from "@/components/home/search-bar";
 import { CategoryChips } from "@/components/home/category-chips";
 import { CategorySection } from "@/components/home/category-section";
+import { CompressionGuides } from "@/components/home/compression-guides";
 import { categories } from "@/lib/categories";
 import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/constants";
 import { websiteJsonLd, organizationJsonLd } from "@/lib/seo/json-ld";
@@ -38,7 +40,10 @@ export default function Home() {
 
       <div className="space-y-8">
         {categories.map((category) => (
-          <CategorySection key={category.slug} category={category} />
+          <Fragment key={category.slug}>
+            <CategorySection category={category} />
+            {category.slug === "optimize" && <CompressionGuides />}
+          </Fragment>
         ))}
       </div>
     </div>

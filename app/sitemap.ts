@@ -11,6 +11,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: path === "" ? 1 : 0.7,
   }));
 
+  // Keyword landing pages for the compression cluster — reuse the compress-pdf
+  // tool's UI under different H1/copy targeting "compress pdf to Nkb" searches.
+  const compressionLandingRoutes = [
+    "/compress-pdf",
+    "/compress-pdf-to-100kb",
+    "/compress-pdf-to-200kb",
+  ].map((path) => ({
+    url: `${SITE_URL}${path}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.8,
+  }));
+
   const categoryRoutes = categories.map((c) => ({
     url: `${SITE_URL}/category/${c.slug}`,
     lastModified: new Date(),
@@ -25,5 +38,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.9,
   }));
 
-  return [...staticRoutes, ...categoryRoutes, ...toolRoutes];
+  return [...staticRoutes, ...compressionLandingRoutes, ...categoryRoutes, ...toolRoutes];
 }
