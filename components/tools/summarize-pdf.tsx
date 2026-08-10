@@ -146,7 +146,7 @@ export function SummarizePdfTool({ tool }: { tool: ToolDefinition }) {
         <ServerSideNotice>
           This tool sends your document&apos;s text to Google&apos;s Gemini API for
           processing. See our{" "}
-          <Link href="/privacy" className="underline underline-offset-2">
+          <Link href="/privacy-policy" className="underline underline-offset-2">
             privacy policy
           </Link>
           .

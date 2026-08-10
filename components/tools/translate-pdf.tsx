@@ -123,7 +123,7 @@ export function TranslatePdfTool({ tool }: { tool: ToolDefinition }) {
     if (!translation) return;
     // Rendered via the same HTML->PDF pipeline used elsewhere on the site
     // (html2canvas + jsPDF) rather than pdf-lib's built-in fonts, which only
-    // cover Latin/WinAnsi text — that would silently mangle Hindi, Arabic,
+    // cover Latin/WinAnsi text, that would silently mangle Hindi, Arabic,
     // Bengali, Russian, Urdu, or Japanese output. Rasterizing through the
     // browser's own font stack renders whatever script is actually there.
     const { renderHtmlToPdf } = await import("@/lib/pdf/html-to-pdf-render");
@@ -149,7 +149,7 @@ export function TranslatePdfTool({ tool }: { tool: ToolDefinition }) {
         <ServerSideNotice>
           This tool sends your document&apos;s text to Google&apos;s Gemini API for
           processing. See our{" "}
-          <Link href="/privacy" className="underline underline-offset-2">
+          <Link href="/privacy-policy" className="underline underline-offset-2">
             privacy policy
           </Link>
           .

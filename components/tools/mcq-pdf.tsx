@@ -128,7 +128,7 @@ export function McqPdfTool({ tool }: { tool: ToolDefinition }) {
     const questionsBytes = await renderHtmlToPdf(buildQuestionsHtml(questions), pdfOpts);
 
     // Rendered as a fully separate PDF and merged in, rather than appended to
-    // the same HTML flow — html2canvas/jsPDF's pagination slices by pixel
+    // the same HTML flow: html2canvas/jsPDF's pagination slices by pixel
     // height, not CSS page-break rules, so this is the only way to guarantee
     // the answer key genuinely starts on its own page regardless of how many
     // pages the questions ended up taking.
@@ -150,7 +150,7 @@ export function McqPdfTool({ tool }: { tool: ToolDefinition }) {
         <ServerSideNotice>
           This tool sends your document&apos;s text to Google&apos;s Gemini API for
           processing. See our{" "}
-          <Link href="/privacy" className="underline underline-offset-2">
+          <Link href="/privacy-policy" className="underline underline-offset-2">
             privacy policy
           </Link>
           .

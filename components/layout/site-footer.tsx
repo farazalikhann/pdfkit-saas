@@ -2,6 +2,15 @@ import Link from "next/link";
 import { categories } from "@/lib/categories";
 import { SITE_NAME } from "@/lib/constants";
 
+const LEGAL_LINKS = [
+  { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
+  { href: "/privacy-policy", label: "Privacy Policy" },
+  { href: "/terms", label: "Terms" },
+  { href: "/disclaimer", label: "Disclaimer" },
+  { href: "/cookie-policy", label: "Cookie Policy" },
+] as const;
+
 export function SiteFooter() {
   return (
     // Extra bottom clearance on mobile: tool pages stack a fixed ActionBar
@@ -19,9 +28,13 @@ export function SiteFooter() {
               {c.name}
             </Link>
           ))}
-          <Link href="/privacy" className="hover:text-foreground">
-            Privacy
-          </Link>
+        </nav>
+        <nav aria-label="Legal" className="flex flex-wrap gap-x-6 gap-y-2 text-xs">
+          {LEGAL_LINKS.map((link) => (
+            <Link key={link.href} href={link.href} className="hover:text-foreground">
+              {link.label}
+            </Link>
+          ))}
         </nav>
         <p className="text-xs">
           © {new Date().getFullYear()} {SITE_NAME}. Free PDF tools that run in your browser.

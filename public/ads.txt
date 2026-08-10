@@ -1,0 +1,8 @@
+# ads.txt for pdfkit.work
+#
+# PLACEHOLDER: replace the line below with the real record from your
+# AdSense dashboard (Sites > pdfkit.work > View site details, or the
+# "ads.txt" snippet shown during AdSense account setup). It looks like:
+#   google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
+# Ads will not serve correctly until that real line replaces this one.
+google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0
