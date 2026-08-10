@@ -1,11 +1,14 @@
 import Link from "next/link";
-import { Minimize2 } from "lucide-react";
+import { Minimize2, Mail, type LucideIcon } from "lucide-react";
 
-const GUIDES = [
-  { href: "/compress-pdf", label: "Compress PDF", hint: "Presets or an exact size" },
-  { href: "/compress-pdf-to-100kb", label: "To 100KB", hint: "For strict portal caps" },
-  { href: "/compress-pdf-to-200kb", label: "To 200KB", hint: "For exam & university forms" },
-] as const;
+const GUIDES: { href: string; label: string; hint: string; icon: LucideIcon }[] = [
+  { href: "/compress-pdf", label: "Compress PDF", hint: "Presets or an exact size", icon: Minimize2 },
+  { href: "/compress-pdf-to-100kb", label: "To 100KB", hint: "For strict portal caps", icon: Minimize2 },
+  { href: "/compress-pdf-to-200kb", label: "To 200KB", hint: "For exam & university forms", icon: Minimize2 },
+  { href: "/compress-pdf-to-500kb", label: "To 500KB", hint: "For scanned reports & portfolios", icon: Minimize2 },
+  { href: "/compress-pdf-to-1mb", label: "To 1MB", hint: "For job & university uploads", icon: Minimize2 },
+  { href: "/compress-pdf-for-email", label: "For Email", hint: "Fit Gmail & Outlook limits", icon: Mail },
+];
 
 /** Discoverability links to the compression keyword-landing-page cluster, alongside the auto-generated tool grid. */
 export function CompressionGuides() {
@@ -29,7 +32,7 @@ export function CompressionGuides() {
                 color: "var(--cat-optimize)",
               }}
             >
-              <Minimize2 className="h-5 w-5" />
+              <guide.icon className="h-5 w-5" />
             </span>
             <div>
               <p className="text-sm font-semibold leading-tight">{guide.label}</p>

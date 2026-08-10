@@ -222,11 +222,15 @@ export default function CompressPdfTo100KbPage() {
           <p className="leading-relaxed">
             If your form actually allows a bit more room, it&apos;s worth checking the exact
             wording of the limit before you spend time on this. For the stricter cap, this page
-            covers it end to end; for anything closer to double that, see{" "}
+            covers it end to end; for anything looser, see{" "}
             <Link href="/compress-pdf-to-200kb" className="font-medium text-primary underline-offset-2 hover:underline">
               compress a PDF to 200KB
-            </Link>{" "}
-            instead, or head back to the{" "}
+            </Link>
+            ,{" "}
+            <Link href="/compress-pdf-to-500kb" className="font-medium text-primary underline-offset-2 hover:underline">
+              compress a PDF to 500KB
+            </Link>
+            , or head back to the{" "}
             <Link href="/compress-pdf" className="font-medium text-primary underline-offset-2 hover:underline">
               main compress PDF tool
             </Link>{" "}

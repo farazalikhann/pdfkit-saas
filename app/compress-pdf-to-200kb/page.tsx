@@ -225,12 +225,16 @@ export default function CompressPdfTo200KbPage() {
 
         <section className="space-y-2 rounded-xl border border-primary/30 bg-primary/5 p-4">
           <p className="leading-relaxed">
-            If your portal&apos;s limit turns out to be the stricter kind, this same tool handles
-            that too: see{" "}
+            If your portal&apos;s limit turns out to be stricter or looser than 200KB, this same
+            tool handles that too: see{" "}
             <Link href="/compress-pdf-to-100kb" className="font-medium text-primary underline-offset-2 hover:underline">
               compress a PDF to 100KB
             </Link>{" "}
-            for the tighter cap, or the{" "}
+            for a tighter cap,{" "}
+            <Link href="/compress-pdf-to-500kb" className="font-medium text-primary underline-offset-2 hover:underline">
+              compress a PDF to 500KB
+            </Link>{" "}
+            for more room, or the{" "}
             <Link href="/compress-pdf" className="font-medium text-primary underline-offset-2 hover:underline">
               main compress PDF tool
             </Link>{" "}

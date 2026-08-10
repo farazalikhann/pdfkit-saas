@@ -143,15 +143,28 @@ export default function CompressPdfHubPage() {
           <h2 className="text-base font-bold leading-tight">Need an exact number, not just a preset?</h2>
           <p className="leading-relaxed">
             Plenty of portals don&apos;t care about &quot;Recommended&quot; or &quot;Strong.&quot;
-            They want a specific figure under a hard cap. If that&apos;s you, go straight to{" "}
+            They want a specific figure under a hard cap, or a file that fits an email provider&apos;s
+            attachment limit. Each of these walks through the Target Size box for one common case:{" "}
             <Link href="/compress-pdf-to-100kb" className="font-medium text-primary underline-offset-2 hover:underline">
               compress a PDF to 100KB
-            </Link>{" "}
-            or{" "}
+            </Link>
+            ,{" "}
             <Link href="/compress-pdf-to-200kb" className="font-medium text-primary underline-offset-2 hover:underline">
               compress a PDF to 200KB
             </Link>
-            , which walk through the Target Size box for those two common limits specifically.
+            ,{" "}
+            <Link href="/compress-pdf-to-500kb" className="font-medium text-primary underline-offset-2 hover:underline">
+              compress a PDF to 500KB
+            </Link>
+            ,{" "}
+            <Link href="/compress-pdf-to-1mb" className="font-medium text-primary underline-offset-2 hover:underline">
+              compress a PDF to 1MB
+            </Link>
+            , or{" "}
+            <Link href="/compress-pdf-for-email" className="font-medium text-primary underline-offset-2 hover:underline">
+              compress a PDF for an email attachment
+            </Link>
+            .
           </p>
         </section>
 
