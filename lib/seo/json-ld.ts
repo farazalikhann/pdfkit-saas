@@ -8,7 +8,7 @@ export function toolJsonLd(tool: ToolDefinition) {
   return {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    name: `${tool.name} — ${SITE_NAME}`,
+    name: `${tool.name}: ${SITE_NAME}`,
     applicationCategory: "Utility",
     operatingSystem: "Any",
     description: content?.metaDescription ?? tool.description,
@@ -19,13 +19,13 @@ export function toolJsonLd(tool: ToolDefinition) {
       priceCurrency: "USD",
       description: "Free to use",
     },
-    // No aggregateRating here deliberately — this site has no real review or rating
+    // No aggregateRating here deliberately, this site has no real review or rating
     // collection system, and fabricating one violates both Google's structured-data
     // policies and the plain rule that schema should never claim what isn't real.
   };
 }
 
-/** HowTo schema — steps must match the visible, numbered "How to" list on the page. */
+/** HowTo schema: steps must match the visible, numbered "How to" list on the page. */
 export function howToJsonLd(tool: ToolDefinition, steps: string[]) {
   const content = getToolSeoContent(tool.slug);
   return {
@@ -41,7 +41,7 @@ export function howToJsonLd(tool: ToolDefinition, steps: string[]) {
 }
 
 /**
- * Same HowTo shape as howToJsonLd, for pages not backed by a ToolDefinition —
+ * Same HowTo shape as howToJsonLd, for pages not backed by a ToolDefinition,
  * e.g. keyword landing pages that reuse an existing tool's UI under a different H1.
  */
 export function howToJsonLdNamed(name: string, steps: string[]) {
@@ -59,7 +59,7 @@ export function howToJsonLdNamed(name: string, steps: string[]) {
 
 /**
  * Same SoftwareApplication shape as toolJsonLd, for pages not backed by a
- * ToolDefinition — e.g. keyword landing pages that reuse an existing tool's UI
+ * ToolDefinition, e.g. keyword landing pages that reuse an existing tool's UI
  * under a different name/URL/description.
  */
 export function softwareApplicationJsonLd(opts: {
@@ -84,7 +84,7 @@ export function softwareApplicationJsonLd(opts: {
   };
 }
 
-/** FAQPage schema — must exactly mirror the visible FAQ content rendered on the page. */
+/** FAQPage schema: must exactly mirror the visible FAQ content rendered on the page. */
 export function faqJsonLd(faqs: ToolFaq[]) {
   return {
     "@context": "https://schema.org",
@@ -124,6 +124,17 @@ export function websiteJsonLd() {
     "@type": "WebSite",
     name: SITE_NAME,
     url: SITE_URL,
+    // /tools reads ?q= and pre-populates the same search box used site-wide
+    // (see components/home/search-bar.tsx), so this target is a real, working
+    // search, not decorative schema.
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${SITE_URL}/tools?q={search_term_string}`,
+      },
+      "query-input": "required name=search_term_string",
+    },
   };
 }
 
@@ -141,7 +152,7 @@ export function categoryJsonLd(category: Category, tools: ToolDefinition[]) {
   return {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: `${category.name} — ${SITE_NAME}`,
+    name: `${category.name}: ${SITE_NAME}`,
     description: category.description,
     url: `${SITE_URL}/category/${category.slug}`,
     mainEntity: {

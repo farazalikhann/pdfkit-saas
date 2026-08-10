@@ -11,7 +11,7 @@ function matches(bytes: Uint8Array, signature: number[]): boolean {
   return signature.every((b, i) => bytes[i] === b);
 }
 
-/** Sniffs the container format by magic bytes — never trusts the file extension. */
+/** Sniffs the container format by magic bytes, never trusts the file extension. */
 async function sniffContainer(file: File): Promise<"zip" | "ole" | "other"> {
   const header = await readHeaderBytes(file, 8);
   if (matches(header, ZIP_SIGNATURE)) return "zip";
@@ -36,10 +36,10 @@ export async function validateDocx(file: File): Promise<void> {
   }
 }
 
-/** Validates a spreadsheet upload — SheetJS itself reads both legacy .xls (OLE) and .xlsx (zip). */
+/** Validates a spreadsheet upload, SheetJS itself reads both legacy .xls (OLE) and .xlsx (zip). */
 export async function validateSpreadsheet(file: File): Promise<void> {
   const isCsv = file.type === "text/csv" || /\.csv$/i.test(file.name);
-  if (isCsv) return; // plain text — no container signature to check
+  if (isCsv) return; // plain text: no container signature to check
   const kind = await sniffContainer(file);
   if (kind === "other") {
     throw new Error("This doesn't look like a valid Excel or CSV file.");

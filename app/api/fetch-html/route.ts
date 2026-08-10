@@ -112,7 +112,7 @@ async function safeFetch(
 }
 
 /** Decodes the handful of entities that show up in HTML attribute values (e.g. MediaWiki
- *  and most CMSes emit `href="...&amp;foo=bar"`) — regex-extracted attributes are raw text,
+ *  and most CMSes emit `href="...&amp;foo=bar"`), regex-extracted attributes are raw text,
  *  not parsed markup, so this doesn't happen for free the way it would via a DOM parser. */
 function decodeHtmlEntities(s: string): string {
   return s
@@ -126,8 +126,8 @@ function decodeHtmlEntities(s: string): string {
 }
 
 /** Best-effort: inlines up to MAX_STYLESHEETS linked <link rel="stylesheet"> files as <style> blocks
- *  so pages that use external CSS (the overwhelming majority of real sites) don't render unstyled —
- *  the client only carries over inline <style> tags, having no safe way to fetch cross-origin CSS itself. */
+ *  so pages that use external CSS (the overwhelming majority of real sites) don't render unstyled.
+ *  The client only carries over inline <style> tags, having no safe way to fetch cross-origin CSS itself. */
 async function inlineStylesheets(html: string, baseUrl: URL): Promise<string> {
   const linkRegex = /<link\b[^>]*>/gi;
   const links = html.match(linkRegex) ?? [];

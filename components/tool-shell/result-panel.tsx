@@ -43,7 +43,7 @@ export function ResultPanel({ tool, results }: ResultPanelProps) {
         /* user cancelled */
       }
     } else {
-      toast.info("Sharing isn't supported on this browser — download instead.");
+      toast.info("Sharing isn't supported on this browser: download instead.");
     }
   }
 

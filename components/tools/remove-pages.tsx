@@ -41,7 +41,7 @@ export function RemovePagesTool({ tool }: { tool: ToolDefinition }) {
       }}
       notice={() => (
         <p className="text-xs text-muted-foreground">
-          Select the pages to delete — everything else is kept, in order.
+          Select the pages to delete, everything else is kept, in order.
         </p>
       )}
       preview={({ files }) =>
@@ -58,7 +58,7 @@ export function RemovePagesTool({ tool }: { tool: ToolDefinition }) {
             />
             {wouldRemoveAll ? (
               <p className="rounded-lg bg-destructive/10 px-3 py-2 text-xs font-medium text-destructive">
-                That&apos;s every page — leave at least one page selected to keep.
+                That&apos;s every page: leave at least one page selected to keep.
               </p>
             ) : selected.size > 0 ? (
               <p className="rounded-lg bg-muted/50 px-3 py-2 text-xs font-medium">

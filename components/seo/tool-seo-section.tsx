@@ -3,7 +3,7 @@ import { getToolBySlug, type ToolDefinition } from "@/lib/tools";
 import { getToolSeoContent } from "@/lib/seo/tool-content";
 
 /**
- * Server-rendered content block placed below the tool UI on every tool page —
+ * Server-rendered content block placed below the tool UI on every tool page:
  * intro copy, a "How to" list, FAQs, and related-tool links. Deliberately a plain
  * Server Component (no "use client", no hooks) so this text is present in the
  * initial HTML a crawler sees, not something that only appears after JS hydrates.
@@ -65,7 +65,7 @@ export function ToolSeoSection({ tool }: { tool: ToolDefinition }) {
                   <Link href={`/tools/${related.slug}`} className="font-medium text-primary underline-offset-2 hover:underline">
                     {related.name}
                   </Link>
-                  {relatedContent && <span className="text-muted-foreground"> — {related.description}</span>}
+                  {relatedContent && <span className="text-muted-foreground">: {related.description}</span>}
                 </li>
               );
             })}

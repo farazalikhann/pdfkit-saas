@@ -23,7 +23,7 @@ interface ElementFrameProps {
   className?: string;
 }
 
-const HANDLE_PX = 28; // touch-friendly — comfortably above the 44px min target once padding/hit-area is added
+const HANDLE_PX = 28; // touch-friendly: comfortably above the 44px min target once padding/hit-area is added
 
 export function ElementFrame({
   rect,

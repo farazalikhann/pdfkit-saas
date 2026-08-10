@@ -38,7 +38,7 @@ export interface TextHighlightElement extends EditorElementBase {
   kind: "text-highlight";
   color: RgbColor;
   opacity: number;
-  /** Individual line rects, in absolute page (editor y-down) space — a highlight can span multiple lines. */
+  /** Individual line rects, in absolute page (editor y-down) space, a highlight can span multiple lines. */
   rects: { x: number; y: number; width: number; height: number }[];
 }
 

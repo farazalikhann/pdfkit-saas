@@ -1,6 +1,6 @@
 /**
  * A small, deliberately narrow HTML parser for mammoth's output (headings, p,
- * strong/b, em/i, ul/ol/li, table/tr/td/th, img, a, br). No DOMParser — this
+ * strong/b, em/i, ul/ol/li, table/tr/td/th, img, a, br). No DOMParser, this
  * runs inside a Web Worker, which doesn't have one. Not a general HTML parser.
  */
 

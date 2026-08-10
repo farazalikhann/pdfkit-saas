@@ -124,7 +124,7 @@ function DragReorderPreview({ files, reorderFile, removeFile }: ToolShellHelpers
       </SortableContext>
       {files.length > 1 && (
         <p className="mt-2 text-center text-xs text-muted-foreground">
-          Drag to reorder — images are combined in this order.
+          Drag to reorder: images are combined in this order.
         </p>
       )}
     </DndContext>

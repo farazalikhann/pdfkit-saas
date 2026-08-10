@@ -20,7 +20,7 @@ export async function protectPdf(
   // "1.7ext3" makes every file get the strongest tier (AES-256, /V 5) regardless
   // of what version the source PDF happened to declare. The fields are typed
   // `private readonly` in pdf-lib's .d.ts (a real class privacy at the JS level
-  // doesn't exist here — just a compile-time annotation), so a cast is needed.
+  // doesn't exist here: just a compile-time annotation), so a cast is needed.
   const header = doc.context.header as unknown as { major: string; minor: string };
   header.major = "1";
   header.minor = "7ext3";

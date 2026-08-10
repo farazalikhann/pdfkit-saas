@@ -10,7 +10,7 @@ interface State {
 }
 
 /**
- * Wraps every tool page — a bug in one tool's rendering shows a friendly
+ * Wraps every tool page, a bug in one tool's rendering shows a friendly
  * message with a reset button instead of a blank white screen.
  */
 export class ToolErrorBoundary extends React.Component<

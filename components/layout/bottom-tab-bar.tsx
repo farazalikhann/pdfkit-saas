@@ -25,7 +25,7 @@ export function BottomTabBar() {
     label: string;
     icon: typeof Home;
   }) {
-    // "/tools/make-pdf" must NOT also light up the "Tools" tab — it has its
+    // "/tools/make-pdf" must NOT also light up the "Tools" tab, it has its
     // own dedicated FAB now, so without this exclusion both the FAB and the
     // adjacent Tools tab render active/red at once, reading as a single
     // smeared red blob instead of two distinct nav items.
@@ -60,7 +60,7 @@ export function BottomTabBar() {
       <ul className="flex items-center">
         {SIDE_TABS.map(renderTab)}
 
-        {/* Make PDF — center FAB, raised above the bar like a primary "create" action.
+        {/* Make PDF: center FAB, raised above the bar like a primary "create" action.
             Chosen over 4 flat tabs: at 375px, "Home · Tools · Make PDF · Recent" with
             labels crowds each tab under ~90px and buries the app's actual point of
             entry (turning photos into a PDF) as just another equal-weight item. */}
@@ -69,7 +69,7 @@ export function BottomTabBar() {
             href="/tools/make-pdf"
             className="flex min-h-[56px] flex-col items-center justify-center gap-0.5 py-1.5 text-[11px] font-medium text-muted-foreground active:text-foreground"
             aria-current={isMakePdfActive ? "page" : undefined}
-            // A no-op touch handler — iOS Safari only reliably clears :active
+            // A no-op touch handler: iOS Safari only reliably clears :active
             // styles on elements it considers "interactive enough" to track
             // touch state for; without this, active:scale-95 below can stay
             // stuck at its pressed scale after the tap ends on some devices.

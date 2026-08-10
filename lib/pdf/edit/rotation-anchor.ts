@@ -17,7 +17,7 @@ export interface PdfPlacement {
  *     screen space but counter-clockwise in y-up PDF space, so the angle must be
  *     negated or the exported rotation spins the opposite way from what was dragged.
  *  3. Rotation pivot: pdf-lib rotates the whole local coordinate system around the
- *     (x, y) point you give it — that point IS the box's pre-rotation corner AND
+ *     (x, y) point you give it, that point IS the box's pre-rotation corner AND
  *     the pivot simultaneously. The editor rotates each box around its own center
  *     instead (the intuitive UI behavior), so the anchor has to be solved for
  *     rather than reusing the box's raw corner.

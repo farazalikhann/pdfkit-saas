@@ -1,4 +1,4 @@
-/** All coordinates/sizes are in PDF points, top-left origin (y grows downward —
+/** All coordinates/sizes are in PDF points, top-left origin (y grows downward,
  *  flipped to PDF's bottom-left/y-up space only at export time). */
 export interface Rect {
   x: number;

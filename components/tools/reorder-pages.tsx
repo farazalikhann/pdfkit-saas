@@ -45,7 +45,7 @@ export function ReorderPagesTool({ tool }: { tool: ToolDefinition }) {
       }}
       notice={() => (
         <p className="text-xs text-muted-foreground">
-          Drag pages to reorder them — works with touch too. Or use the
+          Drag pages to reorder them, works with touch too. Or use the
           arrows / position number on each page if dragging is awkward.
         </p>
       )}

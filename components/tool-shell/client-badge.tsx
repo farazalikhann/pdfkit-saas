@@ -9,7 +9,7 @@ export function ClientSideBadge() {
   );
 }
 
-/** For the one tool that isn't on-device (Summarize) — never claim privacy we don't have. */
+/** For the one tool that isn't on-device (Summarize), never claim privacy we don't have. */
 export function ServerSideNotice({ children }: { children: React.ReactNode }) {
   return (
     <div className="inline-flex items-start gap-1.5 rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-700 dark:text-amber-400">

@@ -236,7 +236,7 @@ function base64ToBytes(base64: string): Uint8Array {
 
 async function layoutImage(state: LayoutState, block: ImageBlock) {
   const match = block.src.match(/^data:([^;]+);base64,([\s\S]*)$/);
-  if (!match) return; // remote/unsupported image source — skip gracefully
+  if (!match) return; // remote/unsupported image source, skip gracefully
   const mime = match[1];
   const bytes = base64ToBytes(match[2]);
 
@@ -244,7 +244,7 @@ async function layoutImage(state: LayoutState, block: ImageBlock) {
   try {
     image = mime.includes("png") ? await state.doc.embedPng(bytes) : await state.doc.embedJpg(bytes);
   } catch {
-    return; // unsupported image format (e.g. gif/svg) — skip rather than fail the whole document
+    return; // unsupported image format (e.g. gif/svg), skip rather than fail the whole document
   }
 
   const maxWidth = CONTENT_WIDTH;

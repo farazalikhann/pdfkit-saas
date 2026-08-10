@@ -35,7 +35,7 @@ export function ExtractPagesTool({ tool }: { tool: ToolDefinition }) {
       }}
       notice={() => (
         <p className="text-xs text-muted-foreground">
-          Select the pages to keep — everything else is left out. The result
+          Select the pages to keep: everything else is left out. The result
           keeps the original page order.
         </p>
       )}

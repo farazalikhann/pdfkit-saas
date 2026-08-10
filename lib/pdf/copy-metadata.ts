@@ -4,7 +4,7 @@ import type { PDFDocument } from "@cantoo/pdf-lib";
  * Carries document-level metadata (title/author/subject/etc.) from a source
  * PDF to a freshly-built one. `copyPages` only copies page content/resources
  * (including each page's own rotation/annotations/links, since those live on
- * the page object) — the document Info dictionary has to be copied separately.
+ * the page object), the document Info dictionary has to be copied separately.
  */
 export function copyMetadata(src: PDFDocument, dest: PDFDocument): void {
   if (src.getAuthor() !== undefined) dest.setAuthor(src.getAuthor()!);

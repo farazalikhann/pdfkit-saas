@@ -10,7 +10,7 @@ export function ServiceWorkerRegister() {
       process.env.NODE_ENV === "production"
     ) {
       navigator.serviceWorker.register("/sw.js").catch(() => {
-        // Offline shell is a progressive enhancement — safe to ignore failures.
+        // Offline shell is a progressive enhancement, safe to ignore failures.
       });
     }
   }, []);

@@ -98,7 +98,7 @@ export function AnnotatePdfTool({ tool }: { tool: ToolDefinition }) {
   const [results, setResults] = React.useState<ResultFile[] | null>(null);
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
 
-  // Eraser: deleting is just "select, then immediately remove" — reuses the normal
+  // Eraser: deleting is just "select, then immediately remove", reuses the normal
   // tap-to-select mechanism rather than a separate hit-testing path.
   React.useEffect(() => {
     if (mode === "eraser" && selectedId) {
@@ -368,11 +368,11 @@ export function AnnotatePdfTool({ tool }: { tool: ToolDefinition }) {
                 ))}
               </div>
               <div className="min-w-[120px] flex-1 space-y-1">
-                <Label className="text-xs">Thickness — {strokeWidth}pt</Label>
+                <Label className="text-xs">Thickness: {strokeWidth}pt</Label>
                 <Slider value={[strokeWidth]} min={1} max={16} step={1} onValueChange={([v]) => setStrokeWidth(v)} />
               </div>
               <div className="min-w-[120px] flex-1 space-y-1">
-                <Label className="text-xs">Opacity — {Math.round(opacity * 100)}%</Label>
+                <Label className="text-xs">Opacity: {Math.round(opacity * 100)}%</Label>
                 <Slider value={[opacity * 100]} min={10} max={100} step={5} onValueChange={([v]) => setOpacity(v / 100)} />
               </div>
               {["rectangle", "circle"].includes(mode) && (
@@ -480,7 +480,7 @@ export function AnnotatePdfTool({ tool }: { tool: ToolDefinition }) {
                   </div>
                 );
               }
-              // text-highlight — render nothing on the frame itself; the actual rects render below
+              // text-highlight: render nothing on the frame itself; the actual rects render below
               return null;
             }}
             overlayContent={(pixelsPerPoint) => (

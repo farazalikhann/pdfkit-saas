@@ -20,12 +20,12 @@ export interface OcrResult {
   plainText: string;
 }
 
-const OCR_RENDER_SCALE = 200 / 72; // ~200 DPI — good balance of accuracy vs. speed
+const OCR_RENDER_SCALE = 200 / 72; // ~200 DPI: good balance of accuracy vs. speed
 
 /**
  * OCRs the selected pages of a PDF and produces a new PDF where those pages are
  * replaced by Tesseract's own PDF renderer output (the re-rendered page image with
- * an invisible, searchable text layer baked in — the same renderer the `tesseract`
+ * an invisible, searchable text layer baked in, the same renderer the `tesseract`
  * CLI and tools like ocrmypdf use). Unselected pages are copied through untouched.
  * Also returns the plain extracted text for all OCR'd pages combined.
  */
@@ -89,7 +89,7 @@ export async function buildSearchablePdf(
         const [copied] = await out.copyPages(singlePagePdf, [0]);
         out.addPage(copied);
       } else {
-        // Recognition produced no PDF output for this page — fall back to the
+        // Recognition produced no PDF output for this page, fall back to the
         // original page rather than silently dropping it from the result.
         const [copied] = await out.copyPages(src, [pageNum - 1]);
         out.addPage(copied);

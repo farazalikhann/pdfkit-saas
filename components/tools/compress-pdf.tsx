@@ -140,7 +140,7 @@ export function CompressPdfTool({ tool }: { tool: ToolDefinition }) {
       <div className="mb-4 space-y-2">
         <ClientSideBadge />
         <p className="text-xs text-muted-foreground">
-          Shrinks embedded images (downsample + re-encode) — real vector text is left
+          Shrinks embedded images (downsample + re-encode), real vector text is left
           untouched, so it never gets blurry or unselectable.
         </p>
       </div>
@@ -185,7 +185,7 @@ export function CompressPdfTool({ tool }: { tool: ToolDefinition }) {
             )}
             {result!.imagesProcessed === 0 && (
               <p className="mt-1 text-xs text-muted-foreground">
-                No compressible embedded images found — this file may already be optimized,
+                No compressible embedded images found, this file may already be optimized,
                 or its content is mostly vector text.
               </p>
             )}
@@ -193,7 +193,7 @@ export function CompressPdfTool({ tool }: { tool: ToolDefinition }) {
 
           {mode === "target" && result!.targetMet === false && (
             <p className="rounded-lg bg-amber-500/10 px-3 py-2 text-xs font-medium text-amber-700 dark:text-amber-400">
-              Couldn&apos;t reach your target — {formatBytes(parsedTarget ?? 0)} isn&apos;t
+              Couldn&apos;t reach your target: {formatBytes(parsedTarget ?? 0)} isn&apos;t
               achievable for this file. {formatBytes(result!.compressedSize)} is the smallest
               this pipeline could produce.
             </p>
@@ -203,7 +203,7 @@ export function CompressPdfTool({ tool }: { tool: ToolDefinition }) {
             <div className="space-y-2 rounded-lg bg-amber-500/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-400">
               <div className="flex items-start gap-2 font-medium">
                 <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                This PDF was already efficiently compressed — compressing it again made it
+                This PDF was already efficiently compressed, compressing it again made it
                 larger, so the original is kept below.
               </div>
               <label className="flex items-center gap-2 font-normal">
@@ -220,7 +220,7 @@ export function CompressPdfTool({ tool }: { tool: ToolDefinition }) {
 
           {afterPreview && beforePreview && (
             <div className="space-y-1.5">
-              <Label>Page 1 — before vs after</Label>
+              <Label>Page 1: before vs after</Label>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
                   {/* eslint-disable-next-line @next/next/no-img-element */}

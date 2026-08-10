@@ -27,7 +27,7 @@ export function saveSignature(sig: Omit<SavedSignature, "id" | "createdAt">): Sa
   try {
     window.localStorage.setItem(KEY, JSON.stringify(updated));
   } catch {
-    // Storage full or unavailable — the signature still works for this session, just won't persist.
+    // Storage full or unavailable, the signature still works for this session, just won't persist.
   }
   return updated;
 }

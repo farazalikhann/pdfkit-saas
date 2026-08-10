@@ -11,7 +11,7 @@ type WorkerMessage<TResult> =
  * Generic bridge to a dedicated Web Worker so heavy parsing/rendering never
  * blocks the UI thread. Each tool passes its own `createWorker` factory
  * (`() => new Worker(new URL("../../lib/workers/x.worker.ts", import.meta.url))`)
- * so its libraries only load into that worker's own chunk — never the main bundle.
+ * so its libraries only load into that worker's own chunk, never the main bundle.
  */
 export function useToolWorker<TRequest, TResult>(createWorker: () => Worker) {
   const workerRef = React.useRef<Worker | null>(null);

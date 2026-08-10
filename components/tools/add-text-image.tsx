@@ -338,7 +338,7 @@ export function AddTextImageTool({ tool }: { tool: ToolDefinition }) {
                       </Select>
                     </div>
                     <div className="space-y-1.5">
-                      <Label>Size — {selected.fontSize}pt</Label>
+                      <Label>Size: {selected.fontSize}pt</Label>
                       <Slider
                         value={[selected.fontSize]}
                         min={8}
@@ -403,7 +403,7 @@ export function AddTextImageTool({ tool }: { tool: ToolDefinition }) {
                     ))}
                   </div>
                   <div className="space-y-1.5">
-                    <Label>Opacity — {Math.round(selected.opacity * 100)}%</Label>
+                    <Label>Opacity: {Math.round(selected.opacity * 100)}%</Label>
                     <Slider
                       value={[selected.opacity * 100]}
                       min={10}

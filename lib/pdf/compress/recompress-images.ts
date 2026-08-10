@@ -98,13 +98,13 @@ async function decodeToImageBitmap(candidate: ImageCandidate): Promise<ImageBitm
   const filters = filterNames(dict);
   const lastFilter = filters[filters.length - 1];
 
-  // Already-JPEG streams are literal JPEG file bytes — decode directly, no PDF-level decoding needed.
+  // Already-JPEG streams are literal JPEG file bytes, decode directly, no PDF-level decoding needed.
   if (lastFilter === "DCTDecode" && filters.length === 1) {
     const blob = new Blob([stream.getContents().slice()], { type: "image/jpeg" });
     return createImageBitmap(blob);
   }
 
-  // JPEG2000 and CCITT fax are specialist image codecs this pipeline doesn't decode —
+  // JPEG2000 and CCITT fax are specialist image codecs this pipeline doesn't decode:
   // leave these objects untouched rather than risk corrupting them.
   if (filters.some((f) => f === "JPXDecode" || f === "CCITTFaxDecode" || f === "DCTDecode")) {
     return null;
@@ -116,12 +116,12 @@ async function decodeToImageBitmap(candidate: ImageCandidate): Promise<ImageBitm
   if (!width || !height || bpc !== 8) return null;
 
   // Soft-masked (transparent) images would lose their alpha channel if round-tripped
-  // through JPEG — leave them alone rather than silently drop transparency.
+  // through JPEG: leave them alone rather than silently drop transparency.
   if (dict.lookup(PDFName.of("SMask")) || dict.lookup(PDFName.of("Mask"))) return null;
 
   const colorSpace = dict.lookup(PDFName.of("ColorSpace"));
   const colorSpaceName = colorSpace instanceof PDFName ? colorSpace.decodeText() : undefined;
-  if (colorSpaceName !== "DeviceRGB" && colorSpaceName !== "DeviceGray") return null; // skip CMYK/indexed — edge case
+  if (colorSpaceName !== "DeviceRGB" && colorSpaceName !== "DeviceGray") return null; // skip CMYK/indexed: edge case
 
   let raw: Uint8Array;
   try {
@@ -159,7 +159,7 @@ function computeTargetSize(
 ): { width: number; height: number } {
   const targetW = Math.max(1, Math.round((candidate.maxPageWidthPt / 72) * dpi));
   const targetH = Math.max(1, Math.round((candidate.maxPageHeightPt / 72) * dpi));
-  // Never upscale — only downsample when the source genuinely exceeds the target.
+  // Never upscale: only downsample when the source genuinely exceeds the target.
   if (bitmap.width <= targetW && bitmap.height <= targetH) {
     return { width: bitmap.width, height: bitmap.height };
   }
@@ -187,7 +187,7 @@ async function reencodeJpeg(
 /**
  * Recompresses embedded raster images in place (extract -> decode -> downsample ->
  * re-encode as JPEG -> write back into the same XObject), leaving page content
- * streams — and therefore any real vector text — completely untouched. Images use
+ * streams, and therefore any real vector text, completely untouched. Images use
  * an unsupported codec (JPEG2000/CCITT fax/CMYK/indexed) or carry a soft mask are
  * left alone rather than risk corrupting them.
  */

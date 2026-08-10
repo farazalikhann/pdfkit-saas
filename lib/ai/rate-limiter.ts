@@ -6,11 +6,11 @@ export const AI_DAILY_LIMIT = 1400;
 export const AI_HOURLY_LIMIT_PER_IP = 5;
 
 /**
- * In-memory counters — a safety net, not a precise meter. Correct for a single
+ * In-memory counters: a safety net, not a precise meter. Correct for a single
  * long-running Node process (e.g. `next start` on a VPS/Railway/Render), but
  * on serverless platforms (Vercel, etc.) each cold start resets these, and
  * concurrent instances don't share counts. For an exact cap across multiple
- * instances, back this with a shared store instead — e.g. a Redis/Upstash
+ * instances, back this with a shared store instead, e.g. a Redis/Upstash
  * counter or a Supabase table, incremented per request.
  */
 let day = "";

@@ -29,7 +29,7 @@ const INITIAL_STATE: ExtractionState = {
   error: null,
 };
 
-// Below this, treat the document as having no usable text layer — a real
+// Below this, treat the document as having no usable text layer, a real
 // scanned page yields 0 characters from pdf.js, so this is a generous
 // threshold that won't false-positive on any document with real prose.
 const MIN_USABLE_CHARS = 40;
@@ -37,7 +37,7 @@ const MIN_USABLE_CHARS = 40;
 /**
  * Shared by Summarize/Translate/MCQ: extracts a PDF's text client-side, and
  * if that comes back empty or near-empty (a scanned/image-only PDF), pauses
- * in a "needs-ocr" phase instead of just failing — the caller can offer the
+ * in a "needs-ocr" phase instead of just failing, the caller can offer the
  * user a "Run OCR first?" prompt and call `runOcr()` to recover real text
  * via the same tesseract.js pipeline the OCR tool uses, before continuing.
  */

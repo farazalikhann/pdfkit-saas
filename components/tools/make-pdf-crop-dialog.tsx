@@ -31,7 +31,7 @@ function trySetPointerCapture(el: Element, pointerId: number) {
   try {
     el.setPointerCapture(pointerId);
   } catch {
-    // A synthetic or already-released pointer can throw here — never let that
+    // A synthetic or already-released pointer can throw here, never let that
     // abort the rest of the gesture.
   }
 }

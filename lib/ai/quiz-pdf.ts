@@ -6,7 +6,7 @@ function escapeHtml(text: string): string {
 
 const LETTERS = ["A", "B", "C", "D"];
 
-/** Questions-only HTML — the answer key is built separately so it can be
+/** Questions-only HTML: the answer key is built separately so it can be
  *  rendered as its own PDF and merged in, guaranteeing it starts on a fresh
  *  page regardless of how many pages the questions take up. */
 export function buildQuestionsHtml(questions: McqQuestion[]): string {

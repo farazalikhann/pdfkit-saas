@@ -204,7 +204,7 @@ function SelectGrid({
     onSelectedChange(next);
   }
 
-  // Selection lives entirely on pointer events (no separate onClick) — a plain
+  // Selection lives entirely on pointer events (no separate onClick), a plain
   // tap/click toggles on pointerup, while a drag that starts moving switches
   // into "paint" mode on pointermove. Handling both in the same state machine
   // is what keeps a click from toggling once via pointerdown and a second time
@@ -249,11 +249,11 @@ function SelectGrid({
       if (!movedEnough) return;
 
       if (session.pointerType === "mouse") {
-        // Mouse drag has no scroll gesture to protect — start painting immediately.
+        // Mouse drag has no scroll gesture to protect: start painting immediately.
         session.paintActive = true;
         paintPage(session.startPage, session.addMode);
       } else {
-        // Moved before the long-press armed — this is a scroll, not a selection drag.
+        // Moved before the long-press armed, this is a scroll, not a selection drag.
         if (session.longPressTimer) window.clearTimeout(session.longPressTimer);
         session.abandoned = true;
         return;
@@ -274,7 +274,7 @@ function SelectGrid({
     if (session.longPressTimer) window.clearTimeout(session.longPressTimer);
 
     if (!session.paintActive && !session.abandoned) {
-      // Never entered paint mode — this was a plain tap/click.
+      // Never entered paint mode, this was a plain tap/click.
       if (e.shiftKey && lastTappedRef.current != null) {
         selectRange(lastTappedRef.current, session.startPage, !selected.has(session.startPage));
       } else {
@@ -378,7 +378,7 @@ function SplitPointsGrid({
 
   return (
     <div className={cn("space-y-1.5", className)}>
-      {/* Horizontal filmstrip, like a video editor's timeline — touch-pan-x lets the
+      {/* Horizontal filmstrip, like a video editor's timeline, touch-pan-x lets the
           browser handle left-right swipes here natively while a vertical swipe (even
           one starting on a thumbnail) still falls through to scroll the page. */}
       <div className="flex touch-pan-x snap-x snap-mandatory gap-0.5 overflow-x-auto overscroll-x-contain pb-2">

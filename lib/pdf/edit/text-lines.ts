@@ -10,8 +10,8 @@ export interface TextLineBox {
 const lineCache = new Map<string, TextLineBox[]>();
 
 /** Extracts per-line bounding boxes (in editor y-down point space) for a page, merging
- *  pdf.js's individual word/run text items that share a line into one contiguous box —
- *  this is what lets a highlight snap to whole lines instead of arbitrary drag rectangles. */
+ *  pdf.js's individual word/run text items that share a line into one contiguous box.
+ *  This is what lets a highlight snap to whole lines instead of arbitrary drag rectangles. */
 export async function getPageTextLines(
   doc: PDFDocumentProxy,
   pageNumber: number,

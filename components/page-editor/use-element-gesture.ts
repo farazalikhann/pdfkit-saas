@@ -6,14 +6,14 @@ import type { Rect } from "./types";
 export type ResizeCorner = "nw" | "ne" | "sw" | "se";
 
 /** setPointerCapture can throw (e.g. a pointer the browser no longer considers
- *  active) — never let that abort the rest of a pointerdown handler, since
+ *  active), never let that abort the rest of a pointerdown handler, since
  *  everything after it (registering the pointer, deciding move vs. pinch) still
  *  needs to run even if capture itself couldn't be established. */
 export function trySetPointerCapture(el: Element, pointerId: number) {
   try {
     el.setPointerCapture(pointerId);
   } catch {
-    // Ignored — capture is a nice-to-have (keeps events flowing to this element
+    // Ignored: capture is a nice-to-have (keeps events flowing to this element
     // if the pointer leaves its bounds), not a precondition for gesture tracking.
   }
 }
@@ -21,7 +21,7 @@ export function trySetPointerCapture(el: Element, pointerId: number) {
 interface UseElementGestureOptions {
   rect: Rect;
   onChange: (next: Rect) => void;
-  /** Fired once at the start of any drag/resize/rotate/pinch — push an undo snapshot here. */
+  /** Fired once at the start of any drag/resize/rotate/pinch, push an undo snapshot here. */
   onGestureStart?: () => void;
   onGestureEnd?: () => void;
   pixelsPerPoint: number;
@@ -33,7 +33,7 @@ interface UseElementGestureOptions {
 
 /**
  * Drag/resize/rotate for one overlay element via native Pointer Events, which unify
- * mouse and touch input — this is what makes drag work on a phone, not just a mouse.
+ * mouse and touch input, this is what makes drag work on a phone, not just a mouse.
  * A second simultaneous pointer on the element body upgrades a plain drag into a
  * pinch gesture (combined resize + rotate around the element's center), covering
  * touch pinch-zoom/pinch-resize without needing separate touch-only code.
@@ -131,7 +131,7 @@ export function useElementGesture({
     onPointerUp: (e: React.PointerEvent) => {
       pointersRef.current.delete(e.pointerId);
       if (pointersRef.current.size === 1 && modeRef.current === "pinch") {
-        // Dropped from pinch back to a single finger — resume as a plain move.
+        // Dropped from pinch back to a single finger, resume as a plain move.
         const [[, pt]] = Array.from(pointersRef.current.entries());
         modeRef.current = "move";
         startRef.current = { rect: { ...rect }, pointerStart: pt };

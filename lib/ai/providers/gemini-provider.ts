@@ -8,7 +8,7 @@ import type {
   McqQuestion,
 } from "../provider";
 
-// An alias, not a dated snapshot — keeps resolving to a current flash-tier model as
+// An alias, not a dated snapshot, keeps resolving to a current flash-tier model as
 // Google retires specific versions (gemini-2.5-flash itself was pulled from new-user
 // access after this was first wired up, which is exactly the failure mode this avoids).
 const MODEL = "gemini-flash-latest";
@@ -38,7 +38,7 @@ function toFriendlyError(err: unknown): Error {
 /**
  * The single call path every AI tool on this site goes through. Summarize,
  * Translate, and generate-MCQs each just build a different prompt and pass it
- * here — the model, the client, and the error handling live in exactly one
+ * here, the model, the client, and the error handling live in exactly one
  * place, so they can't quietly drift apart (e.g. one tool still pointing at a
  * model Google has since retired for new users, like gemini-2.5-flash was).
  */
@@ -66,7 +66,7 @@ async function callGemini(
 
 const SUMMARY_INSTRUCTIONS: Record<NonNullable<SummarizeTextInput["length"]>, string> = {
   short:
-    "Summarize the following document in 2-3 concise sentences — just the core point, no bullets.",
+    "Summarize the following document in 2-3 concise sentences, just the core point, no bullets.",
   detailed:
     "Write a detailed multi-paragraph summary of the following document, covering its main " +
     "points, supporting details, and any conclusions or recommendations. Use Markdown: a level-2 " +
@@ -96,11 +96,11 @@ async function translateText({
   const prompt =
     `Translate the following document text ${sourceClause}into ${targetLanguage}. ` +
     "Preserve the original paragraph structure and meaning as closely as possible. " +
-    "Respond with only the translated text — no preamble, no notes, no explanation.\n\n---\n\n" +
+    "Respond with only the translated text, no preamble, no notes, no explanation.\n\n---\n\n" +
     text;
   const raw = await callGemini(prompt, { maxOutputTokens });
   // Translate doesn't ask for structured output, but models occasionally wrap
-  // even plain-text replies in a ``` fence anyway — strip it defensively so a
+  // even plain-text replies in a ``` fence anyway, strip it defensively so a
   // stray fence marker never ends up in the on-screen text or exported PDF.
   return stripCodeFence(raw);
 }
@@ -111,7 +111,7 @@ const DIFFICULTY_INSTRUCTIONS: Record<GenerateMcqsInput["difficulty"], string> =
   hard: "Questions should require inference or synthesis across the text, and include plausible, non-obvious distractor options.",
 };
 
-/** Strips a wrapping ```json ... ``` or ``` ... ``` fence, if present — models
+/** Strips a wrapping ```json ... ``` or ``` ... ``` fence, if present, models
  * sometimes add one even in JSON mode, or even around plain prose. No-op
  * (aside from trimming) when there isn't one. */
 function stripCodeFence(raw: string): string {
@@ -122,14 +122,14 @@ function stripCodeFence(raw: string): string {
 /**
  * Best-effort recovery for a JSON value that should be in `raw` but may be
  * preceded/followed by prose, wrapped in a markdown fence, or have a trailing
- * comma — things models occasionally do even when told not to and even in
+ * comma, things models occasionally do even when told not to and even in
  * JSON response-mime mode. Throws (a plain SyntaxError from JSON.parse) if
  * nothing usable can be recovered.
  */
 function parseJsonLoose(raw: string): unknown {
   let text = stripCodeFence(raw);
 
-  // Trim to the outermost [ ] or { } — drops any leading/trailing prose the
+  // Trim to the outermost [ ] or { }, drops any leading/trailing prose the
   // fence strip above didn't catch.
   const firstBracket = text.search(/[[{]/);
   const lastBracket = Math.max(text.lastIndexOf("]"), text.lastIndexOf("}"));
@@ -145,7 +145,7 @@ function parseJsonLoose(raw: string): unknown {
 
 function toMcqQuestions(parsed: unknown, count: number): McqQuestion[] {
   // Gemini occasionally wraps the array in an object (e.g. {"questions": [...]})
-  // even when told to respond with a bare array — unwrap it if so.
+  // even when told to respond with a bare array, unwrap it if so.
   const candidate = Array.isArray(parsed)
     ? parsed
     : parsed && typeof parsed === "object" && Array.isArray((parsed as { questions?: unknown }).questions)
@@ -172,8 +172,8 @@ async function generateMcqs({
   text,
   count,
   difficulty,
-  // 20 questions (the tool's max) at "hard" difficulty — which is explicitly
-  // instructed to write longer, non-obvious distractors — can genuinely need
+  // 20 questions (the tool's max) at "hard" difficulty, which is explicitly
+  // instructed to write longer, non-obvious distractors, can genuinely need
   // more than the previous 4096-token ceiling; that was silently truncating
   // the JSON mid-array, which is indistinguishable from a parse failure.
   maxOutputTokens = 8192,
@@ -182,7 +182,7 @@ async function generateMcqs({
     `Generate exactly ${count} multiple-choice questions from the following document text, ` +
     `for a student studying this material. Difficulty: ${difficulty}. ${DIFFICULTY_INSTRUCTIONS[difficulty]} ` +
     "Each question must have exactly 4 options with exactly one correct answer. Keep each question " +
-    "and option concise — one sentence each — so the full response fits comfortably within the output limit.\n\n" +
+    "and option concise, one sentence each, so the full response fits comfortably within the output limit.\n\n" +
     "Respond with ONLY valid JSON: a single array, no markdown code fences, no commentary before or " +
     'after it, in exactly this shape: [{"question": "...", "options": ["...", "...", "...", "..."], "correctIndex": 0}]\n\n' +
     "correctIndex is a 0-based index into options.\n\n---\n\n" +

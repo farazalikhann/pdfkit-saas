@@ -46,7 +46,7 @@ self.onmessage = async (event) => {
       const mid = Math.floor((lo + hi) / 2);
       const preset = PRESET_ORDER[mid];
       const attemptIndex = attempts;
-      // Fresh copy per attempt — cheap relative to the encode work, and removes any
+      // Fresh copy per attempt: cheap relative to the encode work, and removes any
       // risk of one attempt's parsed objects sharing memory with the next's.
       const bufferCopy = fileBuffer.slice(0);
       const result = await recompressPdfImages(bufferCopy, PRESETS[preset], {

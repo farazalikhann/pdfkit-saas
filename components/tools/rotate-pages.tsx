@@ -49,7 +49,7 @@ export function RotatePagesTool({ tool }: { tool: ToolDefinition }) {
       }}
       notice={() => (
         <p className="text-xs text-muted-foreground">
-          Select pages, then rotate just the selection — or rotate every page
+          Select pages, then rotate just the selection, or rotate every page
           at once with the shortcut below.
         </p>
       )}

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { categories } from "@/lib/categories";
 import { getToolsByCategory } from "@/lib/tools";
 import { ToolCard } from "@/components/home/tool-card";
@@ -31,7 +32,9 @@ export default function ToolsPage() {
         </p>
       </div>
 
-      <SearchBar />
+      <Suspense fallback={<div className="h-14 w-full rounded-2xl border border-border bg-card" />}>
+        <SearchBar />
+      </Suspense>
 
       <Tabs defaultValue="all">
         <TabsList className="no-scrollbar h-auto flex-wrap justify-start gap-1 overflow-x-auto bg-transparent p-0">

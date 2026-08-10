@@ -14,11 +14,11 @@ function Cell({ value }: { value: string | boolean }) {
       <X className="h-4 w-4 text-destructive" aria-label="No" />
     );
   }
-  if (value === "—") return <Minus className="h-4 w-4 text-muted-foreground" aria-label="Not applicable" />;
+  if (value === "n/a") return <Minus className="h-4 w-4 text-muted-foreground" aria-label="Not applicable" />;
   return <span>{value}</span>;
 }
 
-/** Renders a "this tool vs typical online compressors" table — no invented competitor names or numbers, only general, qualified patterns. */
+/** Renders a "this tool vs typical online compressors" table, no invented competitor names or numbers, only general, qualified patterns. */
 export function ComparisonTable({ rows }: { rows: ComparisonRow[] }) {
   return (
     <div className="overflow-x-auto rounded-xl border border-border">

@@ -25,7 +25,7 @@ export class ExtractTextLimitError extends Error {
 /**
  * Extracts plain text from every page of a PDF, entirely in the browser.
  * Throws ExtractTextLimitError if the document exceeds the given page/char
- * caps — callers should surface that message and stop, not truncate silently.
+ * caps, callers should surface that message and stop, not truncate silently.
  */
 export async function extractPdfText(
   file: File,
@@ -38,7 +38,7 @@ export async function extractPdfText(
 
   if (pageCount > limits.maxPages) {
     throw new ExtractTextLimitError(
-      `This PDF has ${pageCount} pages — Summarize supports up to ${limits.maxPages}.`,
+      `This PDF has ${pageCount} pages, Summarize supports up to ${limits.maxPages}.`,
       pageCount
     );
   }
@@ -56,7 +56,7 @@ export async function extractPdfText(
 
     if (totalLength > limits.maxCharacters) {
       throw new ExtractTextLimitError(
-        `This document has more than ${limits.maxCharacters.toLocaleString()} characters of text — too long for Summarize.`,
+        `This document has more than ${limits.maxCharacters.toLocaleString()} characters of text, too long for Summarize.`,
         pageCount
       );
     }

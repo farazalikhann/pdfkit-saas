@@ -3,7 +3,7 @@ import type { ToolDefinition } from "@/lib/tools";
 /**
  * The icon + H1 + description block, server-rendered directly in the tool page
  * rather than inside the client-only tool component (which mounts with
- * `ssr: false` because it touches browser-only APIs — canvas, Web Workers,
+ * `ssr: false` because it touches browser-only APIs, canvas, Web Workers,
  * FileReader). Crawlers and link-preview bots that don't execute JS would
  * otherwise never see the page's H1 at all.
  */

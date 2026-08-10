@@ -3,7 +3,7 @@
  * all. Works in both contexts: server-side reads the real secret directly;
  * client-side reads the boolean next.config.js bakes in from that same secret
  * at build time (never the key itself). Used to hide these tools from the UI
- * entirely — nav, search, homepage, sitemap, and the routes themselves —
+ * entirely: nav, search, homepage, sitemap, and the routes themselves,
  * rather than showing a broken page. All three tools share one Gemini key, so
  * one flag covers all of them.
  */

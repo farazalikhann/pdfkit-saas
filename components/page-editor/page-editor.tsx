@@ -36,7 +36,7 @@ interface PageEditorProps<T extends EditorElementBase> {
   keepAspectRatioFor?: (element: T) => boolean;
   handlesFor?: (element: T) => { resize?: boolean; rotate?: boolean };
   renderElement: (element: T, selected: boolean) => React.ReactNode;
-  /** Disables normal select/drag interaction — used while a free-draw tool (pen/shape) is active. */
+  /** Disables normal select/drag interaction, used while a free-draw tool (pen/shape) is active. */
   interactionDisabled?: boolean;
   onCanvasPointerDown?: (pt: { x: number; y: number }, e: React.PointerEvent) => void;
   onCanvasPointerMove?: (pt: { x: number; y: number }, e: React.PointerEvent) => void;
@@ -96,7 +96,7 @@ export function PageEditor<T extends EditorElementBase>({
   }, []);
 
   // A page rendered at full width is often taller than the viewport, and tool pages
-  // pin a "Save" action bar to the bottom — without this, a canvas taller than the
+  // pin a "Save" action bar to the bottom, without this, a canvas taller than the
   // gap between the toolbar and that fixed bar has its middle band physically covered
   // by the bar, silently swallowing pointer/draw gestures aimed at the canvas. Scrolling
   // the canvas to the top of the viewport the moment a free-draw tool activates gives
@@ -253,7 +253,7 @@ export function PageEditor<T extends EditorElementBase>({
           // Without capture, a drag that starts on the canvas but drifts under the
           // fixed bottom action bar mid-gesture would have its move/up events routed
           // to whatever's now under the pointer (the Save button) instead of back here
-          // — silently truncating the stroke. Capturing keeps the whole gesture on
+          //: silently truncating the stroke. Capturing keeps the whole gesture on
           // this element regardless of what's visually underneath as the pointer moves.
           trySetPointerCapture(e.currentTarget, e.pointerId);
           onCanvasPointerDown?.(resolvePoint(e), e);

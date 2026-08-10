@@ -38,9 +38,9 @@ export function uid(): string {
 
 /**
  * Truncates a long filename in the middle rather than at the end, so both the
- * start and the distinguishing tail (page ranges, sequence numbers, extension —
+ * start and the distinguishing tail (page ranges, sequence numbers, extension:
  * generated filenames like "merged-pages-15-108.pdf" put the part that tells
- * files in a batch apart right before the extension) stay visible — e.g.
+ * files in a batch apart right before the extension) stay visible, e.g.
  * "merged (4)-pages-15-108.pdf" -> "merged (4)...ges-15-108.pdf". Biased 35/65
  * toward the tail for that reason. A CSS `truncate` class should still be
  * layered on top as a hard safety net for containers narrower than this

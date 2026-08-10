@@ -35,7 +35,7 @@ function anchorForPosition(position: WatermarkPosition, pageW: number, pageH: nu
 }
 
 /** Moves the content stream a draw call just created to the front of the page's
- *  Contents array, so it renders underneath everything already on the page —
+ *  Contents array, so it renders underneath everything already on the page.
  *  pdf-lib always appends new drawing (i.e. on top), so "behind" needs this. */
 function moveLastContentStreamToFront(page: PDFPage, sizeBefore: number) {
   const contents = page.node.Contents();

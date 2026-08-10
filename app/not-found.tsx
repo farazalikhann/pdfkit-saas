@@ -6,7 +6,7 @@ import { ToolCard } from "@/components/home/tool-card";
 
 export const metadata: Metadata = {
   title: "Page Not Found",
-  description: "This page doesn't exist — but here are some popular PDF tools you can use right now.",
+  description: "This page doesn't exist: but here are some popular PDF tools you can use right now.",
 };
 
 const POPULAR_SLUGS = ["merge-pdf", "compress-pdf", "pdf-to-jpg", "split-pdf", "password-protect", "esign-pdf"];

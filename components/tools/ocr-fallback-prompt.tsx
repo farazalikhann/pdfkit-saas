@@ -18,7 +18,7 @@ export function OcrFallbackPrompt({
       <div>
         <p className="text-sm font-semibold">This looks like a scanned PDF</p>
         <p className="mt-1 text-sm text-muted-foreground">
-          No selectable text was found — it&apos;s probably a photo or scan rather
+          No selectable text was found, it&apos;s probably a photo or scan rather
           than a digital document. Run OCR first to read the text out of it, then
           continue. OCR is slower than normal, especially on mobile.
         </p>

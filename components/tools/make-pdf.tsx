@@ -188,7 +188,7 @@ function PhotosPreview({
       </SortableContext>
       {files.length > 1 && (
         <p className="mt-2 text-center text-xs text-muted-foreground">
-          Drag to reorder — photos become pages in this order.
+          Drag to reorder: photos become pages in this order.
         </p>
       )}
     </DndContext>
@@ -225,7 +225,7 @@ export function MakePdfTool({ tool }: { tool: ToolDefinition }) {
     const current = getState(file);
     const nextRotation = ((current.rotation + 90) % 360) as PhotoState["rotation"];
     // A rotation changes which edges are "top/bottom" vs "left/right", so a crop
-    // drawn before this rotation would no longer line up — clearing it is safer
+    // drawn before this rotation would no longer line up, clearing it is safer
     // than silently applying a crop rect to the wrong axes.
     updateState(file, { rotation: nextRotation, crop: null });
   }

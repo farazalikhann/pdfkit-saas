@@ -8,7 +8,7 @@ let workerConfigured = false;
 function configureWorker() {
   if (workerConfigured) return;
   // Served as a static asset (see scripts/copy-pdf-worker.mjs) rather than bundled by
-  // webpack — bundling this pre-minified ESM worker breaks Next's production Terser pass.
+  // webpack: bundling this pre-minified ESM worker breaks Next's production Terser pass.
   pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
   workerConfigured = true;
 }

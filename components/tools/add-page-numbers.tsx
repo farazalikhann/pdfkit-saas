@@ -114,7 +114,7 @@ export function AddPageNumbersTool({ tool }: { tool: ToolDefinition }) {
         return (
           <div className="space-y-4">
             <div className="space-y-1.5">
-              <Label>Preview — page {numbered[0] ?? 1}</Label>
+              <Label>Preview: page {numbered[0] ?? 1}</Label>
               <div className="relative mx-auto aspect-[3/4] w-full max-w-[220px] overflow-hidden rounded-lg border border-border bg-muted">
                 {previewUrl && (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -169,7 +169,7 @@ export function AddPageNumbersTool({ tool }: { tool: ToolDefinition }) {
                 <Input
                   value={customPattern}
                   onChange={(e) => setCustomPattern(e.target.value)}
-                  placeholder="e.g. Draft — {n}/{total}"
+                  placeholder="e.g. Draft: {n}/{total}"
                 />
               )}
             </div>
@@ -192,11 +192,11 @@ export function AddPageNumbersTool({ tool }: { tool: ToolDefinition }) {
             </div>
 
             <div className="space-y-1.5">
-              <Label>Font size — {fontSize}pt</Label>
+              <Label>Font size: {fontSize}pt</Label>
               <Slider value={[fontSize]} min={8} max={24} step={1} onValueChange={([v]) => setFontSize(v)} />
             </div>
             <div className="space-y-1.5">
-              <Label>Margin — {marginPt}pt</Label>
+              <Label>Margin: {marginPt}pt</Label>
               <Slider value={[marginPt]} min={10} max={60} step={2} onValueChange={([v]) => setMarginPt(v)} />
             </div>
             <div className="space-y-1.5">

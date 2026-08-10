@@ -133,7 +133,7 @@ export function SplitPdfTool({ tool }: { tool: ToolDefinition }) {
                 </div>
                 {everyNGroups.length > 0 && (
                   <p className="rounded-lg bg-muted/50 px-3 py-2 text-xs font-medium">
-                    {everyNGroups.length} file{everyNGroups.length > 1 ? "s" : ""} —{" "}
+                    {everyNGroups.length} file{everyNGroups.length > 1 ? "s" : ""}:{" "}
                     {everyNGroups
                       .map((g, i) => `Part ${i + 1}: pages ${g.from}-${g.to}`)
                       .join(" · ")}
@@ -144,7 +144,7 @@ export function SplitPdfTool({ tool }: { tool: ToolDefinition }) {
 
             {mode === "everyPage" && pageCount > 0 && (
               <p className="rounded-lg bg-muted/50 px-3 py-2 text-xs font-medium">
-                {pageCount} files — one per page.
+                {pageCount} files: one per page.
               </p>
             )}
 
@@ -170,7 +170,7 @@ export function SplitPdfTool({ tool }: { tool: ToolDefinition }) {
 
         const results = await splitPdf(files[0], splitMode, prefix);
         if (results.length === 0) {
-          throw new Error("No pages matched — check your split points and try again.");
+          throw new Error("No pages matched: check your split points and try again.");
         }
 
         if (results.length === 1) {

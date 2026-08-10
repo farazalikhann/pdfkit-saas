@@ -2,18 +2,23 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Search, X } from "lucide-react";
 import { searchTools } from "@/lib/tools";
 import { trackSearchZeroResults } from "@/lib/analytics/track";
 import { cn } from "@/lib/utils";
 
 export function SearchBar() {
-  const [query, setQuery] = React.useState("");
-  const [focused, setFocused] = React.useState(false);
+  // Seeded from ?q= so /tools?q=merge (the WebSite SearchAction target) shows
+  // real matching results on load, not just an empty box.
+  const searchParams = useSearchParams();
+  const initialQuery = searchParams.get("q") ?? "";
+  const [query, setQuery] = React.useState(initialQuery);
+  const [focused, setFocused] = React.useState(initialQuery.trim().length > 0);
   const results = React.useMemo(() => searchTools(query).slice(0, 8), [query]);
   const showDropdown = focused && query.trim().length > 0;
 
-  // Debounced so this fires once the user pauses, not on every keystroke —
+  // Debounced so this fires once the user pauses, not on every keystroke:
   // a zero-result search here is a direct signal for what tool to build next.
   React.useEffect(() => {
     const trimmed = query.trim();

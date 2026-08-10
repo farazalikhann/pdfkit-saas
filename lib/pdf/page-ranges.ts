@@ -1,7 +1,7 @@
 /**
  * Forgiving parser for page-range text input ("1-3, 7, 10-12"). Tolerates
  * extra whitespace, trailing/empty commas, reversed ranges (5-2 -> 2-5),
- * and duplicate/overlapping entries — everything collapses into a Set.
+ * and duplicate/overlapping entries, everything collapses into a Set.
  * Anything out of [1, totalPages] or unparseable is silently dropped rather
  * than rejected, since this drives a live UI, not a validated form submit.
  */

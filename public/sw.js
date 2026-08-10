@@ -1,5 +1,5 @@
 // Bump this version string on every deploy that changes app-shell routes or
-// their content — it's the only thing that forces a stale service worker to
+// their content: it's the only thing that forces a stale service worker to
 // drop its old cache. A returning visitor whose browser is still running an
 // old SW instance (only rechecked periodically, not on every navigation)
 // would otherwise keep serving pages exactly as they were the day that SW

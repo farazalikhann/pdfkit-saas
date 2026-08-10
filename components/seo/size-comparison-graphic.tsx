@@ -3,7 +3,7 @@
  * image-generation/rasterization tooling (no sharp/cwebp/ImageMagick available),
  * so a real WebP couldn't be produced honestly. Inline SVG gets the same
  * fixed-dimension, no-layout-shift, zero-request result without a fabricated
- * asset — swap in a real WebP screenshot here if one becomes available.
+ * asset, swap in a real WebP screenshot here if one becomes available.
  */
 export function SizeComparisonGraphic({
   beforeLabel,

@@ -16,7 +16,7 @@ interface CapturedPage {
 interface ScanCameraDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  /** Called once with all pages the user wants to keep — from a scan session or the gallery fallback. */
+  /** Called once with all pages the user wants to keep, from a scan session or the gallery fallback. */
   onFinish: (files: File[]) => void;
 }
 
@@ -68,7 +68,7 @@ export function ScanCameraDialog({ open, onOpenChange, onFinish }: ScanCameraDia
           return;
         }
         streamRef.current = stream;
-        // Don't touch videoRef here — the <video> element only mounts once
+        // Don't touch videoRef here, the <video> element only mounts once
         // phase flips to "live", so it doesn't exist in the DOM yet at this
         // point. A separate effect (keyed on `phase`) attaches the stream
         // once that render has actually happened.
@@ -87,7 +87,7 @@ export function ScanCameraDialog({ open, onOpenChange, onFinish }: ScanCameraDia
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  // Attaches the already-acquired stream once the <video> element exists —
+  // Attaches the already-acquired stream once the <video> element exists:
   // it only mounts when phase === "live", one render after getUserMedia resolves.
   React.useEffect(() => {
     if (phase === "live" && videoRef.current && streamRef.current) {
@@ -270,7 +270,7 @@ export function ScanCameraDialog({ open, onOpenChange, onFinish }: ScanCameraDia
             </div>
           </div>
           <p className={cn("px-6 text-center text-xs text-white/50", pages.length > 0 && "sr-only")}>
-            Capture each page one at a time — tap Done when you&apos;re finished.
+            Capture each page one at a time: tap Done when you&apos;re finished.
           </p>
         </div>
       )}

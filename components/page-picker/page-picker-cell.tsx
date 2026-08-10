@@ -76,7 +76,7 @@ export function SelectPageCell({ pageNumber, dataUrl, onVisible, selected, varia
   return (
     <div
       data-page-number={pageNumber}
-      // touch-action: pan-y (not "none") — a touch here must still be able to
+      // touch-action: pan-y (not "none"), a touch here must still be able to
       // scroll the page vertically. The pointer handlers in PagePicker already
       // tell a quick swipe apart from a deliberate long-press-then-drag paint
       // gesture; `touch-none` was overriding that at the browser level and

@@ -76,7 +76,7 @@ export function AddHeaderFooterTool({ tool }: { tool: ToolDefinition }) {
       }}
       notice={() => (
         <p className="text-xs text-muted-foreground">
-          Fill in any of the six slots below — left, center, right for both the
+          Fill in any of the six slots below, left, center, right for both the
           header and footer. Use {"{page}"}, {"{total}"}, {"{date}"} or {"{filename}"}
           {" "}anywhere in the text.
         </p>
@@ -87,7 +87,7 @@ export function AddHeaderFooterTool({ tool }: { tool: ToolDefinition }) {
         return (
           <div className="space-y-4">
             <div className="space-y-1.5">
-              <Label>Preview — page 1</Label>
+              <Label>Preview: page 1</Label>
               <div className="relative mx-auto aspect-[3/4] w-full max-w-[220px] overflow-hidden rounded-lg border border-border bg-muted">
                 {previewUrl && (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -125,11 +125,11 @@ export function AddHeaderFooterTool({ tool }: { tool: ToolDefinition }) {
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label>Font size — {fontSize}pt</Label>
+                <Label>Font size: {fontSize}pt</Label>
                 <Slider value={[fontSize]} min={7} max={18} step={1} onValueChange={([v]) => setFontSize(v)} />
               </div>
               <div className="space-y-1.5">
-                <Label>Margin — {marginPt}pt</Label>
+                <Label>Margin: {marginPt}pt</Label>
                 <Slider value={[marginPt]} min={14} max={54} step={2} onValueChange={([v]) => setMarginPt(v)} />
               </div>
             </div>

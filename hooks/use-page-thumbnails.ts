@@ -88,7 +88,7 @@ export function usePageThumbnails(file: File | null): UsePageThumbnailsResult {
           setRenderedCount(renderedCountRef.current);
         })
         .catch(() => {
-          // Leave this page uncached — its cell falls back to a placeholder icon
+          // Leave this page uncached, its cell falls back to a placeholder icon
           // instead of retrying forever or crashing the whole grid.
         })
         .finally(() => {

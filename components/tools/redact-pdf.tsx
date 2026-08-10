@@ -115,7 +115,7 @@ export function RedactPdfTool({ tool }: { tool: ToolDefinition }) {
       <div className="mb-4 space-y-2">
         <ClientSideBadge />
         <p className="rounded-lg bg-amber-500/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-400">
-          Any page with a redaction box is converted to an image on export — this is what
+          Any page with a redaction box is converted to an image on export, this is what
           actually destroys the hidden text. Text elsewhere on that page will no longer be
           selectable or searchable.
         </p>

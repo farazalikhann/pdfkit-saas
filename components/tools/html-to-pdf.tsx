@@ -82,7 +82,7 @@ export function HtmlToPdfTool({ tool }: { tool: ToolDefinition }) {
 
       if (rawHtml.length > HTML_SIZE_WARN_CHARS) {
         toast.warning(
-          "This is a lot of HTML — rendering it could be slow or use a lot of memory on a phone."
+          "This is a lot of HTML: rendering it could be slow or use a lot of memory on a phone."
         );
       }
       setProgress(8);
@@ -120,7 +120,7 @@ export function HtmlToPdfTool({ tool }: { tool: ToolDefinition }) {
       <div className="mb-4 space-y-2">
         <ServerSideNotice>
           Fetching a URL runs through our server briefly to avoid browser CORS
-          blocks — the page is not stored. Pasted HTML never leaves your device.
+          blocks: the page is not stored. Pasted HTML never leaves your device.
         </ServerSideNotice>
         <p className="text-xs text-muted-foreground">
           Renders a snapshot of the page or HTML you provide. JavaScript-heavy

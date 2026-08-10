@@ -126,14 +126,14 @@ const IMPLEMENTED_TOOLS: Record<
 };
 
 export function ToolPageClient({ slug }: { slug: string }) {
-  // Resolved here (client-side) rather than passed down from the Server Component —
+  // Resolved here (client-side) rather than passed down from the Server Component:
   // ToolDefinition.icon is a component reference, which can't cross the RSC boundary as a prop.
   const tool: ToolDefinition | undefined = getToolBySlug(slug);
   if (!tool) return null;
 
   const Implementation = IMPLEMENTED_TOOLS[tool.slug];
   // No placeholder fallback here on purpose: a tool with no real implementation
-  // must not be reachable at all — not visible with a dead-end Run button, not
+  // must not be reachable at all, not visible with a dead-end Run button, not
   // a generic "coming soon" screen. If this ever fires, the tool was listed in
   // lib/tools.ts without being wired up above, which is a bug to catch before
   // shipping, not a state to render gracefully for users.

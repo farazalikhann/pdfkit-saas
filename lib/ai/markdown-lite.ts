@@ -1,7 +1,7 @@
 /**
- * A deliberately tiny Markdown subset — just what the Summarize prompt is
+ * A deliberately tiny Markdown subset, just what the Summarize prompt is
  * instructed to produce (## headings, - bullets, plain paragraphs, a TLDR
- * line) — parsed once and rendered two ways: as React elements for the
+ * line), parsed once and rendered two ways: as React elements for the
  * on-screen result, and as an HTML string for the PDF export. Keeping one
  * parser for both means the screen and the PDF can never show different
  * structure for the same response.

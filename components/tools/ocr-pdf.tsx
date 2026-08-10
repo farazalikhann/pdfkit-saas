@@ -62,7 +62,7 @@ export function OcrPdfTool({ tool }: { tool: ToolDefinition }) {
       const result = await buildSearchablePdf(file, selected, lang, (p) => {
         if (p.phase === "loading-language") {
           setStatusText("Downloading language data (first time only)…");
-          setProgress(p.fraction * 15); // small slice of the bar — the real work is recognition
+          setProgress(p.fraction * 15); // small slice of the bar: the real work is recognition
         } else {
           setStatusText(
             p.ordinal ? `Page ${p.ordinal} of ${p.totalPagesToOcr} selected pages` : "Finishing up…"
@@ -101,14 +101,14 @@ export function OcrPdfTool({ tool }: { tool: ToolDefinition }) {
         <ClientSideBadge />
         <p className="text-xs text-muted-foreground">
           Makes scanned pages searchable by placing an invisible text layer over
-          them — the visible page is a re-rendered copy of the original, so it may
+          them: the visible page is a re-rendered copy of the original, so it may
           look very slightly different at the pixel level. The first OCR run
           downloads a small language model (~15MB); it&apos;s cached after that.
         </p>
         {isMobile && (
           <div className="flex items-start gap-2 rounded-lg bg-amber-500/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-400">
             <Smartphone className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-            OCR is slow on phones — for large files, OCR just a few pages here, or
+            OCR is slow on phones: for large files, OCR just a few pages here, or
             switch to a desktop browser.
           </div>
         )}

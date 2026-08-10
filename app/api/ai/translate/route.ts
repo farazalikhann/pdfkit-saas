@@ -9,11 +9,11 @@ import {
 
 export const runtime = "nodejs";
 
-/** Defensive server-side ceiling — the client is expected to stop well before this. */
+/** Defensive server-side ceiling, the client is expected to stop well before this. */
 const MAX_TEXT_LENGTH = 120_000;
 
 export async function POST(req: Request) {
-  // Same shared counters as Summarize and the MCQ generator — checkDailyLimit()
+  // Same shared counters as Summarize and the MCQ generator, checkDailyLimit()
   // has no per-tool concept, so all three AI tools draw down one common budget.
   if (!checkDailyLimit().allowed) {
     return NextResponse.json(
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
   const ip = getClientIp(req);
   if (!checkHourlyIpLimit(ip).allowed) {
     return NextResponse.json(
-      { error: "Too many requests from this device — try again in a bit." },
+      { error: "Too many requests from this device: try again in a bit." },
       { status: 429 }
     );
   }

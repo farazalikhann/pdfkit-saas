@@ -1,17 +1,35 @@
 import type { Metadata } from "next";
-import { Fragment } from "react";
+import { Fragment, Suspense } from "react";
 import { SearchBar } from "@/components/home/search-bar";
 import { CategoryChips } from "@/components/home/category-chips";
 import { CategorySection } from "@/components/home/category-section";
 import { CompressionGuides } from "@/components/home/compression-guides";
+import { HomeContentSection } from "@/components/home/home-content-section";
 import { categories } from "@/lib/categories";
-import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/constants";
-import { websiteJsonLd, organizationJsonLd } from "@/lib/seo/json-ld";
+import { SITE_NAME, SITE_URL } from "@/lib/constants";
+import { websiteJsonLd, organizationJsonLd, faqJsonLd } from "@/lib/seo/json-ld";
+import { HOME_FAQS } from "@/lib/seo/home-content";
+
+const HOME_TITLE = "Free PDF Tools Online - Compress, Merge, Convert PDF in Your Browser";
+const HOME_DESCRIPTION =
+  "Compress, merge, split, and convert PDFs online for free. Every file processes entirely on your device and is never uploaded to a server. No signup, no limits.";
 
 export const metadata: Metadata = {
-  title: `${SITE_NAME} — Free Online PDF Tools`,
-  description: SITE_DESCRIPTION,
+  title: { absolute: HOME_TITLE },
+  description: HOME_DESCRIPTION,
   alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    url: SITE_URL,
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
+  },
 };
 
 export default function Home() {
@@ -25,16 +43,22 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd()) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd(HOME_FAQS)) }}
+      />
       <div className="space-y-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">
-            Every PDF tool you need
+            Free PDF Tools Online: Compress, Merge, Convert
           </h1>
           <p className="text-sm text-muted-foreground">
-            Fast, private, and free — most tools run right on your device.
+            Every PDF tool you need. Fast, private, and free, most tools run right on your device.
           </p>
         </div>
-        <SearchBar />
+        <Suspense fallback={<div className="h-14 w-full rounded-2xl border border-border bg-card" />}>
+          <SearchBar />
+        </Suspense>
         <CategoryChips />
       </div>
 
@@ -46,6 +70,8 @@ export default function Home() {
           </Fragment>
         ))}
       </div>
+
+      <HomeContentSection />
     </div>
   );
 }

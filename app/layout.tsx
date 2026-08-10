@@ -23,7 +23,7 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${SITE_NAME} — Free Online PDF Tools`,
+    default: `${SITE_NAME}: Free Online PDF Tools`,
     template: `%s | ${SITE_NAME}`,
   },
   description: SITE_DESCRIPTION,
@@ -37,16 +37,16 @@ export const metadata: Metadata = {
     type: "website",
     siteName: SITE_NAME,
     url: SITE_URL,
-    title: `${SITE_NAME} — Free Online PDF Tools`,
+    title: `${SITE_NAME}: Free Online PDF Tools`,
     description: SITE_DESCRIPTION,
   },
   twitter: {
     card: "summary_large_image",
-    title: `${SITE_NAME} — Free Online PDF Tools`,
+    title: `${SITE_NAME}: Free Online PDF Tools`,
     description: SITE_DESCRIPTION,
   },
   // Set NEXT_PUBLIC_GSC_VERIFICATION in Vercel's env vars with the token from
-  // Search Console's "HTML tag" verification method — nothing renders until it's set,
+  // Search Console's "HTML tag" verification method, nothing renders until it's set,
   // so this never ships an empty/placeholder <meta> tag to production.
   verification: process.env.NEXT_PUBLIC_GSC_VERIFICATION
     ? { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION }
@@ -64,7 +64,7 @@ export const viewport: Viewport = {
   ],
 };
 
-// Unset on purpose in local/preview environments — only Vercel's Production
+// Unset on purpose in local/preview environments, only Vercel's Production
 // environment has this configured, so dev traffic and preview deploys never
 // pollute the real GA property's stats.
 const gaId = process.env.NEXT_PUBLIC_GA_ID;

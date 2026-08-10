@@ -38,7 +38,7 @@ export function UploadZone({
         toast.error(
           rejections.length === 1
             ? `"${rejections[0].file.name}" isn't a supported file type.`
-            : `${rejections.length} files were skipped — unsupported type.`
+            : `${rejections.length} files were skipped, unsupported type.`
         );
       }
       if (accepted.length > 0) onFiles(accepted);

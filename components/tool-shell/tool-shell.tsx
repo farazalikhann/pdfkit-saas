@@ -39,15 +39,15 @@ interface ToolShellProps {
   canRun?: (helpers: ToolShellHelpers) => boolean;
   /**
    * Fires from an effect (after commit, never during render) whenever the file list changes.
-   * Use this instead of deriving state inside `preview`/`options` — those run during ToolShellInner's
+   * Use this instead of deriving state inside `preview`/`options`, those run during ToolShellInner's
    * render, and calling a child's setState there trips React's cross-component render warning.
    */
   onFilesChange?: (files: File[]) => void;
   /**
-   * Extra header copy shown before any file is uploaded — for a privacy caveat
+   * Extra header copy shown before any file is uploaded, for a privacy caveat
    * (Summarize sends text to Gemini) or a quality/limitation disclosure (e.g.
    * "complex layouts won't survive"). Renders alongside the on-device badge,
-   * not instead of it — a tool can be genuinely client-side and still have a
+   * not instead of it, a tool can be genuinely client-side and still have a
    * caveat worth surfacing up front.
    */
   notice?: () => React.ReactNode;

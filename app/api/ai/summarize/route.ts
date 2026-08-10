@@ -12,7 +12,7 @@ const VALID_LENGTHS: SummaryLength[] = ["short", "detailed", "bullets"];
 
 export const runtime = "nodejs";
 
-/** Defensive server-side ceiling — the client is expected to stop well before this. */
+/** Defensive server-side ceiling, the client is expected to stop well before this. */
 const MAX_TEXT_LENGTH = 120_000;
 
 export async function POST(req: Request) {
@@ -26,7 +26,7 @@ export async function POST(req: Request) {
   const ip = getClientIp(req);
   if (!checkHourlyIpLimit(ip).allowed) {
     return NextResponse.json(
-      { error: "Too many summaries from this device — try again in a bit." },
+      { error: "Too many summaries from this device: try again in a bit." },
       { status: 429 }
     );
   }

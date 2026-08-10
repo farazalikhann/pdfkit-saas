@@ -42,7 +42,7 @@ export default function RecentPage() {
         <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border py-16 text-center">
           <Clock className="h-8 w-8 text-muted-foreground" />
           <p className="text-sm text-muted-foreground">
-            Nothing here yet — tools you use will show up for quick access.
+            Nothing here yet: tools you use will show up for quick access.
           </p>
         </div>
       ) : (

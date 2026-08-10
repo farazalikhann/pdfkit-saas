@@ -162,7 +162,7 @@ export function AddWatermarkTool({ tool }: { tool: ToolDefinition }) {
                   <Input id="wm-text" value={text} onChange={(e) => setText(e.target.value)} placeholder="CONFIDENTIAL" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label>Font size — {fontSize}pt</Label>
+                  <Label>Font size: {fontSize}pt</Label>
                   <Slider value={[fontSize]} min={12} max={96} step={2} onValueChange={([v]) => setFontSize(v)} />
                 </div>
                 <div className="space-y-1.5">
@@ -203,17 +203,17 @@ export function AddWatermarkTool({ tool }: { tool: ToolDefinition }) {
                     reader.readAsDataURL(f);
                   }}
                 />
-                <Label>Size — {imageScale}% of page width</Label>
+                <Label>Size: {imageScale}% of page width</Label>
                 <Slider value={[imageScale]} min={10} max={90} step={5} onValueChange={([v]) => setImageScale(v)} />
               </div>
             )}
 
             <div className="space-y-1.5">
-              <Label>Opacity — {opacity}%</Label>
+              <Label>Opacity: {opacity}%</Label>
               <Slider value={[opacity]} min={5} max={90} step={5} onValueChange={([v]) => setOpacity(v)} />
             </div>
             <div className="space-y-1.5">
-              <Label>Rotation — {rotation}°</Label>
+              <Label>Rotation: {rotation}°</Label>
               <Slider value={[rotation]} min={-90} max={90} step={5} onValueChange={([v]) => setRotation(v)} />
             </div>
 

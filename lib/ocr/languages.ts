@@ -3,7 +3,7 @@ export interface OcrLanguage {
   label: string;
 }
 
-/** A curated common subset — tesseract.js supports 100+ or the full list can be added later. */
+/** A curated common subset, tesseract.js supports 100+ or the full list can be added later. */
 export const OCR_LANGUAGES: OcrLanguage[] = [
   { code: "eng", label: "English" },
   { code: "hin", label: "Hindi" },

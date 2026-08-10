@@ -8,7 +8,7 @@ export interface RedactBoxElement extends EditorElementBase {
   kind: "redact";
 }
 
-// Rendered at 2x (144 DPI) before burning in the black boxes — sharp enough to stay
+// Rendered at 2x (144 DPI) before burning in the black boxes, sharp enough to stay
 // legible for anything that wasn't redacted, without the file size exploding.
 const REDACT_RENDER_SCALE = 2;
 
@@ -52,7 +52,7 @@ async function dataUrlToBytes(dataUrl: string): Promise<Uint8Array> {
 
 /**
  * Burns black boxes into rasterized copies of any page that has redactions, so the
- * underlying text/vector content is genuinely gone — not just hidden behind a shape a
+ * underlying text/vector content is genuinely gone, not just hidden behind a shape a
  * viewer could delete or select-through. Pages with no redaction boxes are copied over
  * unmodified (kept as real vector/text pages).
  */
