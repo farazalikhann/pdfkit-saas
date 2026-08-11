@@ -231,7 +231,12 @@ export default function CompressPdfTo1MbPage() {
             <Link href="/compress-pdf" className="font-medium text-primary underline-offset-2 hover:underline">
               main compress PDF tool
             </Link>{" "}
-            covers the full set of presets.
+            covers the full set of presets. Want the honest version of how much this actually
+            costs in quality? See{" "}
+            <Link href="/compress-pdf-without-losing-quality" className="font-medium text-primary underline-offset-2 hover:underline">
+              compress a PDF without losing quality
+            </Link>
+            .
           </p>
         </section>
 

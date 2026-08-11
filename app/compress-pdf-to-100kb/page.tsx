@@ -234,7 +234,12 @@ export default function CompressPdfTo100KbPage() {
             <Link href="/compress-pdf" className="font-medium text-primary underline-offset-2 hover:underline">
               main compress PDF tool
             </Link>{" "}
-            for the full set of presets.
+            for the full set of presets. Wondering how much of that reduction is actually
+            visible? See{" "}
+            <Link href="/compress-pdf-without-losing-quality" className="font-medium text-primary underline-offset-2 hover:underline">
+              compress a PDF without losing quality
+            </Link>{" "}
+            for the honest breakdown.
           </p>
         </section>
 

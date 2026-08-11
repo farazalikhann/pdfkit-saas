@@ -227,7 +227,12 @@ export default function CompressPdfForEmailPage() {
             <Link href="/compress-pdf" className="font-medium text-primary underline-offset-2 hover:underline">
               main compress PDF tool
             </Link>{" "}
-            covers the full set of presets.
+            covers the full set of presets. Wondering if compressing for email actually costs
+            you anything visible? See{" "}
+            <Link href="/compress-pdf-without-losing-quality" className="font-medium text-primary underline-offset-2 hover:underline">
+              compress a PDF without losing quality
+            </Link>
+            .
           </p>
         </section>
 

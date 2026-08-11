@@ -238,7 +238,12 @@ export default function CompressPdfTo200KbPage() {
             <Link href="/compress-pdf" className="font-medium text-primary underline-offset-2 hover:underline">
               main compress PDF tool
             </Link>{" "}
-            for the full set of presets and a broader look at how the compressor works.
+            for the full set of presets and a broader look at how the compressor works. For the
+            honest version of what gets lost at any of these targets, see{" "}
+            <Link href="/compress-pdf-without-losing-quality" className="font-medium text-primary underline-offset-2 hover:underline">
+              compress a PDF without losing quality
+            </Link>
+            .
           </p>
         </section>
 

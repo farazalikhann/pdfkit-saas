@@ -36,6 +36,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/compress-pdf-to-500kb",
     "/compress-pdf-to-1mb",
     "/compress-pdf-for-email",
+    "/compress-scanned-pdf",
+    "/compress-pdf-without-losing-quality",
+    "/compress-large-pdf",
   ].map((path) => ({
     url: `${SITE_URL}${path}`,
     lastModified: new Date(),

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Minimize2, Mail, type LucideIcon } from "lucide-react";
+import { Minimize2, Mail, ScanText, BadgeCheck, HardDrive, type LucideIcon } from "lucide-react";
 
 const GUIDES: { href: string; label: string; hint: string; icon: LucideIcon }[] = [
   { href: "/compress-pdf", label: "Compress PDF", hint: "Presets or an exact size", icon: Minimize2 },
@@ -8,6 +8,9 @@ const GUIDES: { href: string; label: string; hint: string; icon: LucideIcon }[] 
   { href: "/compress-pdf-to-500kb", label: "To 500KB", hint: "For scanned reports & portfolios", icon: Minimize2 },
   { href: "/compress-pdf-to-1mb", label: "To 1MB", hint: "For job & university uploads", icon: Minimize2 },
   { href: "/compress-pdf-for-email", label: "For Email", hint: "Fit Gmail & Outlook limits", icon: Mail },
+  { href: "/compress-scanned-pdf", label: "Scanned PDF", hint: "Keep text readable at the right DPI", icon: ScanText },
+  { href: "/compress-pdf-without-losing-quality", label: "Without Losing Quality", hint: "The honest lossless vs lossy breakdown", icon: BadgeCheck },
+  { href: "/compress-large-pdf", label: "Large PDF Files", hint: "No 10MB or 20MB upload cap", icon: HardDrive },
 ];
 
 /** Discoverability links to the compression keyword-landing-page cluster, alongside the auto-generated tool grid. */
@@ -16,7 +19,7 @@ export function CompressionGuides() {
     <section className="space-y-3">
       <h2 className="flex items-center gap-2 text-base font-bold">
         <span aria-hidden>📏</span>
-        Compress to an exact size
+        More ways to compress a PDF
       </h2>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {GUIDES.map((guide) => (

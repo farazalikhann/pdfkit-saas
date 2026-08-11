@@ -168,6 +168,27 @@ export default function CompressPdfHubPage() {
           </p>
         </section>
 
+        <section className="space-y-2 rounded-xl border border-border bg-card p-4">
+          <h2 className="text-base font-bold leading-tight">Dealing with a specific problem instead?</h2>
+          <p className="leading-relaxed">
+            Not every compression question is about hitting a number. If a scan came out
+            blurry, or you just want to know how much this can shrink a file before it looks
+            worse, one of these covers it directly:{" "}
+            <Link href="/compress-scanned-pdf" className="font-medium text-primary underline-offset-2 hover:underline">
+              compress a scanned PDF
+            </Link>
+            ,{" "}
+            <Link href="/compress-pdf-without-losing-quality" className="font-medium text-primary underline-offset-2 hover:underline">
+              compress a PDF without losing quality
+            </Link>
+            , or{" "}
+            <Link href="/compress-large-pdf" className="font-medium text-primary underline-offset-2 hover:underline">
+              compress a large PDF file
+            </Link>
+            .
+          </p>
+        </section>
+
         <section className="space-y-3">
           <h2 className="text-lg font-bold leading-tight">When you need this</h2>
           <p className="leading-relaxed">
