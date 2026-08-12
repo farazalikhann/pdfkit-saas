@@ -46,6 +46,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
+  // Keyword landing pages for the merge cluster, reuse the merge-pdf tool's
+  // UI under different H1/copy targeting merge-related searches.
+  const mergeLandingRoutes = [
+    "/merge-pdf",
+    "/merge-pdf-without-losing-quality",
+    "/combine-pdf-and-images",
+  ].map((path) => ({
+    url: `${SITE_URL}${path}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.8,
+  }));
+
   const categoryRoutes = categories.map((c) => ({
     url: `${SITE_URL}/category/${c.slug}`,
     lastModified: new Date(),
@@ -60,5 +73,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.9,
   }));
 
-  return [...staticRoutes, ...legalRoutes, ...compressionLandingRoutes, ...categoryRoutes, ...toolRoutes];
+  return [
+    ...staticRoutes,
+    ...legalRoutes,
+    ...compressionLandingRoutes,
+    ...mergeLandingRoutes,
+    ...categoryRoutes,
+    ...toolRoutes,
+  ];
 }

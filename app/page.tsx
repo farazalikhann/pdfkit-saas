@@ -4,6 +4,7 @@ import { SearchBar } from "@/components/home/search-bar";
 import { CategoryChips } from "@/components/home/category-chips";
 import { CategorySection } from "@/components/home/category-section";
 import { CompressionGuides } from "@/components/home/compression-guides";
+import { MergeGuides } from "@/components/home/merge-guides";
 import { HomeContentSection } from "@/components/home/home-content-section";
 import { categories } from "@/lib/categories";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
@@ -67,6 +68,7 @@ export default function Home() {
           <Fragment key={category.slug}>
             <CategorySection category={category} />
             {category.slug === "optimize" && <CompressionGuides />}
+            {category.slug === "organize" && <MergeGuides />}
           </Fragment>
         ))}
       </div>

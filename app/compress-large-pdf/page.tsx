@@ -256,7 +256,11 @@ export default function CompressLargePdfPage() {
             <Link href="/compress-pdf" className="font-medium text-primary underline-offset-2 hover:underline">
               main compress PDF tool
             </Link>{" "}
-            covers the full set of presets.
+            covers the full set of presets. If the file only got this large after you{" "}
+            <Link href="/merge-pdf" className="font-medium text-primary underline-offset-2 hover:underline">
+              merged several PDFs
+            </Link>{" "}
+            together, compressing the result here is the natural next step.
           </p>
         </section>
 
