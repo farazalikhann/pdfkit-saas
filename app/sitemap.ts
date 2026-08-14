@@ -52,6 +52,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/merge-pdf",
     "/merge-pdf-without-losing-quality",
     "/combine-pdf-and-images",
+    "/merge-pdf-in-order",
+    "/merge-scanned-documents",
+    "/combine-pdf-pages-into-one",
   ].map((path) => ({
     url: `${SITE_URL}${path}`,
     lastModified: new Date(),

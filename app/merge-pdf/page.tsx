@@ -242,6 +242,18 @@ export default function MergePdfHubPage() {
             <Link href="/combine-pdf-and-images" className="font-medium text-primary underline-offset-2 hover:underline">
               combine PDF and JPG into one file
             </Link>
+            . Need the files in an exact sequence, not alphabetical order? See{" "}
+            <Link href="/merge-pdf-in-order" className="font-medium text-primary underline-offset-2 hover:underline">
+              merge PDF files in a specific order
+            </Link>
+            . Working from a scanner? See{" "}
+            <Link href="/merge-scanned-documents" className="font-medium text-primary underline-offset-2 hover:underline">
+              merge scanned documents into one PDF
+            </Link>
+            . Cleaning up a large folder of loose single-page files? See{" "}
+            <Link href="/combine-pdf-pages-into-one" className="font-medium text-primary underline-offset-2 hover:underline">
+              combine PDF pages into one file
+            </Link>
             . If the merged file comes out too large afterward,{" "}
             <Link href="/compress-pdf" className="font-medium text-primary underline-offset-2 hover:underline">
               compress a PDF

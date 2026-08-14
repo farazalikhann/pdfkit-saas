@@ -4,6 +4,11 @@
  * so a real WebP couldn't be produced honestly. Inline SVG gets the same
  * fixed-dimension, no-layout-shift, zero-request result without a fabricated
  * asset, swap in a real WebP screenshot here if one becomes available.
+ *
+ * Labels are drawn above each bar in the page's normal text color rather than
+ * inside it: a bar representing a big reduction (the component's main use
+ * case) can be too narrow to hold its own label, and text relying on the bar
+ * for contrast becomes unreadable once it overflows onto the page background.
  */
 export function SizeComparisonGraphic({
   beforeLabel,
@@ -18,10 +23,12 @@ export function SizeComparisonGraphic({
   afterWidthPct: number;
   caption: string;
 }) {
-  const barH = 28;
-  const gap = 14;
+  const labelH = 14;
+  const barH = 16;
+  const rowH = labelH + barH + 4;
+  const rowGap = 10;
   const width = 320;
-  const height = barH * 2 + gap + 20;
+  const height = rowH * 2 + rowGap;
 
   return (
     <figure className="my-2">
@@ -34,21 +41,30 @@ export function SizeComparisonGraphic({
         className="h-auto w-full max-w-sm"
       >
         <title>{caption}</title>
-        <rect x="0" y="0" width={(beforeWidthPct / 100) * width} height={barH} rx="6" className="fill-muted-foreground/30" />
-        <text x="6" y={barH / 2 + 4} className="fill-foreground text-[11px] font-medium">
+        <text x="0" y={labelH - 2} className="fill-foreground text-[11px] font-medium">
           {beforeLabel}
         </text>
         <rect
           x="0"
-          y={barH + gap}
-          width={Math.max(28, (afterWidthPct / 100) * width)}
+          y={labelH + 2}
+          width={(beforeWidthPct / 100) * width}
           height={barH}
-          rx="6"
-          className="fill-primary"
+          rx="4"
+          className="fill-muted-foreground"
+          fillOpacity={0.3}
         />
-        <text x="6" y={barH + gap + barH / 2 + 4} className="fill-primary-foreground text-[11px] font-medium">
+
+        <text x="0" y={rowH + rowGap + labelH - 2} className="fill-foreground text-[11px] font-medium">
           {afterLabel}
         </text>
+        <rect
+          x="0"
+          y={rowH + rowGap + labelH + 2}
+          width={Math.max(14, (afterWidthPct / 100) * width)}
+          height={barH}
+          rx="4"
+          className="fill-primary"
+        />
       </svg>
       <figcaption className="mt-1 text-xs text-muted-foreground">{caption}</figcaption>
     </figure>

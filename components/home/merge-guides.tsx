@@ -1,10 +1,13 @@
 import Link from "next/link";
-import { Combine, ShieldCheck, Images, type LucideIcon } from "lucide-react";
+import { Combine, ShieldCheck, Images, GripVertical, ScanLine, Layers, type LucideIcon } from "lucide-react";
 
 const GUIDES: { href: string; label: string; hint: string; icon: LucideIcon }[] = [
   { href: "/merge-pdf", label: "Merge PDF", hint: "Combine up to 50 files at once", icon: Combine },
   { href: "/merge-pdf-without-losing-quality", label: "Without Losing Quality", hint: "Merging is not compression, here is why", icon: ShieldCheck },
   { href: "/combine-pdf-and-images", label: "PDF + Photos", hint: "Combine scans, screenshots, and PDFs", icon: Images },
+  { href: "/merge-pdf-in-order", label: "Merge in Order", hint: "Drag to fix sequences alphabetical sort breaks", icon: GripVertical },
+  { href: "/merge-scanned-documents", label: "Scanned Documents", hint: "Mixed sizes, sideways pages, handled honestly", icon: ScanLine },
+  { href: "/combine-pdf-pages-into-one", label: "Combine Into One", hint: "Batch a folder of loose pages, verify the count", icon: Layers },
 ];
 
 /** Discoverability links to the merge keyword-landing-page cluster, alongside the auto-generated tool grid. */

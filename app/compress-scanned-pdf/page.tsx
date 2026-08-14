@@ -258,6 +258,10 @@ export default function CompressScannedPdfPage() {
             <Link href="/compress-large-pdf" className="font-medium text-primary underline-offset-2 hover:underline">
               compress a large PDF file
             </Link>
+            . Combining several scans into one document first? See{" "}
+            <Link href="/merge-scanned-documents" className="font-medium text-primary underline-offset-2 hover:underline">
+              merge scanned documents into one PDF
+            </Link>
             . The{" "}
             <Link href="/compress-pdf" className="font-medium text-primary underline-offset-2 hover:underline">
               main compress PDF tool
