@@ -28,7 +28,7 @@ export function generateMetadata({ params }: Props): Metadata {
 export default function ToolPage({ params }: Props) {
   const tool = getToolBySlug(params.slug);
   if (!tool) notFound();
-  // Hidden entirely (not a broken page) when there's no Gemini key configured:
+  // Hidden entirely (not a broken page) when there's no OpenRouter key configured:
   // covers every AI tool (Summarize, Translate, MCQ), not just one hardcoded slug.
   if (tool.category === "ai" && !isAiToolsEnabled()) notFound();
 

@@ -449,7 +449,7 @@ export const tools: ToolDefinition[] = [
     multiple: false,
     maxFiles: 1,
     resultFileName: "summary.txt",
-    keywords: ["ai", "summary", "tldr", "gemini"],
+    keywords: ["ai", "summary", "tldr"],
   },
   {
     slug: "translate-pdf",
@@ -464,7 +464,7 @@ export const tools: ToolDefinition[] = [
     multiple: false,
     maxFiles: 1,
     resultFileName: "translation.txt",
-    keywords: ["ai", "translate", "language", "gemini"],
+    keywords: ["ai", "translate", "language"],
   },
   {
     slug: "pdf-to-mcq",
@@ -479,7 +479,7 @@ export const tools: ToolDefinition[] = [
     multiple: false,
     maxFiles: 1,
     resultFileName: "quiz.pdf",
-    keywords: ["ai", "quiz", "mcq", "questions", "gemini", "study"],
+    keywords: ["ai", "quiz", "mcq", "questions", "study"],
   },
 ];
 
@@ -487,7 +487,7 @@ export function getToolBySlug(slug: string): ToolDefinition | undefined {
   return tools.find((t) => t.slug === slug);
 }
 
-/** All tools minus ones hidden at runtime (currently the "ai" category, without a Gemini key). */
+/** All tools minus ones hidden at runtime (currently the "ai" category, without an OpenRouter key). */
 export function getVisibleTools(): ToolDefinition[] {
   if (isAiToolsEnabled()) return tools;
   return tools.filter((t) => t.category !== "ai");

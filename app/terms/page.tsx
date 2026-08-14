@@ -41,9 +41,9 @@ export default function TermsPage() {
           PDFKit is a collection of free, browser-based PDF tools: merging, splitting,
           compressing, converting, editing, and securing PDF files, plus a couple of AI-powered
           tools for summarizing and translating documents. Most tools run entirely on your own
-          device using JavaScript. The two AI tools send extracted text, not your file, to
-          Google&apos;s Gemini API to do their job, and that is disclosed on those specific tool
-          pages before you use them.
+          device using JavaScript. The two AI tools send extracted text, not your file, through
+          OpenRouter to a third-party AI model provider to do their job, and that is disclosed on
+          those specific tool pages before you use them.
         </p>
       </section>
 

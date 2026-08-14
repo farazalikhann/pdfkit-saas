@@ -1,6 +1,6 @@
 import "server-only";
 import type { AiProvider } from "./provider";
-import { geminiProvider } from "./providers/gemini-provider";
+import { openrouterProvider } from "./providers/openrouter-provider";
 
 /**
  * Central switch for the active AI provider. To plug in another one (Groq,
@@ -9,13 +9,13 @@ import { geminiProvider } from "./providers/gemini-provider";
  * components never change.
  */
 export function getAiProvider(): AiProvider {
-  const name = process.env.AI_PROVIDER ?? "gemini";
+  const name = process.env.AI_PROVIDER ?? "openrouter";
   switch (name) {
-    case "gemini":
-      return geminiProvider;
+    case "openrouter":
+      return openrouterProvider;
     default:
       throw new Error(
-        `Unknown AI_PROVIDER "${name}", only "gemini" is currently implemented.`
+        `Unknown AI_PROVIDER "${name}", only "openrouter" is currently implemented.`
       );
   }
 }

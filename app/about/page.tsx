@@ -42,8 +42,9 @@ export default function AboutPage() {
           memory, processed right there on your own device, and handed back to you as a
           download. Nothing about it passes through a server, because there is no server in that
           part of the process at all. The only exceptions are the Summarize and Translate tools,
-          which send extracted text, never the file itself, to Google&apos;s Gemini API to do
-          their job, and that is stated clearly on those specific pages.
+          which send extracted text, never the file itself, through OpenRouter to a
+          third-party AI model provider to do their job, and that is stated clearly on those
+          specific pages.
         </p>
 
         <p>

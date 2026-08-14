@@ -144,8 +144,8 @@ export function SummarizePdfTool({ tool }: { tool: ToolDefinition }) {
     <div className="mx-auto max-w-2xl px-4 pb-40 pt-4 md:pb-16">
       <div className="mb-4 space-y-2">
         <ServerSideNotice>
-          This tool sends your document&apos;s text to Google&apos;s Gemini API for
-          processing. See our{" "}
+          This tool sends your document&apos;s text through OpenRouter to a third-party AI
+          model provider for processing. See our{" "}
           <Link href="/privacy-policy" className="underline underline-offset-2">
             privacy policy
           </Link>

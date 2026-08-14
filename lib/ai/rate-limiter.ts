@@ -1,7 +1,13 @@
 import "server-only";
 
-/** Hard stop comfortably inside Gemini's free tier (1,500 requests/day on gemini-2.5-flash). */
-export const AI_DAILY_LIMIT = 1400;
+/**
+ * Hard stop comfortably inside the free-tier request budget for the active
+ * OpenRouter model. OpenRouter's published free-tier ceiling for ":free"
+ * models varies by account standing and changes over time, verify the
+ * current limit for your key at openrouter.ai/settings/limits and adjust
+ * this to stay safely under it.
+ */
+export const AI_DAILY_LIMIT = 45;
 /** Per-IP throttle so one visitor can't burn through the shared daily budget alone. */
 export const AI_HOURLY_LIMIT_PER_IP = 5;
 

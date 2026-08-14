@@ -45,7 +45,7 @@ interface ToolShellProps {
   onFilesChange?: (files: File[]) => void;
   /**
    * Extra header copy shown before any file is uploaded, for a privacy caveat
-   * (Summarize sends text to Gemini) or a quality/limitation disclosure (e.g.
+   * (Summarize sends text to OpenRouter) or a quality/limitation disclosure (e.g.
    * "complex layouts won't survive"). Renders alongside the on-device badge,
    * not instead of it, a tool can be genuinely client-side and still have a
    * caveat worth surfacing up front.

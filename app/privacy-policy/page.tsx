@@ -52,9 +52,10 @@ export default function PrivacyPolicyPage() {
         <p className="text-sm text-muted-foreground">
           Summarize and Translate are the one exception, and we are upfront about it on those
           tool pages before you use them. Your file&apos;s text is still extracted locally in
-          your browser, but that extracted text, not the file itself, is sent to Google&apos;s
-          Gemini API to generate a summary or translation. We do not store that text or the
-          result on our own servers beyond the length of that single request.
+          your browser, but that extracted text, not the file itself, is sent through OpenRouter
+          to a third-party AI model provider to generate a summary or translation. We do not
+          store that text or the result on our own servers beyond the length of that single
+          request.
         </p>
       </section>
 

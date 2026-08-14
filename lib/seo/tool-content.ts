@@ -1025,8 +1025,8 @@ export const toolSeoContent: Record<string, ToolSeoContent> = {
       "Get a free AI summary of a long PDF in seconds. Choose short, detailed, or bullet-point style. Text extraction is local, only the text is sent to AI.",
     h1: "Summarize a PDF With AI: Free, Fast Document Summary",
     intro: [
-      "This tool reads a long PDF and produces a summary, short, detailed, or as bullet points, whichever you need, using Google's Gemini AI model. It's built for skimming a long report, a research paper, or a contract quickly, when reading the whole thing isn't practical.",
-      "Unlike every other tool on this site, this one genuinely isn't fully private: text extraction from your PDF happens locally in your browser, but that extracted text is then sent to Google's Gemini API to generate the summary, since running a capable AI model entirely on-device isn't realistic yet. We're upfront about this with a clear notice before you use it, and only the extracted text is sent, never the original file itself.",
+      "This tool reads a long PDF and produces a summary, short, detailed, or as bullet points, whichever you need, using an AI model accessed through OpenRouter. It's built for skimming a long report, a research paper, or a contract quickly, when reading the whole thing isn't practical.",
+      "Unlike every other tool on this site, this one genuinely isn't fully private: text extraction from your PDF happens locally in your browser, but that extracted text is then sent through OpenRouter to a third-party AI model provider to generate the summary, since running a capable AI model entirely on-device isn't realistic yet. We're upfront about this with a clear notice before you use it, and only the extracted text is sent, never the original file itself.",
       "There are real limits worth knowing: documents are capped at 50 pages or 100,000 characters, whichever comes first, since AI summarization quality and cost both degrade on very long inputs. If a PDF is a scanned image with no real text layer (and hasn't been OCR'd first), there's nothing for this tool to extract or summarize: run it through the OCR tool first in that case.",
       "This is built for getting the gist of something long before deciding whether to read the whole thing, a research paper you're evaluating for relevance, a lengthy contract before a call with a lawyer, a long report before a meeting where you need the key points rather than every detail. The bullet-point format works well for scanning key facts quickly, while the detailed option is better when you need enough context to discuss the document intelligently without having read every page yourself.",
       "The short option is useful for quickly checking whether a document is even relevant to what you're looking for, before spending time on a more detailed summary or the full document itself.",
@@ -1040,7 +1040,7 @@ export const toolSeoContent: Record<string, ToolSeoContent> = {
     faqs: [
       {
         q: "Is this tool as private as the others on the site?",
-        a: "No, and we say so clearly before you use it, text extraction is local, but the extracted text is sent to Google's Gemini API to generate the summary. The original file itself is never uploaded.",
+        a: "No, and we say so clearly before you use it, text extraction is local, but the extracted text is sent through OpenRouter to a third-party AI model provider to generate the summary. The original file itself is never uploaded.",
       },
       {
         q: "Is there a document length limit?",
@@ -1068,8 +1068,8 @@ export const toolSeoContent: Record<string, ToolSeoContent> = {
       "Translate a PDF into Hindi, Spanish, Arabic, Chinese, and more with AI, for free. Get a .txt file or a full translated PDF. Extraction is local, text is sent to AI.",
     h1: "Translate a PDF With AI: Free, 13+ Languages",
     intro: [
-      "This tool translates a PDF's text into another language using Google's Gemini AI model, useful for reading a document written in a language you don't speak, or producing a translated version to share with someone who doesn't read the original. Pick a source language or let the tool auto-detect it, choose a target language from 13 widely-spoken options, and get back the full translated text.",
-      "Like Summarize, this is one of the two tools on this site that genuinely isn't fully private, and we say so upfront: your PDF's text is extracted locally in your browser, but that extracted text is then sent to Google's Gemini API to produce the translation, since no on-device model today handles this range of languages well. Only the extracted text is sent, never the original file, and there's a clear notice before you run it.",
+      "This tool translates a PDF's text into another language using an AI model accessed through OpenRouter, useful for reading a document written in a language you don't speak, or producing a translated version to share with someone who doesn't read the original. Pick a source language or let the tool auto-detect it, choose a target language from 13 widely-spoken options, and get back the full translated text.",
+      "Like Summarize, this is one of the two tools on this site that genuinely isn't fully private, and we say so upfront: your PDF's text is extracted locally in your browser, but that extracted text is then sent through OpenRouter to a third-party AI model provider to produce the translation, since no on-device model today handles this range of languages well. Only the extracted text is sent, never the original file, and there's a clear notice before you run it.",
       "You can download the translation as a plain text file, or check the option to also generate a simple PDF version of it. That PDF is rendered through the browser's own text layout engine rather than a fixed built-in font, specifically so that non-Latin scripts, Hindi, Arabic, Bengali, Russian, Urdu, Japanese, Mandarin, render correctly instead of coming out as missing characters, which is a real limitation of the basic fonts a lot of lightweight PDF tools rely on.",
       "The same 50-page/100,000-character cap as Summarize applies here, for the same reason: translation quality and cost both hold up better on reasonably-sized documents than on very long ones. For a scanned PDF with no real text layer, run it through the OCR tool first, there's nothing to translate without extractable text underneath.",
     ],
@@ -1094,7 +1094,7 @@ export const toolSeoContent: Record<string, ToolSeoContent> = {
       },
       {
         q: "Is this tool as private as the rest of the site?",
-        a: "No, and we're upfront about it, text extraction is local, but the extracted text is sent to Google's Gemini API to produce the translation. The original file is never uploaded.",
+        a: "No, and we're upfront about it, text extraction is local, but the extracted text is sent through OpenRouter to a third-party AI model provider to produce the translation. The original file is never uploaded.",
       },
       {
         q: "Is there a document length limit?",
@@ -1110,8 +1110,8 @@ export const toolSeoContent: Record<string, ToolSeoContent> = {
       "Turn any PDF into multiple-choice quiz questions with AI, for free. Pick question count and difficulty, with an answer key. Great for studying and revision.",
     h1: "Generate MCQs From a PDF: Free AI Quiz Maker",
     intro: [
-      "This tool reads a PDF and generates multiple-choice questions from it using Google's Gemini AI model, built for students turning lecture notes, a textbook chapter, or a study guide into practice questions without writing them by hand. Choose how many questions you want, how difficult they should be, and whether to include an answer key.",
-      "Like Summarize and Translate, this tool isn't fully private and says so clearly: your PDF's text is extracted locally in your browser, and that extracted text is sent to Google's Gemini API to generate questions, since this depth of reading comprehension isn't something an on-device model handles well yet. Only the extracted text is sent, never the file itself.",
+      "This tool reads a PDF and generates multiple-choice questions from it using an AI model accessed through OpenRouter, built for students turning lecture notes, a textbook chapter, or a study guide into practice questions without writing them by hand. Choose how many questions you want, how difficult they should be, and whether to include an answer key.",
+      "Like Summarize and Translate, this tool isn't fully private and says so clearly: your PDF's text is extracted locally in your browser, and that extracted text is sent through OpenRouter to a third-party AI model provider to generate questions, since this depth of reading comprehension isn't something an on-device model handles well yet. Only the extracted text is sent, never the file itself.",
       "Difficulty genuinely changes what kind of question you get, not just the wording: easy questions test direct recall of facts stated plainly in the text, medium questions require connecting two or more points together, and hard questions lean on inference and include closer, more plausible wrong answers, meaningfully harder to guess by elimination alone.",
       "Questions appear on screen as a real quiz you can click through, with each answer hidden until you choose to reveal it, useful for self-testing right in the browser before you ever download anything. When you're ready, download the quiz as a plain text file or as a formatted PDF with the questions first and the answer key (if you asked for one) in a separate section at the end.",
       "This is meant for genuine self-testing rather than passively re-reading notes, which research on studying consistently finds is a weaker way to retain material, actively recalling an answer, checking it, and noting what you got wrong sticks better than highlighting a page for the third time. It works equally well on a dense textbook chapter or a shorter set of lecture notes, and generating several quizzes from the same material with different difficulty settings is a reasonable way to build up a larger practice set over time.",
@@ -1141,7 +1141,7 @@ export const toolSeoContent: Record<string, ToolSeoContent> = {
       },
       {
         q: "Is my document uploaded to a server?",
-        a: "The original PDF is never uploaded, text is extracted locally in your browser, and only that extracted text is sent to Google's Gemini API to generate the questions.",
+        a: "The original PDF is never uploaded, text is extracted locally in your browser, and only that extracted text is sent through OpenRouter to a third-party AI model provider to generate the questions.",
       },
       {
         q: "Is there a document length limit?",
