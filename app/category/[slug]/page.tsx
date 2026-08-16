@@ -7,6 +7,7 @@ import { getToolsByCategory } from "@/lib/tools";
 import { ToolCard } from "@/components/home/tool-card";
 import { CompressionGuides } from "@/components/home/compression-guides";
 import { MergeGuides } from "@/components/home/merge-guides";
+import { SplitGuides } from "@/components/home/split-guides";
 import { categoryJsonLd, breadcrumbJsonLd } from "@/lib/seo/json-ld";
 import { SITE_URL } from "@/lib/constants";
 
@@ -81,6 +82,7 @@ export default function CategoryPage({ params }: Props) {
 
       {category.slug === "optimize" && <CompressionGuides />}
       {category.slug === "organize" && <MergeGuides />}
+      {category.slug === "organize" && <SplitGuides />}
     </div>
   );
 }

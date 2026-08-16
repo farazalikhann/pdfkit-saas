@@ -62,6 +62,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
+  // Keyword landing pages for the split cluster, reuse the split-pdf and
+  // extract-pages tools' UI under different H1/copy targeting split-related
+  // searches.
+  const splitLandingRoutes = [
+    "/split-pdf",
+    "/extract-pages-from-pdf",
+    "/split-pdf-by-page-range",
+  ].map((path) => ({
+    url: `${SITE_URL}${path}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.8,
+  }));
+
   const categoryRoutes = categories.map((c) => ({
     url: `${SITE_URL}/category/${c.slug}`,
     lastModified: new Date(),
@@ -81,6 +95,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...legalRoutes,
     ...compressionLandingRoutes,
     ...mergeLandingRoutes,
+    ...splitLandingRoutes,
     ...categoryRoutes,
     ...toolRoutes,
   ];

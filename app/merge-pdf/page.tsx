@@ -258,7 +258,12 @@ export default function MergePdfHubPage() {
             <Link href="/compress-pdf" className="font-medium text-primary underline-offset-2 hover:underline">
               compress a PDF
             </Link>{" "}
-            shrinks it back down.
+            shrinks it back down. Need to go the other way and divide a file instead of combining
+            several? See the{" "}
+            <Link href="/split-pdf" className="font-medium text-primary underline-offset-2 hover:underline">
+              split PDF hub
+            </Link>
+            .
           </p>
         </section>
 
